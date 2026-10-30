@@ -1,328 +1,99 @@
 "use strict";
-const test = require("node:test"),
-  assert = require("node:assert/strict"),
-  P = require("../src/training.js");
-function config(entry = false, step = 2.5) {
-  return {
-    tm: 155,
-    increment: step,
-    barWeight: 20,
-    weights: P.seedWeights(155, step, 20),
-    phases: P.phases(entry),
-    startDate: "2026-06-01",
-    completed: {},
-    records: [],
-    archives: [],
-    extraRest: {},
-  };
-}
-function record(c, key, overrides = {}, phase = "round1") {
-  const s = P.sessions(c).find((x) => x.key === key && x.phaseId === phase),
-    plan = P.prescription(s, c),
-    actual = {
-      weights: Array(plan.sets).fill(plan.weight),
-      reps: Array(plan.sets).fill(plan.reps),
-      rpes: Array(plan.sets).fill(7),
-      technique: true,
-      pain: false,
-      fatigued: false,
-      warmupTired: false,
-      ...overrides,
-    };
-  return {
-    sessionId: s.id,
-    plan,
-    actual,
-    result: P.evaluate(plan, actual),
-    date: "2026-06-01",
-  };
-}
-const next = (c, key) => P.nextWeights(c).find((x) => x.key === key);
-test("12天轮转保持用户指定频率及四种卧推组次，下肢每种出现两次", () => {
-  const c = config(),
-    s = P.sessions(c).filter((x) => x.phaseId === "round1");
-  assert.deepEqual(
-    s.map((x) => [x.offset, x.key]),
-    [
-      [0, "bench_a"],
-      [1, "squat"],
-      [3, "bench_b"],
-      [4, "deadlift"],
-      [6, "bench_c"],
-      [7, "squat"],
-      [9, "bench_d"],
-      [10, "deadlift"],
-    ],
-  );
-  assert.deepEqual(
-    s.filter((x) => x.type === "bench").map((x) => [x.sets, x.reps]),
-    [
-      [4, 9],
-      [5, 7],
-      [6, 5],
-      [7, 3],
-    ],
-  );
-  assert.equal(
-    s.reduce((n, x) => n + x.sets, 0),
-    42,
-  );
-  assert.deepEqual(
-    s.filter((x) => x.type !== "bench").map((x) => [x.sets, x.reps]),
-    Array(4).fill([5, 5]),
-  );
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const P = require("../src/training.js");
+const config = (overrides = {}) => ({ ...P.defaults("2026-01-01"), entryDay: 1, ...overrides });
+
+test("默认从今天第9天第三次卧推开始，不伪造过去记录或腿日重量", () => {
+  const c = P.defaults("2026-01-01"), plan = P.plan(c);
+  assert.equal(c.entryDay, 9);
+  assert.equal(P.nextWorkout(plan, {}).day, 9);
+  assert.equal(plan[8].date, "2026-01-01");
+  assert.equal(plan[0].date, "2025-12-24");
+  assert.equal(plan[0].beforeStart, true);
+  assert.equal(plan[2].weight, null);
+  assert.equal(plan[6].weight, null);
+  assert.equal(plan[8].weight, 137.5);
+  assert.equal(plan[10].weight, 120);
+  assert.equal(plan[14].weight, 125);
 });
-test("开局恢复后36天24练，后续30天20练，常规两轮不会强加重量", () => {
-  for (const [entry, days, count] of [
-    [true, 36, 24],
-    [false, 30, 20],
-  ]) {
-    const c = config(entry);
-    assert.equal(
-      c.phases.reduce((n, p) => n + p.days, 0),
-      days,
-    );
-    assert.equal(P.sessions(c).length, count);
-    assert.equal(
-      P.rollingSchedule(c).at(-1).nextDate,
-      P.addDays(c.startDate, days),
-    );
-    for (const key of P.KEYS) {
-      const a = record(c, key, {}, "round1"),
-        b = record(c, key, {}, "round2");
-      assert.equal(a.plan.weight, b.plan.weight);
-    }
-  }
+
+test("四天胸背腿休，四组组成16天，最多三轮共48天", () => {
+  const plan = P.plan(config());
+  assert.equal(plan.length, 48);
+  assert.deepEqual(plan.slice(0, 8).map((d) => d.type), ["chest", "back", "legs", "rest", "chest", "back", "legs", "rest"]);
+  assert.deepEqual(plan.filter((d) => d.type === "chest").slice(0, 4).map((d) => d.day), [1, 5, 9, 13]);
+  assert.deepEqual(plan.filter((d) => d.type === "back").slice(0, 4).map((d) => d.day), [2, 6, 10, 14]);
+  assert.deepEqual(plan.filter((d) => d.type === "legs").slice(0, 4).map((d) => d.day), [3, 7, 11, 15]);
+  assert.deepEqual(plan.filter((d) => d.type === "rest").slice(0, 4).map((d) => d.day), [4, 8, 12, 16]);
+  assert.equal(plan.filter((d) => d.type !== "rest").length, 36);
 });
-test("2.5/5kg设备向下配片，各主项独立；历史计划不会由纯计算修改", () => {
-  const c = config();
-  assert.deepEqual(c.weights, {
-    bench_a: 100,
-    bench_b: 107.5,
-    bench_c: 115,
-    bench_d: 122.5,
-    squat: 100,
-    deadlift: 140,
-  });
-  assert.deepEqual(config(false, 5).weights, {
-    bench_a: 100,
-    bench_b: 105,
-    bench_c: 115,
-    bench_d: 120,
-    squat: 100,
-    deadlift: 140,
-  });
-  assert.ok(P.validConfig(c));
-  assert.equal(P.validConfig(null), false);
-  assert.equal(P.validConfig({ ...c, phases: [null, null, null] }), false);
-  assert.equal(P.validConfig({ ...c, increment: 5 }), false);
-  const r = record(c, "bench_a");
-  c.weights.bench_a = 102.5;
-  assert.equal(r.plan.weight, 100);
-  assert.equal(P.prescription(P.sessions(c)[0], c).weight, 102.5);
-  assert.equal(P.validWeight(107.5, 5, 20), false);
-  assert.equal(P.validWeight(5, 2.5, 20), false);
+
+test("第一轮使用指定的四个重量，每个16天循环四项均加5kg", () => {
+  const bench = P.plan(config()).filter((d) => d.type === "chest");
+  assert.deepEqual(bench.slice(0, 4).map((d) => [d.sets, d.reps, d.weight]), [[4, "9", 122.5], [5, "7", 130], [6, "5", 137.5], [8, "3", 145]]);
+  assert.deepEqual(bench.slice(4, 8).map((d) => d.weight), [127.5, 135, 142.5, 150]);
+  assert.deepEqual(bench.slice(8).map((d) => d.weight), [132.5, 140, 147.5, 155]);
+  assert.deepEqual(bench.slice(0, 4).map((d) => d.referenceRatio), [.7, .75, .8, .85]);
 });
-test("恢复段实质减组、减重，无12×25或辅助且不占用常规A—D", () => {
-  const c = config(true),
-    s = P.sessions(c).slice(0, 4);
-  assert.deepEqual(
-    s.map((x) => [P.prescription(x, c).weight, x.sets, x.reps, x.maxRpe]),
-    [
-      [80, 2, 5, 6],
-      [70, 2, 5, 6],
-      [90, 2, 3, 6],
-      [97.5, 2, 3, 6],
-    ],
-  );
-  for (const x of s) {
-    assert.deepEqual(P.warmup(x), []);
-    assert.deepEqual(P.accessories(x), []);
-  }
-  assert.equal(P.sessions(c)[4].key, "bench_a");
-  assert.equal(P.sessions(c)[4].offset, 6);
-  assert.equal(
-    P.prescription(P.sessions(config(true, 5))[2], config(true, 5)).weight,
-    90,
-  );
+
+test("深蹲每次增加5kg，腿部A/B辅助跨轮持续交替", () => {
+  const legs = P.plan(config()).filter((d) => d.type === "legs");
+  assert.deepEqual(legs.map((d) => d.weight), [120,125,130,135,140,145,150,155,160,165,170,175]);
+  assert.deepEqual(legs.map((d) => d.legVariant), ["A","B","A","B","A","B","A","B","A","B","A","B"]);
+  assert.ok(legs.every((d) => d.sets === 5 && d.reps === "5"));
 });
-test("正常日严格12组300次；辅助有单独上限，不塞进准备循环", () => {
-  const s = P.sessions(config()).filter((x) => x.phaseId === "round1");
-  for (const x of s) {
-    const w = P.warmup(x);
-    assert.equal(w.length, 6);
-    assert.equal(
-      w.reduce((n, e) => n + e.sets, 0),
-      12,
-    );
-    assert.equal(
-      w.reduce((n, e) => n + e.sets * e.reps, 0),
-      300,
-    );
-    assert.equal(new Set(w.map((e) => e.id)).size, 6);
-  }
-  assert.equal(
-    s.reduce((n, x) => n + P.accessories(x).reduce((m, e) => m + e.sets, 0), 0),
-    36,
-  );
-  assert.deepEqual(
-    P.accessories(s[1]).map((e) => [e.name, e.sets]),
-    [
-      ["直腿硬拉", 2],
-      ["腿屈伸", 2],
-      ["器械内收", 1],
-      ["器械外展", 1],
-    ],
-  );
-  assert.equal(P.accessories(s[3])[0].name, "引体向上");
-  assert.match(P.warmup(s[0])[0].cue, /总共2组/);
-  assert.match(P.warmup(s[1]).at(-1).count, /合计25次/);
+
+test("调整某次深蹲后，从该重量继续递增，先前安排不变", () => {
+  const legs = P.plan(config(), {}, { 7: 115, 19: 130 }).filter((d) => d.type === "legs");
+  assert.deepEqual(legs.slice(0, 7).map((d) => d.weight), [120, 115, 120, 125, 130, 135, 140]);
 });
-test("单组超难度、少次数、动作失控、减重均结束记录但不达标；疼痛或疲劳暂停", () => {
-  const c = config();
-  assert.equal(record(c, "bench_a").result.pass, true);
-  for (const overrides of [
-    { reps: [9, 9, 9, 8] },
-    { rpes: [7, 7, 7, 8.5] },
-    { technique: false },
-    { weights: [100, 100, 100, 97.5] },
-  ]) {
-    const r = record(c, "bench_a", overrides);
-    assert.equal(r.result.finished, true);
-    assert.equal(r.result.pass, false);
-  }
-  assert.equal(
-    record(c, "deadlift", { rpes: Array(5).fill(8) }).result.pass,
-    false,
-  );
-  for (const flag of ["pain", "fatigued"])
-    assert.equal(record(c, "bench_a", { [flag]: true }).result.finished, false);
-  const r = record(c, "bench_a", {
-    reps: [0, 0, 0, 0],
-    rpes: [null, null, null, null],
-  });
-  assert.equal(r.result.finished, false);
-  assert.equal(r.result.pass, false);
+
+test("支持输入不同档距、杆重、加重和1–3轮，拒绝无法配出的重量", () => {
+  assert.equal(P.validate(config()), "");
+  const c = config({ increment: 1.25, benchIncrease: 5, squatIncrease: 2.5, rounds: 2 });
+  assert.equal(P.validate(c), "");
+  assert.equal(P.plan(c).length, 32);
+  assert.equal(P.plan(c)[0].weight, 122.5);
+  assert.equal(P.seedBench(167.5, 1.25, 20)[0], 116.25);
+  assert.match(P.validate(config({ increment: 5 })), /卧推重量/);
+  assert.match(P.validate(config({ squatStart: 121 })), /深蹲起点/);
+  assert.match(P.validate(config({ rounds: 4 })), /1–3/);
+  assert.equal(P.validate(config({ benchIncrease: 0, squatIncrease: 0, rounds: 1 })), "");
 });
-test("各主项独立进阶：2次同重量达标才加档，恢复成绩不计", () => {
-  const c = config(true);
-  c.records = [record(c, "bench_a")];
-  assert.equal(next(c, "bench_a").to, 100);
-  c.records.push(record(c, "bench_a", {}, "entry"));
-  assert.equal(next(c, "bench_a").to, 100);
-  c.records.push(record(c, "bench_a", {}, "round2"));
-  assert.equal(next(c, "bench_a").to, 102.5);
-  assert.equal(next(c, "bench_b").to, 107.5);
-  c.records.at(-1).actual.rpes[3] = 8;
-  assert.equal(next(c, "bench_a").to, 100);
+
+test("训练晚到后整体顺延，已记录日期保留；跨月和闰日计算正确", () => {
+  const c = config({ startDate: "2028-02-27", rounds: 1 });
+  const records = { 1: { date: "2028-02-29" }, 2: { date: "2028-03-02" } };
+  const plan = P.plan(c, records);
+  assert.equal(plan[0].date, "2028-02-29");
+  assert.equal(plan[1].date, "2028-03-02");
+  assert.equal(plan[2].date, "2028-03-03");
+  assert.equal(plan[3].date, "2028-03-04");
+  assert.equal(P.validDate("2028-02-29"), true);
+  assert.equal(P.validDate("2027-02-29"), false);
 });
-test("5kg器械更严格；任意一次准备后疲劳都阻止加重", () => {
-  const c = config(false, 5);
-  c.records = [record(c, "bench_a"), record(c, "bench_a", {}, "round2")];
-  assert.equal(next(c, "bench_a").to, 105);
-  c.records[0].actual.rpes[0] = 7.5;
-  assert.equal(next(c, "bench_a").to, 100);
-  c.records[0].actual.rpes[0] = 7;
-  for (const i of [0, 1]) {
-    c.records[i].actual.warmupTired = true;
-    assert.equal(next(c, "bench_a").to, 100);
-    c.records[i].actual.warmupTired = false;
-  }
+
+test("暂停发生在计划日期之后时，重试和后续日期随之顺延", () => {
+  const all = P.plan(config({ rounds: 1 }), {}, {}, [{ day: 1, date: "2026-01-05" }]);
+  assert.equal(all[0].date, "2026-01-05");
+  assert.equal(all[1].date, "2026-01-06");
+  assert.equal(P.nextWorkout(all, {}).day, 1);
 });
-test("失败下调只应用一次，即使工作中已经减重；不改其他主项", () => {
-  const c = config();
-  c.records = [
-    record(c, "bench_a", {
-      reps: [9, 9, 7, 0],
-      weights: [100, 97.5, 97.5, 97.5],
-      rpes: [7, 8, 9, null],
-    }),
-  ];
-  assert.equal(next(c, "bench_a").to, 95);
-  c.weights.bench_a = 95;
-  assert.equal(next(c, "bench_a").to, 95);
-  assert.equal(next(c, "squat").to, 100);
-  c.weights.bench_a = 92.5;
-  assert.equal(next(c, "bench_a").to, 92.5);
+
+test("按顺序寻找下次训练，休息日不需要手动记录", () => {
+  const all = P.plan(config({ rounds: 1 }));
+  const records = { 1: {}, 2: {}, 3: {} };
+  assert.equal(P.nextWorkout(all, records).day, 5);
+  for (const d of all.filter((x) => x.type !== "rest")) records[d.day] = {};
+  assert.equal(P.nextWorkout(all, records), null);
 });
-test("相同重量和组次不足两次时保持，归档可以参与但暂停会阻止加重", () => {
-  const c = config();
-  const old = record(c, "bench_a");
-  old.actual.weights.fill(97.5);
-  c.archives = [{ records: [old] }];
-  c.records = [record(c, "bench_a")];
-  assert.equal(next(c, "bench_a").to, 100);
-  old.actual.weights.fill(100);
-  old.plan.reps = 8;
-  assert.equal(next(c, "bench_a").to, 100);
-  old.plan.reps = 9;
-  assert.equal(next(c, "bench_a").to, 102.5);
-  c.records.push(record(c, "bench_a", { fatigued: true }));
-  assert.equal(next(c, "bench_a").to, 100);
-});
-test("实际日期、训练间隔、额外休息与暂停共同顺延，已完成日期保持", () => {
-  const c = config(),
-    s = P.sessions(c);
-  assert.deepEqual(
-    P.rollingSchedule(c)
-      .slice(0, 4)
-      .map((x) => [x.date, x.restDays]),
-    [
-      ["2026-06-01", 0],
-      ["2026-06-02", 1],
-      ["2026-06-04", 0],
-      ["2026-06-05", 1],
-    ],
-  );
-  const r = record(c, "bench_a");
-  r.date = "2026-06-03";
-  c.records = [r];
-  c.completed[r.sessionId] = r;
-  assert.equal(P.earliestRecordDate(c, s[1]), "2026-06-04");
-  c.extraRest[s[0].id] = 1;
-  let dates = P.rollingSchedule(c);
-  assert.equal(dates[0].date, "2026-06-03");
-  assert.equal(dates[1].date, "2026-06-05");
-  assert.equal(dates[2].date, "2026-06-07");
-  assert.equal(P.earliestRecordDate(c, s[1]), "2026-06-05");
-  const paused = record(c, "squat", { fatigued: true });
-  paused.date = "2026-06-05";
-  c.records.push(paused);
-  assert.equal(P.earliestRecordDate(c, s[1]), "2026-06-07");
-  dates = P.rollingSchedule(c);
-  assert.equal(dates[1].date, "2026-06-07");
-  assert.equal(dates[2].date, "2026-06-09");
-});
-test("日期跨月和闰日有效，不接受不存在的日期", () => {
-  assert.equal(P.addDays("2026-09-30", 2), "2026-10-02");
-  assert.equal(P.validDate("2026-02-29"), false);
-  assert.equal(P.addDays("2028-02-28", 1), "2028-02-29");
-  assert.equal(P.validDate("2026-06-31"), false);
-  assert.equal(P.addDays("bad", 1), null);
-});
-test("递增热身按设备可配、逐级升重、低于主项，无重复档；不把300次循环混入", () => {
-  for (const step of [2.5, 5])
-    for (const bar of [10, 15, 20]) {
-      const c = { ...config(true, step), barWeight: bar };
-      for (const s of P.sessions(c)) {
-        const p = P.prescription(s, c),
-          r = P.rampFor(p);
-        assert.equal(r.length, new Set(r.map((x) => x.weight)).size);
-        r.forEach((x, i) => {
-          assert.ok(P.validWeight(x.weight, step, bar));
-          assert.ok(x.weight < p.weight);
-          assert.equal(x.perSide, (x.weight - bar) / 2);
-          if (i) assert.ok(x.weight > r[i - 1].weight);
-        });
-      }
-    }
-  assert.deepEqual(
-    P.rampFor(record(config(), "deadlift").plan).map((x) => [x.weight, x.reps]),
-    [
-      [55, "5"],
-      [70, "5"],
-      [97.5, "3"],
-      [117.5, "1"],
-    ],
-  );
+
+test("结束末轮正常休息日后，再休满5天才能测试新1RM", () => {
+  const all = P.plan(config({ rounds: 1 }));
+  assert.equal(all.at(-1).date, "2026-01-16");
+  assert.equal(P.testDate(all), "2026-01-22");
+  const delayed = P.plan(config({ rounds: 1 }), { 15: { date: "2026-01-20" } });
+  assert.equal(delayed.at(-1).date, "2026-01-21");
+  assert.equal(P.testDate(delayed), "2026-01-27");
 });

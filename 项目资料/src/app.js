@@ -2,17 +2,29 @@
 "use strict";
 (() => {
   const P = window.TrainingPlan;
-  const KEY = "fitness-cycle-v11";
-  const OLD_KEYS = ["fitness-cycle-v10", "fitness-cycle-v9", "bench-rotation-v8", "bench-smolov-v7", "bench-personal-v6", "bench-fenjue-v5", "bench-rebuild-v4", "bench-fen-jue-v3"];
+  const KEY = "fitness-cycle-v12";
+  const OLD_KEYS = ["fitness-cycle-v11", "fitness-cycle-v10", "fitness-cycle-v9", "bench-rotation-v8", "bench-smolov-v7", "bench-personal-v6", "bench-fenjue-v5", "bench-rebuild-v4", "bench-fen-jue-v3"];
   const $ = (selector) => document.querySelector(selector);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (x) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[x]);
   function read(key) {
     try { const value = localStorage.getItem(key); return value === null ? null : JSON.parse(value); } catch { return null; }
   }
-  function fresh() { return { version: 11, config: P.defaults(), records: {}, attempts: [], archives: [], drafts: {}, squatOverrides: {} }; }
+  function fresh() { return { version: 12, config: P.defaults(), records: {}, attempts: [], archives: [], drafts: {}, squatOverrides: {} }; }
   const saved = read(KEY);
-  let state = saved && saved.version === 11 && !P.validate(saved.config) && saved.records && Array.isArray(saved.archives)
+  let state = saved && saved.version === 12 && !P.validate(saved.config) && saved.records && Array.isArray(saved.archives)
     ? { ...fresh(), ...saved, attempts: Array.isArray(saved.attempts) ? saved.attempts : [], drafts: saved.drafts || {} } : fresh();
+  // 沿用上版的进度、记录及历史处方，只重算未来的目标重量。
+  if (!saved) {
+    const previous = read("fitness-cycle-v11");
+    if (previous?.version === 11 && previous.config && previous.records && Array.isArray(previous.archives)) {
+      const oldConfig = previous.config;
+      const config = { ...oldConfig, tm: 160, benchWeights: P.seedBench(160, oldConfig.increment, oldConfig.barWeight) };
+      if (!P.validate(config)) {
+        state = { ...fresh(), ...previous, version: 12, config, attempts: previous.attempts || [], drafts: previous.drafts || {}, squatOverrides: previous.squatOverrides || {} };
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* 保存失败时仍保留原数据。 */ }
+      }
+    }
+  }
   let viewedDay = null;
   let viewedRound = 1;
   function persist() {

@@ -1,10 +1,10 @@
-/* 四天一组、十六天一轮的力量计划；全部重量均为含杆总重量。 */
+/* 四天一组、二十天一轮的力量计划；全部重量均为含杆总重量。 */
 (function (root) {
   "use strict";
-  // 十次卧推：第一轮双数、第二轮单数；比例为可调整的起始估算。
+  // 用户指定的TM对照表；奇数次数使用相邻两档的中间值。
   const BENCH = [
-    {sets:5,reps:10,ratio:.625},{sets:5,reps:8,ratio:.675},{sets:5,reps:6,ratio:.725},{sets:5,reps:4,ratio:.775},{sets:5,reps:2,ratio:.825},
-    {sets:5,reps:9,ratio:.65},{sets:5,reps:7,ratio:.70},{sets:5,reps:5,ratio:.75},{sets:5,reps:3,ratio:.80},{sets:5,reps:1,ratio:.96},
+    {sets:5,reps:10,ratio:.75},{sets:5,reps:8,ratio:.80},{sets:5,reps:6,ratio:.85},{sets:5,reps:4,ratio:.90},{sets:5,reps:2,ratio:.95},
+    {sets:5,reps:9,ratio:.775},{sets:5,reps:7,ratio:.825},{sets:5,reps:5,ratio:.875},{sets:5,reps:3,ratio:.925},{sets:5,reps:1,ratio:1},
   ];
   const TYPES = ["chest", "back", "legs", "rest"];
   const LABELS = { chest: "胸", back: "背", legs: "腿", rest: "休息" };
@@ -32,11 +32,11 @@
     return BENCH.map((slot) => Math.max(barWeight, roundDown(tm * slot.ratio, increment, barWeight)));
   }
   function defaults(startDate = today()) {
-    return { tm: 165, increment: 2.5, barWeight: 20, benchWeights: seedBench(165, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
+    return { tm: 160, increment: 2.5, barWeight: 20, benchWeights: seedBench(160, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
   }
   function validate(c) {
     if (!c || !validDate(c.startDate)) return "请选择有效的开始日期。";
-    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400) return "卧推 1RM 请填写 20–400 kg。";
+    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400) return "卧推 eTM 请填写 20–400 kg。";
     if (!Number.isFinite(c.increment) || c.increment < 0.25 || c.increment > 25) return "最小加重请填写 0.25–25 kg。";
     if (!Number.isFinite(c.barWeight) || c.barWeight < 0 || c.barWeight > 30) return "杠铃杆重请填写 0–30 kg。";
     if (!Array.isArray(c.benchWeights) || c.benchWeights.length !== 10 || c.benchWeights.some((w) => !aligned(w, c.increment, c.barWeight) || w > 400)) return "十个卧推重量须能按杆重和最小加重配出，且不超过 400 kg。";

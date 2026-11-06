@@ -379,8 +379,8 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
               <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
               <p id="progressText">第 1 轮 / 共 3 轮</p>
             </div>
-            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>留意身体状态</strong><p>预定加重是目标，不必硬追。动作变形、疼痛或明显疲劳时，暂停并调整。</p></div></div>
-            <div class="side-card compact-card"><span>卧推 eTM</span><strong id="summaryTm">165 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
+            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>留意身体状态</strong><p>对照表接近单组极限，不保证能完成五组。动作变形、疼痛或明显疲劳时，减重或结束。</p></div></div>
+            <div class="side-card compact-card"><span>卧推 eTM</span><strong id="summaryTm">160 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
           </aside>
         </div>
       </section>
@@ -410,7 +410,7 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
           <form class="settings-card" id="settingsForm">
             <div class="card-title"><div><span class="card-kicker">YOUR NUMBERS</span><h3>训练起点</h3></div><svg class="icon"><use href="#i-settings" /></svg></div>
             <div class="form-grid">
-              <label>卧推 eTM <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
+              <label>卧推 eTM <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /><small>按你的定义：单次较轻松，但很难完成两次的重量。</small></label>
               <label>开始记录日期<input id="startDate" type="date" required /><small>与下面的开始天数对应。</small></label>
               <label>杠铃最小总加重 <span>kg</span><input id="increment" type="number" min="0.25" max="25" step="any" required inputmode="decimal" /></label>
               <label>杠铃杆重 <span>kg</span><input id="barWeight" type="number" min="0" max="30" step="any" required inputmode="decimal" /></label>
@@ -426,7 +426,7 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
             <p class="small-note">已保存的训练保留当时的处方；有记录后开始日期和天数不可更改。</p>
           </form>
           <aside class="settings-aside">
-            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>按 eTM 的比例向下配片。第一轮 10 / 8 / 6 / 4 / 2 次；第二轮 9 / 7 / 5 / 3 / 1 次，均为 5 组。</p><p>最后 5×1 约 95% eTM：动作变慢或不稳时降重或结束，并使用保护。</p></div>
+            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>按指定的 TM 对照表计算：10次75%、8次80%、6次85%、4次90%、2次95%、1次100%；奇数取相邻两档中间值。结果向下配片。</p><p>对照表接近单组极限，五组可能需要降重；卧推使用安全杆或可靠保护。</p></div>
             <div class="finish-card"><span>完成训练周期后</span><strong>休息至少 5 天</strong><p>正常休息日之后再休息至少 5 个完整日，状态恢复后测试新的卧推 eTM。</p></div>
           </aside>
         </div>
@@ -448,18 +448,18 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
         <p class="data-note">记录只保存在此浏览器。换设备前请导出备份；旧版本记录会保留在原处。</p>
       </section>
     </main>
-    <footer class="site-footer"><div class="shell footer-inner"><span>健身计划 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIgwrcg5L2/55So6K+05piOCgrog7jjgIHog4zjgIHohb/jgIHkvJHmga/lm5vlpKnkuIDnu4TjgILkupTmrKHljafmjqjkuLrkuIDova7vvIznrKzkuIDova4gNcOXMTDjgIE444CBNuOAgTTjgIEy77yb56ys5LqM6L2uIDXDlznjgIE344CBNeOAgTPjgIEx44CC5Lik6L2u5YWx5Y2B5qyh5Y2n5o6o77yM5q2j5bi45a6J5o6SNDDlpKnjgIIKCuiuvue9rumHjOWhq+WGmeWNp+aOqCBlVE3vvIjpu5jorqQxNjUga2fvvInjgIHmnaDpk4PmnYbph43lj4rmnIDlsI/mgLvlop7ph4/vvIzkv53lrZjlkI7oh6rliqjorqHnrpfph43ph4/jgILljYHmrKHljafmjqjlrozmiJDlkI7vvIznirbmgIHmgaLlpI3lhYHorrjml7blj6/lvIDlkK/kuIvkuIDlkajmnJ/vvIzpu5jorqTmr4/pobnliqA1IGtn77yb5LiN6YCC5ZCI5Yqg6YeN5pe25YWI5oqK5aKe6YeP6LCD5L2O44CCNcOXMeaOpei/keaegemZkO+8jOS9v+eUqOS/neaKpO+8jOWHuueOsOeWsuWKs+aIluWKqOS9nOS4jeeos+W6lOmZjemHjeaIlue7k+adn+OAggoK5LiA57qn6L6F5Yqp5L6d5qyh5Li65a6e5Yqb5o6o44CB5LiK5pac5Y2n5o6o44CB6Ieq6YeN6IeC5bGI5Ly444CB5L+v5Y2n5pKR44CB5Zmo5qKw5Y2n5o6o77yM5Lik6L2u55u45ZCM44CC5LqM57qn6L6F5Yqp5Li65LiJ5aS05Lu76YCJ5LiA6aG55ZKM5ZOR6ZOD5byv5Li+44CC6IOM5ZKM6IW/57un57ut5Y6f5pyJ5a6J5o6S44CCCgrmlbDmja7kv53lrZjlnKjlvZPliY3mtY/op4jlmajjgILmlrDorqHliJLni6znq4vlvIDlp4vvvIzml6fniYjorrDlvZXkv53nlZnlnKjljp/lpITvvIzlj6/lnKjorrDlvZXpobXmn6XnnIvlkozlr7zlh7rjgILmjaLorr7lpIfliY3lr7zlh7rlrozmlbRKU09O77yb5b2T5YmN5LiN5pSv5oyB5a+85YWl44CCCg==" download="使用说明.md">使用说明</a><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIgwrcg5Y2B5qyh5Y2n5o6o5b6q546vCgrku6XljafmjqggZVRNIDE2NSBrZ+OAgeadoOmTg+acgOWwj+aAu+WinumHjyAyLjUga2cg5Li65L6L44CC5oyJ5q+U5L6L5ZCR5LiL6YWN54mH77yM5bel5L2c6YeN6YeP5ZCr5p2G77yb5q+P5qyh5Y2n5o6o5Z2H5Li6IDUg57uE44CCCgp8IOmhuuW6jyB8IOe7hOasoSB8IOWPguiAg+avlOS+iyB8IOWPguiAg+mHjemHjyB8IOS4gOe6p+i+heWKqSB8CnwtLS18LS0tfC0tLXwtLS18LS0tfAp8IOesrDHova4gMSB8IDXDlzEwIHwgNjIuNSUgfCAxMDIuNSBrZyB8IOWunuWKm+aOqCB8Cnwg56ysMei9riAyIHwgNcOXOCB8IDY3LjUlIHwgMTEwIGtnIHwg5LiK5pac5Y2n5o6oIHwKfCDnrKwx6L2uIDMgfCA1w5c2IHwgNzIuNSUgfCAxMTcuNSBrZyB8IOiHqumHjeiHguWxiOS8uCB8Cnwg56ysMei9riA0IHwgNcOXNCB8IDc3LjUlIHwgMTI3LjUga2cgfCDkv6/ljafmkpEgfAp8IOesrDHova4gNSB8IDXDlzIgfCA4Mi41JSB8IDEzNSBrZyB8IOWZqOaisOWNp+aOqCB8Cnwg56ysMui9riAxIHwgNcOXOSB8IDY1JSB8IDEwNSBrZyB8IOWunuWKm+aOqCB8Cnwg56ysMui9riAyIHwgNcOXNyB8IDcwJSB8IDExNSBrZyB8IOS4iuaWnOWNp+aOqCB8Cnwg56ysMui9riAzIHwgNcOXNSB8IDc1JSB8IDEyMi41IGtnIHwg6Ieq6YeN6IeC5bGI5Ly4IHwKfCDnrKwy6L2uIDQgfCA1w5czIHwgODAlIHwgMTMwIGtnIHwg5L+v5Y2n5pKRIHwKfCDnrKwy6L2uIDUgfCA1w5cxIHwgOTYlIHwgMTU3LjUga2cgfCDlmajmorDljafmjqggfAoK5q+U5L6L5piv6LW35aeL57yW5o6S77yM5LiN5L+d6K+B5Liq5Lq66IO95aSf5a6M5oiQ44CCMTU3LjUga2cg5a6e6ZmF57qm5Li6IDE2NSBrZyDnmoQgOTUuNSXvvJs1IOS4quaOpei/keaegemZkOeahOWNleasoemcgOimgeWPr+mdoOS/neaKpO+8jOWKqOS9nOWPmOaFouOAgeWkseeos+aIlueWsuWKs+aXtumZjemHjeaIlue7k+adn++8jOS4jeW8uuihjOWHkee7hOOAguiuree7g+WIsOWKm+erreS8muWinuWKoOeWsuWKs+WSjOaBouWkjeaXtumXtO+8jOingSBbTW9yw6FuLU5hdmFycm8g562JXShodHRwczovL3B1Ym1lZC5uY2JpLm5sbS5uaWguZ292LzI4OTY1MTk4LynjgILph43lpI3mrKHmlbDkuI7nm7jlr7nph43ph4/mnInkuKrkvZPlt67lvILvvIzlsKTlhbbmmK/ljafmjqjvvJpb6YeN5aSN5qyh5pWw5LiOMVJN5q+U5L6L55qE56CU56m2XShodHRwczovL3B1Ym1lZC5uY2JpLm5sbS5uaWguZ292LzM3NzkyMjcyLynjgIIKCuavjzTlpKnkvp3mrKHog7jjgIHog4zjgIHohb/jgIHkvJHmga/jgILmr4/ova415qyh5Y2n5o6o44CB6K6h5YiSMjDlpKnvvIzkuKTova7lhbExMOasoeWNp+aOqOOAgTQw5aSp44CC5Y2B5qyh5a6M5oiQ5ZCO77yM5oGi5aSN5YWB6K645pe25LiL5LiA5ZGo5pyf5q+P6aG55bel5L2c6YeN6YeP5YqgNSBrZ++8m+S4jeimgeaxguW/hemhu+WKoOmHje+8jOiuvue9ruWPr+iwg+aVtOOAgmVUTeaUueWPmOaXtuaMieavlOS+i+mHjeaWsOiuoeeul++8jOS4jeS7o+ihqOW8uuW6puW+l+WIsOmqjOivgeOAggoK6IO45pel77ya6L276YeP5rip5a6B5byP54Ot6Lqr44CB5Y2n5o6o44CB5LiK6KGo5LiA57qn6L6F5Yqp44CB5LiJ5aS05Lu76YCJ77yL5ZOR6ZOD5byv5Li+44CB5bmz5p2/5pSv5pKR5oiW5Y236IW544CC6L6F5Yqp5L+d55WZ5L2Z5Yqb44CC6IOM5pel77ya5byV5L2T44CB6auY5L2N5LiL5ouJ44CB5Zmo5qKw5YiS6Ii544CC6IW/Qe+8mua3sei5sjXDlzXjgIHlk4jlhYvmt7HoubLjgIHohb/lsYjkvLjlkozohb/lvK/kuL7vvJvohb9C77ya5rex6LmyNcOXNeOAgeehrOaLieOAguiFv0EvQuS6pOabv++8m+a3sei5sum7mOiupDEyMCBrZ++8jOWinumHj+S4ujDvvIzlj6/lnKjorr7nva7osIPmlbTjgIIK" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
+    <footer class="site-footer"><div class="shell footer-inner"><span>健身计划 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIgwrcg5L2/55So6K+05piOCgrog7jjgIHog4zjgIHohb/jgIHkvJHmga/lm5vlpKnkuIDnu4TjgILkupTmrKHljafmjqjkuLrkuIDova7vvIznrKzkuIDova4gNcOXMTDjgIE444CBNuOAgTTjgIEy77yb56ys5LqM6L2uIDXDlznjgIE344CBNeOAgTPjgIEx44CC5Lik6L2u5YWx5Y2B5qyh5Y2n5o6o77yM5q2j5bi45a6J5o6SNDDlpKnjgIIKCuiuvue9rumHjOWhq+WGmeWNp+aOqCBlVE3vvIjpu5jorqQxNjAga2fvvInjgIHmnaDpk4PmnYbph43lj4rmnIDlsI/mgLvlop7ph4/vvIzkv53lrZjlkI7mjInmjIflrppUTeWvueeFp+ihqOiHquWKqOiuoeeul+mHjemHj++8mjEw5qyhNzUl44CBOOasoTgwJeOAgTbmrKE4NSXjgIE05qyhOTAl44CBMuasoTk1JeOAgTHmrKExMDAl77yM5aWH5pWw5qyh5pWw5Y+W55u46YK75Lik5qGj5Lit6Ze05YC844CC5Y2B5qyh5Y2n5o6o5a6M5oiQ5ZCO77yM54q25oCB5oGi5aSN5YWB6K645pe25Y+v5byA5ZCv5LiL5LiA5ZGo5pyf77yM6buY6K6k5q+P6aG55YqgNSBrZ++8m+S4jemAguWQiOWKoOmHjeaXtuWFiOaKiuWinumHj+iwg+S9juOAguWvueeFp+ihqOS4jeS/neivgeiDveWujOaIkOS6lOe7hO+8m+S9v+eUqOS/neaKpO+8jOWHuueOsOeWsuWKs+aIluWKqOS9nOS4jeeos+W6lOmZjemHjeaIlue7k+adn+OAggoK5LiA57qn6L6F5Yqp5L6d5qyh5Li65a6e5Yqb5o6o44CB5LiK5pac5Y2n5o6o44CB6Ieq6YeN6IeC5bGI5Ly444CB5L+v5Y2n5pKR44CB5Zmo5qKw5Y2n5o6o77yM5Lik6L2u55u45ZCM44CC5LqM57qn6L6F5Yqp5Li65LiJ5aS05Lu76YCJ5LiA6aG55ZKM5ZOR6ZOD5byv5Li+44CC6IOM5ZKM6IW/57un57ut5Y6f5pyJ5a6J5o6S44CCCgrmlbDmja7kv53lrZjlnKjlvZPliY3mtY/op4jlmajjgILkuIrkuIDniYjljYHmrKHljafmjqjorqHliJLnmoTov5vluqbkuI7orrDlvZXkvJrkv53nlZnlubboh6rliqjov4Hnp7vvvIzlt7LorrDlvZXnmoTlpITmlrnkuI3lj5jvvJvmm7Tml6nnmoTml6fniYjorrDlvZXlj6/lnKjorrDlvZXpobXmn6XnnIvlkozlr7zlh7rjgILmjaLorr7lpIfliY3lr7zlh7rlrozmlbRKU09O77yb5b2T5YmN5LiN5pSv5oyB5a+85YWl44CCCg==" download="使用说明.md">使用说明</a><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIgwrcg5Y2B5qyh5Y2n5o6o5b6q546vCgrku6XljafmjqggZVRNIDE2MCBrZ+OAgeadoOmTg+acgOWwj+aAu+WinumHjyAyLjUga2cg5Li65L6L44CC6L+Z6YeM55qEIGVUTSDmjInkvaDnmoTlrprkuYnvvIzmmK/ljZXmrKHovoPovbvmnb7jgIHkvYblvojpmr7lrozmiJDkuKTmrKHnmoTlj4LogIPph43ph4/jgILmjInmr5TkvovlkJHkuIvphY3niYfvvIzlt6XkvZzph43ph4/lkKvmnYbvvJvmr4/mrKHljafmjqjlnYfkuLogNSDnu4TjgIIKCnwg6aG65bqPIHwg57uE5qyhIHwg5Y+C6ICD5q+U5L6LIHwg5Y+C6ICD6YeN6YePIHwg5LiA57qn6L6F5YqpIHwKfC0tLXwtLS18LS0tfC0tLXwtLS18Cnwg56ysMei9riAxIHwgNcOXMTAgfCA3NSUgfCAxMjAga2cgfCDlrp7lipvmjqggfAp8IOesrDHova4gMiB8IDXDlzggfCA4MCUgfCAxMjcuNSBrZyB8IOS4iuaWnOWNp+aOqCB8Cnwg56ysMei9riAzIHwgNcOXNiB8IDg1JSB8IDEzNSBrZyB8IOiHqumHjeiHguWxiOS8uCB8Cnwg56ysMei9riA0IHwgNcOXNCB8IDkwJSB8IDE0Mi41IGtnIHwg5L+v5Y2n5pKRIHwKfCDnrKwx6L2uIDUgfCA1w5cyIHwgOTUlIHwgMTUwIGtnIHwg5Zmo5qKw5Y2n5o6oIHwKfCDnrKwy6L2uIDEgfCA1w5c5IHwgNzcuNSUgfCAxMjIuNSBrZyB8IOWunuWKm+aOqCB8Cnwg56ysMui9riAyIHwgNcOXNyB8IDgyLjUlIHwgMTMwIGtnIHwg5LiK5pac5Y2n5o6oIHwKfCDnrKwy6L2uIDMgfCA1w5c1IHwgODcuNSUgfCAxNDAga2cgfCDoh6rph43oh4LlsYjkvLggfAp8IOesrDLova4gNCB8IDXDlzMgfCA5Mi41JSB8IDE0Ny41IGtnIHwg5L+v5Y2n5pKRIHwKfCDnrKwy6L2uIDUgfCA1w5cxIHwgMTAwJSB8IDE2MCBrZyB8IOWZqOaisOWNp+aOqCB8CgrlgbbmlbDmrKHmlbDlkowx5qyh6YeH55So5L2g5oyH5a6a55qE5q+U5L6L77yM5aWH5pWw5qyh5pWw5Y+W55u46YK75Lik5qGj55qE5Lit6Ze05YC844CC6L+Z5piv6K6h5YiS5Lit55qE5a+554Wn6KGo77yM5bm26Z2e5a+55q+P5Liq5Lq65YeG56Gu55qE6IO95Yqb6aKE5rWL77yb54m55Yir5piv5o6l6L+R5Y2V57uE5p6B6ZmQ55qE6YeN6YeP5bm25LiN5L+d6K+B6IO95a6M5oiQNee7hOOAgjE2MCBrZyDnmoQ15Liq5Y2V5qyh6ZyA6KaB5Y+v6Z2g5L+d5oqk77yM5Yqo5L2c5Y+Y5oWi44CB5aSx56iz5oiW55ay5Yqz5pe26ZmN6YeN5oiW57uT5p2f77yM5LiN5by66KGM5YeR57uE44CC6K6t57uD5Yiw5Yqb56ut5Lya5aKe5Yqg55ay5Yqz5ZKM5oGi5aSN5pe26Ze077yM6KeBIFtNb3LDoW4tTmF2YXJybyDnrYldKGh0dHBzOi8vcHVibWVkLm5jYmkubmxtLm5paC5nb3YvMjg5NjUxOTgvKeOAgumHjeWkjeasoeaVsOS4juebuOWvuemHjemHj+acieS4quS9k+W3ruW8gu+8jOWwpOWFtuaYr+WNp+aOqO+8mlvph43lpI3mrKHmlbDkuI4xUk3mr5TkvovnmoTnoJTnqbZdKGh0dHBzOi8vcHVibWVkLm5jYmkubmxtLm5paC5nb3YvMzc3OTIyNzIvKeOAggoK5q+PNOWkqeS+neasoeiDuOOAgeiDjOOAgeiFv+OAgeS8keaBr+OAguavj+i9rjXmrKHljafmjqjjgIHorqHliJIyMOWkqe+8jOS4pOi9ruWFsTEw5qyh5Y2n5o6o44CBNDDlpKnjgILljYHmrKHlrozmiJDlkI7vvIzmgaLlpI3lhYHorrjml7bkuIvkuIDlkajmnJ/mr4/pobnlt6XkvZzph43ph4/liqA1IGtn77yb5LiN6KaB5rGC5b+F6aG75Yqg6YeN77yM6K6+572u5Y+v6LCD5pW044CCZVRN5pS55Y+Y5pe25oyJ5q+U5L6L6YeN5paw6K6h566X77yM5LiN5Luj6KGo5by65bqm5b6X5Yiw6aqM6K+B44CCCgrog7jml6XvvJrovbvph4/muKnlroHlvI/ng63ouqvjgIHljafmjqjjgIHkuIrooajkuIDnuqfovoXliqnjgIHkuInlpLTku7vpgInvvIvlk5Hpk4PlvK/kuL7jgIHlubPmnb/mlK/mkpHmiJbljbfohbnjgILovoXliqnkv53nlZnkvZnlipvjgILog4zml6XvvJrlvJXkvZPjgIHpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnjgILohb9B77ya5rex6LmyNcOXNeOAgeWTiOWFi+a3sei5suOAgeiFv+WxiOS8uOWSjOiFv+W8r+S4vu+8m+iFv0LvvJrmt7HoubI1w5c144CB56Gs5ouJ44CC6IW/QS9C5Lqk5pu/77yb5rex6Lmy6buY6K6kMTIwIGtn77yM5aKe6YeP5Li6MO+8jOWPr+WcqOiuvue9ruiwg+aVtOOAggo=" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
     <nav class="mobile-nav" aria-label="手机导航">
       <a href="#workout"><svg class="icon"><use href="#i-barbell" /></svg><span>训练</span></a><a href="#schedule"><svg class="icon"><use href="#i-calendar" /></svg><span>计划</span></a><a href="#settings"><svg class="icon"><use href="#i-settings" /></svg><span>设置</span></a><a href="#history"><svg class="icon"><use href="#i-history" /></svg><span>记录</span></a>
     </nav>
     <script>
-/* 四天一组、十六天一轮的力量计划；全部重量均为含杆总重量。 */
+/* 四天一组、二十天一轮的力量计划；全部重量均为含杆总重量。 */
 (function (root) {
   "use strict";
-  // 十次卧推：第一轮双数、第二轮单数；比例为可调整的起始估算。
+  // 用户指定的TM对照表；奇数次数使用相邻两档的中间值。
   const BENCH = [
-    {sets:5,reps:10,ratio:.625},{sets:5,reps:8,ratio:.675},{sets:5,reps:6,ratio:.725},{sets:5,reps:4,ratio:.775},{sets:5,reps:2,ratio:.825},
-    {sets:5,reps:9,ratio:.65},{sets:5,reps:7,ratio:.70},{sets:5,reps:5,ratio:.75},{sets:5,reps:3,ratio:.80},{sets:5,reps:1,ratio:.96},
+    {sets:5,reps:10,ratio:.75},{sets:5,reps:8,ratio:.80},{sets:5,reps:6,ratio:.85},{sets:5,reps:4,ratio:.90},{sets:5,reps:2,ratio:.95},
+    {sets:5,reps:9,ratio:.775},{sets:5,reps:7,ratio:.825},{sets:5,reps:5,ratio:.875},{sets:5,reps:3,ratio:.925},{sets:5,reps:1,ratio:1},
   ];
   const TYPES = ["chest", "back", "legs", "rest"];
   const LABELS = { chest: "胸", back: "背", legs: "腿", rest: "休息" };
@@ -487,11 +487,11 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
     return BENCH.map((slot) => Math.max(barWeight, roundDown(tm * slot.ratio, increment, barWeight)));
   }
   function defaults(startDate = today()) {
-    return { tm: 165, increment: 2.5, barWeight: 20, benchWeights: seedBench(165, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
+    return { tm: 160, increment: 2.5, barWeight: 20, benchWeights: seedBench(160, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
   }
   function validate(c) {
     if (!c || !validDate(c.startDate)) return "请选择有效的开始日期。";
-    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400) return "卧推 1RM 请填写 20–400 kg。";
+    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400) return "卧推 eTM 请填写 20–400 kg。";
     if (!Number.isFinite(c.increment) || c.increment < 0.25 || c.increment > 25) return "最小加重请填写 0.25–25 kg。";
     if (!Number.isFinite(c.barWeight) || c.barWeight < 0 || c.barWeight > 30) return "杠铃杆重请填写 0–30 kg。";
     if (!Array.isArray(c.benchWeights) || c.benchWeights.length !== 10 || c.benchWeights.some((w) => !aligned(w, c.increment, c.barWeight) || w > 400)) return "十个卧推重量须能按杆重和最小加重配出，且不超过 400 kg。";
@@ -555,17 +555,29 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
 "use strict";
 (() => {
   const P = window.TrainingPlan;
-  const KEY = "fitness-cycle-v11";
-  const OLD_KEYS = ["fitness-cycle-v10", "fitness-cycle-v9", "bench-rotation-v8", "bench-smolov-v7", "bench-personal-v6", "bench-fenjue-v5", "bench-rebuild-v4", "bench-fen-jue-v3"];
+  const KEY = "fitness-cycle-v12";
+  const OLD_KEYS = ["fitness-cycle-v11", "fitness-cycle-v10", "fitness-cycle-v9", "bench-rotation-v8", "bench-smolov-v7", "bench-personal-v6", "bench-fenjue-v5", "bench-rebuild-v4", "bench-fen-jue-v3"];
   const $ = (selector) => document.querySelector(selector);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (x) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[x]);
   function read(key) {
     try { const value = localStorage.getItem(key); return value === null ? null : JSON.parse(value); } catch { return null; }
   }
-  function fresh() { return { version: 11, config: P.defaults(), records: {}, attempts: [], archives: [], drafts: {}, squatOverrides: {} }; }
+  function fresh() { return { version: 12, config: P.defaults(), records: {}, attempts: [], archives: [], drafts: {}, squatOverrides: {} }; }
   const saved = read(KEY);
-  let state = saved && saved.version === 11 && !P.validate(saved.config) && saved.records && Array.isArray(saved.archives)
+  let state = saved && saved.version === 12 && !P.validate(saved.config) && saved.records && Array.isArray(saved.archives)
     ? { ...fresh(), ...saved, attempts: Array.isArray(saved.attempts) ? saved.attempts : [], drafts: saved.drafts || {} } : fresh();
+  // 沿用上版的进度、记录及历史处方，只重算未来的目标重量。
+  if (!saved) {
+    const previous = read("fitness-cycle-v11");
+    if (previous?.version === 11 && previous.config && previous.records && Array.isArray(previous.archives)) {
+      const oldConfig = previous.config;
+      const config = { ...oldConfig, tm: 160, benchWeights: P.seedBench(160, oldConfig.increment, oldConfig.barWeight) };
+      if (!P.validate(config)) {
+        state = { ...fresh(), ...previous, version: 12, config, attempts: previous.attempts || [], drafts: previous.drafts || {}, squatOverrides: previous.squatOverrides || {} };
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* 保存失败时仍保留原数据。 */ }
+      }
+    }
+  }
   let viewedDay = null;
   let viewedRound = 1;
   function persist() {

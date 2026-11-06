@@ -4,9 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f3f9f8" />
-    <meta name="apple-mobile-web-app-title" content="力量训练" />
+    <meta name="apple-mobile-web-app-title" content="健身计划" />
+    <meta name="application-name" content="健身计划" />
+    <meta property="og:title" content="健身计划" />
     <meta name="description" content="简单清晰的胸、背、腿训练计划，按周期安排重量并记录训练。" />
-    <title>力量训练 · 我的训练计划</title>
+    <title>健身计划</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -21,9 +23,9 @@
     </svg>
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="#top" aria-label="力量训练首页">
+        <a class="brand" href="#top" aria-label="健身计划首页">
           <span class="brand-icon"><svg class="icon"><use href="#i-barbell" /></svg></span>
-          <span><strong>力量训练</strong><small>YOUR TRAINING SPACE</small></span>
+          <span><strong>健身计划</strong><small>YOUR TRAINING SPACE</small></span>
         </a>
         <nav class="desktop-nav" aria-label="主导航">
           <a href="#workout">当前训练</a><a href="#schedule">周期计划</a><a href="#settings">设置</a><a href="#history">记录</a>
@@ -40,13 +42,13 @@
           <p class="hero-copy">胸、背、腿，练三天，休息一天。<br />按自己的节奏，把每一轮练扎实。</p>
           <a href="#workout" class="hero-link">查看当前训练 <svg class="icon"><use href="#i-arrow" /></svg></a>
         </div>
-        <div class="hero-detail"><span>TRAIN · RECOVER · REPEAT</span><strong>04 <i>/</i> 16 <i>/</i> 03</strong><small>四天一组 · 十六天一轮 · 最多三轮</small></div>
+        <div class="hero-detail"><span>TRAIN · RECOVER · REPEAT</span><strong>04 <i>/</i> 20 <i>/</i> 02</strong><small>四天一组 · 五次卧推一轮 · 两轮一周期</small></div>
       </section>
 
       <section class="rhythm-strip" aria-label="训练周期结构">
         <article><span class="rhythm-number">01</span><div><strong>4 天</strong><p>胸 / 背 / 腿 / 休</p></div></article>
-        <article><span class="rhythm-number">02</span><div><strong>16 天</strong><p>卧推四种组次</p></div></article>
-        <article><span class="rhythm-number">03</span><div><strong>最多 3 轮</strong><p>休息后测试 1RM</p></div></article>
+        <article><span class="rhythm-number">02</span><div><strong>20 天</strong><p>五次卧推一轮</p></div></article>
+        <article><span class="rhythm-number">03</span><div><strong>2 轮</strong><p>十次卧推后评估加重</p></div></article>
       </section>
 
       <section class="section workout-section" id="workout" aria-labelledby="workout-title">
@@ -64,15 +66,15 @@
               <p id="progressText">第 1 轮 / 共 3 轮</p>
             </div>
             <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>留意身体状态</strong><p>预定加重是目标，不必硬追。动作变形、疼痛或明显疲劳时，暂停并调整。</p></div></div>
-            <div class="side-card compact-card"><span>卧推 1RM</span><strong id="summaryTm">167.5 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
+            <div class="side-card compact-card"><span>卧推 eTM</span><strong id="summaryTm">165 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
           </aside>
         </div>
       </section>
 
       <section class="section plan-section" id="schedule" aria-labelledby="schedule-title">
         <div class="section-head">
-          <div><p class="eyebrow">02 / THE CYCLE</p><h2 id="schedule-title">16 天计划</h2><p class="section-sub">每一格都可以点开查看训练内容。</p></div>
-          <div class="round-tabs" id="roundTabs" role="group" aria-label="选择16天循环"></div>
+          <div><p class="eyebrow">02 / THE CYCLE</p><h2 id="schedule-title">20 天计划</h2><p class="section-sub">每一格都可以点开查看训练内容。</p></div>
+          <div class="round-tabs" id="roundTabs" role="group" aria-label="选择20天循环"></div>
         </div>
         <div class="schedule-panel">
           <div class="schedule-panel-head"><div><span class="mini-label">CURRENT PLAN</span><h3 id="roundTitle">第 1 轮</h3></div><span class="schedule-meta" id="roundMeta"></span></div>
@@ -80,10 +82,10 @@
           <p class="schedule-note" id="scheduleNote"></p>
         </div>
         <div class="print-only">
-          <p>胸：温宁式热身、卧推、实力推、三头任选＋哑铃弯举、平板支撑或卷腹。</p>
+          <p>胸：温宁式热身、卧推；一级辅助轮换实力推、上斜卧推、自重臂屈伸、俯卧撑、器械卧推；三头＋二头。</p>
           <p>背：引体向上、高位下拉、器械划船。</p>
           <p>腿A：深蹲、哈克深蹲、腿屈伸、腿弯举。腿B：深蹲、硬拉。</p>
-          <p>各轮结束可调整重量；周期结束正常休息日后再休至少5个完整日，恢复后测试1RM。</p>
+          <p>十次卧推完成后评估恢复，再决定下一周期是否加重。</p>
           <div id="printSchedule"></div>
         </div>
       </section>
@@ -94,28 +96,24 @@
           <form class="settings-card" id="settingsForm">
             <div class="card-title"><div><span class="card-kicker">YOUR NUMBERS</span><h3>训练起点</h3></div><svg class="icon"><use href="#i-settings" /></svg></div>
             <div class="form-grid">
-              <label>卧推 1RM <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
+              <label>卧推 eTM <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
               <label>开始记录日期<input id="startDate" type="date" required /><small>与下面的开始天数对应。</small></label>
               <label>杠铃最小总加重 <span>kg</span><input id="increment" type="number" min="0.25" max="25" step="any" required inputmode="decimal" /></label>
               <label>杠铃杆重 <span>kg</span><input id="barWeight" type="number" min="0" max="30" step="any" required inputmode="decimal" /></label>
-              <label>卧推每轮加重 <span>kg</span><input id="benchIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /><small id="suggestedIncrease"></small></label>
-              <label>完整周期轮数<select id="rounds"><option value="1">1 轮 · 16 天</option><option value="2">2 轮 · 32 天</option><option value="3">3 轮 · 48 天</option></select></label>
-              <div class="bench-input-heading full-field"><strong>第 1 轮卧推重量</strong><button type="button" class="text-action" id="seedBench">按 1RM 生成参考</button></div>
-              <label>4×9 <span>kg</span><input id="bench0" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
-              <label>5×7 <span>kg</span><input id="bench1" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
-              <label>6×5 <span>kg</span><input id="bench2" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
-              <label>8×3 <span>kg</span><input id="bench3" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
-              <label>从第几天开始记录<input id="entryDay" type="number" min="1" max="48" step="1" required inputmode="numeric" /><small>此前的训练不会自动记为完成。</small></label>
+              <label>十次卧推后加重 <span>kg</span><input id="benchIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /><small id="suggestedIncrease"></small></label>
+              <label>完整周期轮数<select id="rounds"><option value="2">2 轮 · 40 天</option></select></label>
+              <p class="full-field small-note">保存后根据 eTM 和器械档距自动计算十次卧推重量。</p>
+              <label>从第几天开始记录<input id="entryDay" type="number" min="1" max="40" step="1" required inputmode="numeric" /><small>新计划从此天开始记录。</small></label>
               <label>下次深蹲起点 <span>kg</span><input id="squatStart" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
               <label>深蹲每次加重 <span>kg</span><input id="squatIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /></label>
-              <label class="full-field">调整下一次深蹲重量 <span>选填 · kg</span><input id="squatOverride" type="number" min="0" max="400" step="any" inputmode="decimal" placeholder="留空则按现有计划递增" /><small>填写后，后续深蹲从这个重量继续递增。</small></label>
+              <label class="full-field">调整下一次深蹲重量 <span>选填 · kg</span><input id="squatOverride" type="number" min="0" max="400" step="any" inputmode="decimal" placeholder="留空则保持现有计划" /><small>默认每次深蹲均为 120 kg；可以在此调整。</small></label>
             </div>
             <div class="form-footer"><button class="primary-button" type="submit">保存设置</button><p id="settingsStatus" class="form-message" role="status"></p></div>
             <p class="small-note">已保存的训练保留当时的处方；有记录后开始日期和天数不可更改。</p>
           </form>
           <aside class="settings-aside">
-            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><div class="formula-row"><span>第 1 轮卧推</span><strong>按输入的四个重量</strong></div><div class="formula-row"><span>之后每轮</span><strong>四个重量各加设定值</strong></div><div class="formula-row"><span>腿日深蹲</span><strong>从下次起按设置递增</strong></div><p>1RM 只用于参考，不会覆盖手填重量。需要时可按 70 / 75 / 80 / 85% 生成新参考。</p></div>
-            <div class="finish-card"><span>完成训练周期后</span><strong>休息至少 5 天</strong><p>正常休息日之后再休息至少 5 个完整日，状态恢复后测试新的卧推 1RM。</p></div>
+            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>按 eTM 的比例向下配片。第一轮 10 / 8 / 6 / 4 / 2 次；第二轮 9 / 7 / 5 / 3 / 1 次，均为 5 组。</p><p>最后 5×1 约 95% eTM：动作变慢或不稳时降重或结束，并使用保护。</p></div>
+            <div class="finish-card"><span>完成训练周期后</span><strong>休息至少 5 天</strong><p>正常休息日之后再休息至少 5 个完整日，状态恢复后测试新的卧推 eTM。</p></div>
           </aside>
         </div>
       </section>
@@ -126,8 +124,8 @@
         <div class="reset-card" id="cycleFinish" hidden>
           <div><p class="eyebrow">NEXT CHAPTER</p><h3>这一周期完成了</h3><p id="finishDescription"></p></div>
           <form id="nextCycleForm" class="next-cycle-form">
-            <label>新卧推 1RM <span>kg</span><input id="newTm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
-            <label>测试日期<input id="testDate" type="date" required /></label>
+            <label>新卧推 eTM <span>kg</span><input id="newTm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
+
             <label>下周期深蹲起点 <span>kg</span><input id="newSquat" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
             <label>下一周期开始日期<input id="nextStart" type="date" required /></label>
             <button type="submit" class="primary-button">保存并开启新周期</button><p class="form-message" id="cycleStatus" role="status"></p>
@@ -136,7 +134,7 @@
         <p class="data-note">记录只保存在此浏览器。换设备前请导出备份；旧版本记录会保留在原处。</p>
       </section>
     </main>
-    <footer class="site-footer"><div class="shell footer-inner"><span>力量训练 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="../docs/使用说明.md" download="使用说明.md">使用说明</a><a href="../docs/重建计划与研究依据.md" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
+    <footer class="site-footer"><div class="shell footer-inner"><span>健身计划 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="../docs/使用说明.md" download="使用说明.md">使用说明</a><a href="../docs/重建计划与研究依据.md" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
     <nav class="mobile-nav" aria-label="手机导航">
       <a href="#workout"><svg class="icon"><use href="#i-barbell" /></svg><span>训练</span></a><a href="#schedule"><svg class="icon"><use href="#i-calendar" /></svg><span>计划</span></a><a href="#settings"><svg class="icon"><use href="#i-settings" /></svg><span>设置</span></a><a href="#history"><svg class="icon"><use href="#i-history" /></svg><span>记录</span></a>
     </nav>

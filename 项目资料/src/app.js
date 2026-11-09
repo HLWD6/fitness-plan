@@ -1,4 +1,4 @@
-/* 个人训练日志：只安排动作与组次，负重由训练者选择并记录。 */
+/* 个人训练日志：显示近似卧推参考重量，实际负重由训练者选择并记录。 */
 "use strict";
 (() => {
   const P = window.TrainingPlan;
@@ -40,6 +40,7 @@
   const count = () => Object.keys(state.records).length;
   const displayDate = (date) => date ? `${Number(date.slice(5, 7))}月${Number(date.slice(8, 10))}日` : "";
   const actualWeightText = (r) => Number.isFinite(r?.actualWeight) ? `${r.actualWeight} kg` : "";
+  const referenceWeightText = (d) => Number.isFinite(d?.referenceWeight) ? `参考约 ${d.referenceWeight} kg` : "";
   function warmupText(d) {
     return d.type === "legs" && d.legVariant === "B" ? "徒手热身，逐步熟悉动作" : "空杆或轻重量起步，逐步加到当天合适重量";
   }
@@ -50,7 +51,7 @@
   function exerciseBody(d, record, draft) {
     const selected = record?.triceps || draft?.triceps || choices[0];
     if (d.type === "chest") {
-      const main = exerciseRow("01", `卧推 · ${d.benchDayName}`, d.style, `${d.sets} 组 × ${d.reps} 次 · 负重自定，训练后记录`, `<small>${esc(d.cue)}</small>`);
+      const main = exerciseRow("01", `卧推 · ${d.benchDayName}`, d.style, `${d.sets} 组 × ${d.reps} 次 · 按状态调整，训练后记录实重`, `<small>${esc(d.cue)}</small>`);
       if (d.micro === 4) return `<div class="warmup-box"><div><span class="warmup-kicker">减载要点</span><strong>无腿驱动 · 动作轻松</strong></div><p>双脚放松，不蹬腿；这一天不做大重量辅助动作。</p></div><p class="ramp-line"><b>上杠准备</b> ${warmupText(d)}</p><div class="exercise-list">${main}</div>`;
       const selector = `<label class="choice-label">三头动作 <select name="triceps" form="logForm" ${record ? "disabled" : ""}>${choices.map((x) => `<option ${x === selected ? "selected" : ""}>${x}</option>`).join("")}</select></label>`;
       const accessory = ["实力推", "上斜卧推", "自重臂屈伸"][d.micro - 1];
@@ -100,13 +101,14 @@
     const mode = record ? "已记录" : d.beforeStart ? "此前未记录" : upcoming?.day === d.day ? "下一次训练" : d.type === "rest" ? "恢复日" : "计划预览";
     const value = d.type === "rest" ? "休息" : d.type === "back" ? "引体向上" : `${esc(p.sets)} <span>×</span> ${esc(p.reps)}`;
     const weight = actualWeightText(record);
-    const unit = d.type === "rest" ? "让身体恢复" : d.type === "back" ? "3 组 · 5–8 次" : d.type === "chest" ? `${weight || "重量训练后记录"} · ${esc(p.style)}` : `${weight || (d.legVariant === "A" ? "重量训练后记录" : "哑铃负重自选")} · ${esc(p.name)}`;
+    const benchLoad = weight ? `实重 ${weight} · ${referenceWeightText(d)}` : `${referenceWeightText(d)} · 按当天状态调整`;
+    const unit = d.type === "rest" ? "让身体恢复" : d.type === "back" ? "3 组 · 5–8 次" : d.type === "chest" ? `${benchLoad} · ${esc(p.style)}` : `${weight || (d.legVariant === "A" ? "重量训练后记录" : "哑铃负重自选")} · ${esc(p.name)}`;
     const lastRecord = Object.values(state.records).sort((a, b) => b.day - a.day)[0];
     const warning = upcoming?.day === d.day && lastRecord?.result === "incomplete" ? `<div class="mini-warning">上次训练未完成。按恢复情况调整训练或多休息。</div>` : "";
     const phase = d.type === "chest" ? d.benchDayName : d.type === "rest" ? "恢复日" : `第 ${d.micro} 个四日组`;
     $("#sessionCard").innerHTML = `<div class="session-topline"><div><span class="session-number">DAY ${String(d.day).padStart(2, "0")}</span><span class="session-date">${d.beforeStart && !record ? "参考 " : ""}${displayDate(record?.date || d.date)} · ${phase}</span></div><span class="session-pill">${mode}</span></div>
       <div class="session-hero"><div><p>${d.type === "rest" ? "REST DAY" : d.type === "chest" ? "CHEST DAY" : d.type === "back" ? "BACK DAY" : `LEG DAY · ${d.legVariant}`}</p><h3>${d.label}${d.type === "rest" ? "" : "日训练"}</h3></div><span class="session-icon"><svg class="icon"><use href="#i-${d.type === "rest" ? "calendar" : "barbell"}" /></svg></span></div>
-      <div class="main-lift"><div><span>今日主项</span><strong>${value}</strong></div><p>${unit}</p></div>${warning}${exerciseBody({ ...d, ...p, date: d.date }, record, draft)}${recordForm(d, record, draft, upcoming)}`;
+      <div class="main-lift"><div><span>今日主项</span><strong>${value}</strong></div><p>${unit}</p></div>${warning}${exerciseBody({ ...d, ...p, referenceWeight: p.referenceWeight ?? d.referenceWeight, date: d.date }, record, draft)}${recordForm(d, record, draft, upcoming)}`;
   }
   function renderSchedule() {
     const all = days(), upcoming = next();
@@ -116,13 +118,13 @@
       const group = all.filter((d) => d.micro === row + 1);
       return `<div class="schedule-row"><div class="schedule-row-label"><strong>0${row + 1}</strong><span>${["容量日", "控制稳定", "赛推专项", "减载日"][row]}</span></div><div class="schedule-cells">${group.map((d) => {
         const r = state.records[d.day], selected = d.day === viewedDay;
-        const detail = r && actualWeightText(r) ? ` · ${actualWeightText(r)}` : "";
-        const desc = d.type === "chest" ? `${d.style} · ${d.sets}×${d.reps}${detail}` : d.type === "legs" ? (d.legVariant === "A" ? `杠铃深蹲 · 5×5${detail}` : "保加利亚分腿蹲 · 3×8–10/腿") : d.type === "back" ? "引体向上" : "休息";
+        const detail = r && actualWeightText(r) ? ` · 实重${actualWeightText(r)}` : "";
+        const desc = d.type === "chest" ? `${d.style} · ${d.sets}×${d.reps} · 参考约${d.referenceWeight}kg${detail}` : d.type === "legs" ? (d.legVariant === "A" ? `杠铃深蹲 · 5×5${detail}` : "保加利亚分腿蹲 · 3×8–10/腿") : d.type === "back" ? "引体向上" : "休息";
         return `<button type="button" class="schedule-cell ${d.type} ${selected ? "selected" : ""} ${r ? "done" : ""}" data-day="${d.day}" aria-label="第${d.day}天 ${d.label} ${esc(desc)}${r ? " 已记录" : d.beforeStart ? " 此前未记录" : upcoming?.day === d.day ? " 下一次训练" : ""}"><span>DAY ${String(d.day).padStart(2, "0")} ${r ? "✓" : d.beforeStart ? "· 此前" : upcoming?.day === d.day ? "· 下次" : ""}</span><strong>${d.label}</strong><small>${esc(desc)}</small></button>`;
       }).join("")}</div></div>`;
     }).join("");
-    $("#scheduleNote").textContent = "胸、背、腿、休息四天一组；腿日的杠铃深蹲与保加利亚分腿蹲交替。重量不自动推算，训练后记录实重。";
-    $("#printSchedule").innerHTML = `<h3>16 天循环</h3><table><thead><tr><th>天数 / 日期</th><th>训练</th><th>主项 / 组次</th><th>记录</th></tr></thead><tbody>${all.map((d) => { const r = state.records[d.day], p = r?.plan || d; const title = d.type === "chest" ? p.style : d.name; const sets = d.type === "rest" ? "" : `${p.sets} × ${p.reps}`; const load = actualWeightText(r); const note = d.type === "chest" || d.legVariant === "A" ? (load || "实重自记") : d.legVariant === "B" ? "负重自选" : "—"; return `<tr><td>${d.day} / ${esc(r?.date || d.date)}${d.beforeStart && !r ? "（参考）" : ""}</td><td>${d.label}</td><td>${esc(title)} ${sets}</td><td>${esc(note)}</td></tr>`; }).join("")}</tbody></table>`;
+    $("#scheduleNote").textContent = "胸、背、腿、休息四天一组；腿日的杠铃深蹲与保加利亚分腿蹲交替。卧推参考值供调整，训练后另记实重。";
+    $("#printSchedule").innerHTML = `<h3>16 天循环</h3><table><thead><tr><th>天数 / 日期</th><th>训练</th><th>主项 / 组次</th><th>参考 / 实际</th></tr></thead><tbody>${all.map((d) => { const r = state.records[d.day], p = r?.plan || d; const title = d.type === "chest" ? p.style : d.name; const sets = d.type === "rest" ? "" : `${p.sets} × ${p.reps}`; const load = actualWeightText(r); const note = d.type === "chest" ? `${referenceWeightText(d)}${load ? `；实重 ${load}` : ""}` : d.type === "legs" && d.legVariant === "A" ? (load ? `实重 ${load}` : "实重自记") : d.legVariant === "B" ? "负重自选" : "—"; return `<tr><td>${d.day} / ${esc(r?.date || d.date)}${d.beforeStart && !r ? "（参考）" : ""}</td><td>${d.label}</td><td>${esc(title)} ${sets}</td><td>${esc(note)}</td></tr>`; }).join("")}</tbody></table>`;
   }
   function renderProgress() {
     const upcoming = next(), total = days().filter((d) => d.type !== "rest").length;
@@ -220,8 +222,8 @@
   });
   $("#exportCsv").addEventListener("click", () => {
     const cell = (v) => { let text = String(v ?? ""); if (/^\s*[=+\-@\t\r]/.test(text)) text = `'${text}`; return `"${text.replace(/"/g, '""')}"`; };
-    const rows = [["天数", "训练", "卧推类型", "腿日类型", "日期", "主项", "组次", "实际重量kg", "状态", "表现记录", "备注"]];
-    days().forEach((d) => { const r = state.records[d.day], p = r?.plan || d; rows.push([d.day, d.label, d.type === "chest" ? p.benchDayName : "", d.legVariant || "", `${r?.date || d.date}${d.beforeStart && !r ? "（倒推参考）" : ""}`, p.style || p.name, d.type === "rest" ? "" : `${p.sets}×${p.reps}`, r?.actualWeight ?? "", r ? (r.result === "done" ? "完成" : "未完成") : d.beforeStart ? "此前未记录" : "", r?.actual || "", r?.notes || ""]); });
+    const rows = [["天数", "训练", "卧推类型", "腿日类型", "日期", "主项", "组次", "参考重量kg", "实际重量kg", "状态", "表现记录", "备注"]];
+    days().forEach((d) => { const r = state.records[d.day], p = r?.plan || d; rows.push([d.day, d.label, d.type === "chest" ? p.benchDayName : "", d.legVariant || "", `${r?.date || d.date}${d.beforeStart && !r ? "（倒推参考）" : ""}`, p.style || p.name, d.type === "rest" ? "" : `${p.sets}×${p.reps}`, d.type === "chest" ? d.referenceWeight : "", r?.actualWeight ?? "", r ? (r.result === "done" ? "完成" : "未完成") : d.beforeStart ? "此前未记录" : "", r?.actual || "", r?.notes || ""]); });
     download("\ufeff" + rows.map((row) => row.map(cell).join(",")).join("\r\n"), "text/csv;charset=utf-8", "健身计划-训练记录.csv");
   });
   $("#printButton").addEventListener("click", () => window.print());

@@ -13,7 +13,7 @@ const P=require('../src/training.js'),root=path.resolve(__dirname,'../..'),url=p
  const migrated=await b.newContext();await migrated.addInitScript(x=>localStorage.setItem('fitness-cycle-v14',JSON.stringify(x)),previous);const page=await migrated.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
  const fresh=await page.evaluate(()=>JSON.parse(localStorage.getItem('fitness-cycle-v15')));assert.equal(fresh.config.startDate,P.today());assert.equal(fresh.records[1].actualWeight,120);assert.equal(fresh.records[1].actual,'5×8');assert.equal(fresh.archives.length,1);assert.deepEqual(fresh.archives[0].records,previous.records);
  assert.match(await page.locator('#sessionCard').innerText(),/引体向上/);
- await page.locator('[data-day="1"]').click();assert.match(await page.locator('#sessionCard').innerText(),/120 kg/);assert.match(await page.locator('#sessionCard').innerText(),/5 × 8/);
- for(const [day,name] of [[1,'快速卧推'],[5,'胸前停顿卧推'],[9,'比赛式卧推'],[13,'无腿驱动卧推']]){await page.locator(`[data-day="${day}"]`).click();assert.match(await page.locator('#sessionCard').innerText(),new RegExp(name));}
+ await page.locator('[data-day="1"]').click();assert.match(await page.locator('#sessionCard').innerText(),/实重 120 kg/);assert.match(await page.locator('#sessionCard').innerText(),/参考约 120 kg/);assert.match(await page.locator('#sessionCard').innerText(),/5 × 8/);
+ for(const [day,name,weight] of [[1,'快速卧推',120],[5,'胸前停顿卧推',135],[9,'比赛式卧推',150],[13,'无腿驱动卧推',100]]){await page.locator(`[data-day="${day}"]`).click();const text=await page.locator('#sessionCard').innerText();assert.match(text,new RegExp(name));assert.match(text,new RegExp(`参考约 ${weight} kg`));}
  await page.locator('[data-day="7"]').click();assert.match(await page.locator('#sessionCard').innerText(),/保加利亚分腿蹲/);
  assert.deepEqual(errors,[]);await migrated.close();await b.close();console.log('16天训练节奏、实重记录、腿部交替和周期归档正常。');})().catch(e=>{console.error(e);process.exit(1)});

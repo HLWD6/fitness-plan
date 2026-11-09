@@ -1,12 +1,12 @@
 "use strict";
 const test = require("node:test"), assert = require("node:assert/strict"), P = require("../src/training.js");
 const config = (x = {}) => ({ ...P.defaults("2026-01-01"), ...x });
-test("四种卧推依次轮换，计划只规定动作和组次", () => {
+test("四种卧推依次轮换并提供参考重量，不覆盖实际重量记录", () => {
  const p=P.plan(config()), b=p.filter(x=>x.type==='chest');
  assert.equal(p.length,16); assert.deepEqual(b.map(x=>x.day),[1,5,9,13]);
  assert.deepEqual(b.map(x=>`${x.sets}×${x.reps}`),['5×8','5×5','5×3','5×8']);
  assert.deepEqual(b.map(x=>x.benchDayName),['容量日','控制稳定日','赛推专项日','减载日']);
- assert.ok(b.every(x=>x.weight===null));
+ assert.deepEqual(b.map(x=>x.referenceWeight),[120,135,150,100]); assert.ok(b.every(x=>x.weight===null));
 });
 test("胸背腿休四天节奏，腿日交替深蹲和保加利亚分腿蹲",()=>{
  const p=P.plan(config()); assert.deepEqual(p.slice(0,8).map(x=>x.type),['chest','back','legs','rest','chest','back','legs','rest']);

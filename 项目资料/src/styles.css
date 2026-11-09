@@ -175,6 +175,10 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
 .schedule-note, .small-note, .data-note { color: #6b8783; margin-top: 17px; }
 .settings-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
 .settings-card, .formula-card, .finish-card { padding: 27px; }
+.method-list { display: grid; gap: 0; margin-top: 19px; }
+.method-list p { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; padding: 16px 0; margin: 0; border-top: 1px solid var(--line); color: var(--muted); }
+.method-list strong { color: var(--ink); font-size: 14px; }
+.method-list span { font-size: 14px; line-height: 1.7; }
 .card-title { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
 .card-title h3, .formula-card h3 { font-size: 22px; margin-top: 3px; }
 .card-title > .icon { color: #65a69b; }
@@ -270,6 +274,7 @@ input:disabled, select:disabled { color: #6c8580; background: #f1f6f4; }
   .record-form { padding: 17px; }
   .record-actions .primary-button { width: 100%; }
   .schedule-panel, .settings-card, .formula-card, .finish-card, .reset-card { padding: 20px; border-radius: 17px; }
+  .method-list p { grid-template-columns: 82px minmax(0, 1fr); gap: 10px; }
   .schedule-row { grid-template-columns: minmax(0, 1fr); gap: 7px; }
   .schedule-row-label { display: flex; flex-direction: row; align-items: center; gap: 8px; }
   .schedule-row-label strong { font-size: 19px; }

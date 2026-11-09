@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-title" content="健身计划" />
     <meta name="application-name" content="健身计划" />
     <meta property="og:title" content="健身计划" />
-    <meta name="description" content="简单清晰的胸、背、腿训练计划，按周期安排重量并记录训练。" />
+    <meta name="description" content="简单清晰的胸、背、腿训练计划，记录每次训练的实际重量与表现。" />
     <title>健身计划</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -28,7 +28,7 @@
           <span><strong>健身计划</strong><small>YOUR TRAINING SPACE</small></span>
         </a>
         <nav class="desktop-nav" aria-label="主导航">
-          <a href="#workout">当前训练</a><a href="#schedule">周期计划</a><a href="#settings">设置</a><a href="#history">记录</a>
+          <a href="#workout">当前训练</a><a href="#schedule">周期计划</a><a href="#settings">训练安排</a><a href="#history">记录</a>
         </nav>
         <span class="header-tag"><span class="status-dot"></span>我的训练计划</span>
       </div>
@@ -39,7 +39,7 @@
         <div class="hero-content">
           <p class="eyebrow hero-eyebrow"><span></span> PERSONAL STRENGTH PLAN</p>
           <h1 id="hero-title">专注这一练，<br /><em>进步自然发生。</em></h1>
-          <p class="hero-copy">容量、控制、赛推、减载。<br />四种卧推按节奏轮换，稳步进步。</p>
+          <p class="hero-copy">容量、控制、赛推、减载。<br />按计划训练，按实际记录。</p>
           <a href="#workout" class="hero-link">查看当前训练 <svg class="icon"><use href="#i-arrow" /></svg></a>
         </div>
         <div class="hero-detail"><span>TRAIN · RECOVER · REPEAT</span><strong>04 <i>/</i> 16 <i>/</i> 01</strong><small>四天一组 · 四种卧推 · 16天一轮</small></div>
@@ -48,7 +48,7 @@
       <section class="rhythm-strip" aria-label="训练周期结构">
         <article><span class="rhythm-number">01</span><div><strong>4 天</strong><p>胸 / 背 / 腿 / 休</p></div></article>
         <article><span class="rhythm-number">02</span><div><strong>16 天</strong><p>四种卧推各一次</p></div></article>
-        <article><span class="rhythm-number">03</span><div><strong>+2.5 kg</strong><p>每轮后默认加重</p></div></article>
+        <article><span class="rhythm-number">03</span><div><strong>实重</strong><p>每次训练后记录</p></div></article>
       </section>
 
       <section class="section workout-section" id="workout" aria-labelledby="workout-title">
@@ -65,8 +65,8 @@
               <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
               <p id="progressText">下一项：容量日</p>
             </div>
-            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>重量先稳再加</strong><p>首轮用保守参考重量起步。若动作变形、疼痛或明显疲劳，减重或停止。</p></div></div>
-            <div class="side-card compact-card"><span>卧推参考极限</span><strong id="summaryTm">160 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
+            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>按状态选择重量</strong><p>计划只安排动作与组次。负重自行选择，训练后记录实际重量。</p></div></div>
+            <div class="side-card compact-card"><span>最近卧推实重</span><strong id="summaryTm">待记录</strong><a href="#history">查看训练记录 ↗</a></div>
           </aside>
         </div>
       </section>
@@ -81,37 +81,28 @@
           <p class="schedule-note" id="scheduleNote"></p>
         </div>
         <div class="print-only">
-          <p>卧推日依次练快速容量、胸前停顿、赛推技术和无腿驱动减载。</p>
+          <p>卧推日依次练快速容量、胸前停顿、赛推技术和无腿驱动减载；负重按实际训练记录。</p>
           <p>背：引体向上、高位下拉、器械划船。</p>
-          <p>腿A：深蹲、哈克深蹲、腿屈伸、腿弯举。腿B：深蹲、硬拉。</p>
-          <p>四种卧推完成后休息至少5天；新周期参考重量默认加2.5 kg。</p>
+          <p>腿日交替安排杠铃深蹲与保加利亚分腿蹲。</p>
+          <p>四种卧推完成后休息至少5天，再开启新周期。</p>
           <div id="printSchedule"></div>
         </div>
       </section>
 
       <section class="section" id="settings" aria-labelledby="settings-title">
-        <div class="section-head"><div><p class="eyebrow">03 / MAKE IT YOURS</p><h2 id="settings-title">计划设置</h2><p class="section-sub">修改参数后，未来训练自动重新计算。</p></div></div>
+        <div class="section-head"><div><p class="eyebrow">03 / THE METHOD</p><h2 id="settings-title">训练安排</h2><p class="section-sub">动作与组次固定，训练重量按当天状态选择并记录。</p></div></div>
         <div class="settings-layout">
-          <form class="settings-card" id="settingsForm">
-            <div class="card-title"><div><span class="card-kicker">YOUR NUMBERS</span><h3>训练起点</h3></div><svg class="icon"><use href="#i-settings" /></svg></div>
-            <div class="form-grid">
-              <label>卧推参考极限 <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /><small>默认160 kg；四种动作按比例自动计算。</small></label>
-              <label>开始记录日期<input id="startDate" type="date" required /><small>与下面的开始天数对应。</small></label>
-              <label>杠铃最小总加重 <span>kg</span><input id="increment" type="number" min="0.25" max="25" step="any" required inputmode="decimal" /></label>
-              <label>杠铃杆重 <span>kg</span><input id="barWeight" type="number" min="0" max="30" step="any" required inputmode="decimal" /></label>
-              <label>完成一轮后加重 <span>kg</span><input id="benchIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /><small id="suggestedIncrease"></small></label>
-              <p class="full-field small-note">四种卧推按 70%、75%、82.5%、55% 参考极限计算，再向下配到杠铃档距。</p>
-              <label>从第几天开始记录<input id="entryDay" type="number" min="1" max="15" step="1" required inputmode="numeric" /><small>新计划从此天开始记录。</small></label>
-              <label>下次深蹲起点 <span>kg</span><input id="squatStart" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
-              <label>深蹲每次加重 <span>kg</span><input id="squatIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /></label>
-              <label class="full-field">调整下一次深蹲重量 <span>选填 · kg</span><input id="squatOverride" type="number" min="0" max="400" step="any" inputmode="decimal" placeholder="留空则保持现有计划" /><small>默认每次深蹲均为 120 kg；可以在此调整。</small></label>
+          <div class="settings-card">
+            <div class="card-title"><div><span class="card-kicker">16 DAY CYCLE</span><h3>胸 · 背 · 腿 · 休息</h3></div><svg class="icon"><use href="#i-grid" /></svg></div>
+            <div class="method-list">
+              <p><strong>卧推</strong><span>容量、控制、赛推、减载，四次训练依次轮换。</span></p>
+              <p><strong>练腿</strong><span>杠铃深蹲日与保加利亚分腿蹲日交替。</span></p>
+              <p><strong>训练重量</strong><span>不自动推算；记录页面填写本次实际负重。</span></p>
             </div>
-            <div class="form-footer"><button class="primary-button" type="submit">保存设置</button><p id="settingsStatus" class="form-message" role="status"></p></div>
-            <p class="small-note">已保存的训练保留当时的处方；有记录后开始日期和天数不可更改。</p>
-          </form>
+          </div>
           <aside class="settings-aside">
-            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>容量、胸前停顿、赛推、减载依次按参考极限的70%、75%、82.5%、55%估算，按档距向下取整。</p><p>前三种动作末组约 RPE 7–8；减载日约 RPE 6。起始重量需按实际动作与当天状态调整。</p></div>
-            <div class="finish-card"><span>完成四种卧推后</span><strong>休息至少 5 天</strong><p>完成最后一组四日训练后，留足5个完整休息日，再复测并开启新循环。</p></div>
+            <div class="formula-card"><span class="card-kicker">TRAINING LOG</span><h3>训练后记实重</h3><p>首次记录：快速节奏卧推 5×8，120 kg。</p><p>新一轮沿用同一训练节奏，按你的实际训练情况留下记录。</p></div>
+            <div class="finish-card"><span>完成四种卧推后</span><strong>休息至少 5 天</strong><p>留足5个完整休息日，再复测并手动开启新周期。</p></div>
           </aside>
         </div>
       </section>
@@ -122,9 +113,6 @@
         <div class="reset-card" id="cycleFinish" hidden>
           <div><p class="eyebrow">NEXT CHAPTER</p><h3>这一周期完成了</h3><p id="finishDescription"></p></div>
           <form id="nextCycleForm" class="next-cycle-form">
-            <label>新循环卧推参考极限 <span>kg</span><input id="newTm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
-
-            <label>下周期深蹲起点 <span>kg</span><input id="newSquat" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
             <label>下一周期开始日期<input id="nextStart" type="date" required /></label>
             <button type="submit" class="primary-button">保存并开启新周期</button><p class="form-message" id="cycleStatus" role="status"></p>
           </form>

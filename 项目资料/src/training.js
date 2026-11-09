@@ -1,11 +1,20 @@
 /* 四天一组、二十天一轮的力量计划；全部重量均为含杆总重量。 */
 (function (root) {
   "use strict";
-  // 用户指定的TM对照表；奇数次数使用相邻两档的中间值。
+  // 以末组RPE约7.5（约2.5次余力）为起点，再按总组数下调；实际重量向下配片。
+  // 高组数和高次数的卧推个体差异较大，这些比例只作起始估算。
+  const TARGET_RPE = 7.5;
   const BENCH = [
-    {sets:5,reps:10,ratio:.75},{sets:5,reps:8,ratio:.80},{sets:5,reps:6,ratio:.85},{sets:5,reps:4,ratio:.90},{sets:5,reps:2,ratio:.95},
-    {sets:5,reps:9,ratio:.775},{sets:5,reps:7,ratio:.825},{sets:5,reps:5,ratio:.875},{sets:5,reps:3,ratio:.925},{sets:5,reps:1,ratio:1},
+    {sets:4,reps:10},{sets:5,reps:8},{sets:6,reps:6},{sets:8,reps:4},{sets:10,reps:2},
+    {sets:4,reps:9},{sets:5,reps:7},{sets:6,reps:5},{sets:8,reps:3},{sets:15,reps:1},
   ];
+  function targetRatio(slot) {
+    // Epley近似只提供初始比例；额外按工作组数留出疲劳余量。
+    const rir = 10 - TARGET_RPE;
+    const base = 30 / (30 + slot.reps + rir);
+    const volumeAllowance = 0.003 * (slot.sets - 1);
+    return Number((base - volumeAllowance).toFixed(6));
+  }
   const TYPES = ["chest", "back", "legs", "rest"];
   const LABELS = { chest: "胸", back: "背", legs: "腿", rest: "休息" };
   function today() {
@@ -28,15 +37,18 @@
   function aligned(value, increment, base = 0) {
     return Number.isFinite(value) && value >= base && Math.abs((value - base) / increment - Math.round((value - base) / increment)) < 1e-7;
   }
-  function seedBench(tm, increment, barWeight) {
-    return BENCH.map((slot) => Math.max(barWeight, roundDown(tm * slot.ratio, increment, barWeight)));
+  function seedBench(tm, tm2, increment, barWeight) {
+    return BENCH.map((slot, index) => {
+      const reference = index < 5 ? tm : tm2;
+      return Math.max(barWeight, roundDown(reference * targetRatio(slot), increment, barWeight));
+    });
   }
   function defaults(startDate = today()) {
-    return { tm: 160, increment: 2.5, barWeight: 20, benchWeights: seedBench(160, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
+    return { tm: 160, tm2: 170, increment: 2.5, barWeight: 20, benchWeights: seedBench(160, 170, 2.5, 20), benchIncrease: 5, cycleOffset: 0, squatStart: 120, squatIncrease: 0, rounds: 2, entryDay: 1, startDate };
   }
   function validate(c) {
     if (!c || !validDate(c.startDate)) return "请选择有效的开始日期。";
-    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400) return "卧推 eTM 请填写 20–400 kg。";
+    if (!Number.isFinite(c.tm) || c.tm < 20 || c.tm > 400 || !Number.isFinite(c.tm2) || c.tm2 < 20 || c.tm2 > 400) return "两轮卧推估算极限均须填写 20–400 kg。";
     if (!Number.isFinite(c.increment) || c.increment < 0.25 || c.increment > 25) return "最小加重请填写 0.25–25 kg。";
     if (!Number.isFinite(c.barWeight) || c.barWeight < 0 || c.barWeight > 30) return "杠铃杆重请填写 0–30 kg。";
     if (!Array.isArray(c.benchWeights) || c.benchWeights.length !== 10 || c.benchWeights.some((w) => !aligned(w, c.increment, c.barWeight) || w > 400)) return "十个卧推重量须能按杆重和最小加重配出，且不超过 400 kg。";
@@ -67,7 +79,8 @@
         sets: type === "chest" ? slot.sets : type === "legs" ? 5 : type === "back" ? 3 : 0,
         reps: type === "chest" ? String(slot.reps) : type === "legs" ? "5" : type === "back" ? "5–8" : "",
         weight: type === "chest" ? Number((c.benchWeights[(round - 1) * 5 + micro] + (c.cycleOffset || 0)).toFixed(3)) : type === "legs" ? (legIndex < firstLegIndex ? c.squatStart : Number((squatAnchor.weight + (legIndex - squatAnchor.index) * c.squatIncrease).toFixed(3))) : null,
-        referenceRatio: type === "chest" ? slot.ratio : null,
+        referenceRatio: type === "chest" ? targetRatio(slot) : null,
+        targetRpe: type === "chest" ? TARGET_RPE : null,
         legVariant: type === "legs" ? (legIndex % 2 === 0 ? "A" : "B") : null,
       };
       date = addDays(date, 1);
@@ -89,7 +102,7 @@
   // 周期末正常休息日之后再休息至少5整天，次日才可测1RM。
   function testDate(days) { return addDays(days[days.length - 1].date, 6); }
   function weightText(weight) { return Number.isFinite(weight) ? `${weight} kg` : ""; }
-  const api = { BENCH, LABELS, today, validDate, addDays, roundDown, seedBench, aligned, defaults, validate, plan, backfillCompleted, nextWorkout, testDate, weightText };
+  const api = { BENCH, TARGET_RPE, LABELS, today, validDate, addDays, roundDown, seedBench, targetRatio, aligned, defaults, validate, plan, backfillCompleted, nextWorkout, testDate, weightText };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.TrainingPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);

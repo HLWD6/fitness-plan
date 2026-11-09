@@ -65,8 +65,8 @@
               <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
               <p id="progressText">第 1 轮 / 共 3 轮</p>
             </div>
-            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>留意身体状态</strong><p>对照表接近单组极限，不保证能完成五组。动作变形、疼痛或明显疲劳时，减重或结束。</p></div></div>
-            <div class="side-card compact-card"><span>卧推 eTM</span><strong id="summaryTm">160 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
+          <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>留意身体状态</strong><p>工作重量按末组 RPE 7–8 估算；若超过 8、动作变形或明显疲劳，减重或结束。</p></div></div>
+            <div class="side-card compact-card"><span>两轮估算极限</span><strong id="summaryTm">160 / 170 <small>kg</small></strong><a href="#settings">调整设置 ↗</a></div>
           </aside>
         </div>
       </section>
@@ -96,13 +96,14 @@
           <form class="settings-card" id="settingsForm">
             <div class="card-title"><div><span class="card-kicker">YOUR NUMBERS</span><h3>训练起点</h3></div><svg class="icon"><use href="#i-settings" /></svg></div>
             <div class="form-grid">
-              <label>卧推 eTM <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /><small>按你的定义：单次较轻松，但很难完成两次的重量。</small></label>
+              <label>第一轮估算极限 <span>kg</span><input id="tm" type="number" min="20" max="400" step="any" required inputmode="decimal" /><small>第一轮重量换算基准。</small></label>
+              <label>第二轮估算极限 <span>kg</span><input id="tm2" type="number" min="20" max="400" step="any" required inputmode="decimal" /><small>第二轮重量换算基准。</small></label>
               <label>开始记录日期<input id="startDate" type="date" required /><small>与下面的开始天数对应。</small></label>
               <label>杠铃最小总加重 <span>kg</span><input id="increment" type="number" min="0.25" max="25" step="any" required inputmode="decimal" /></label>
               <label>杠铃杆重 <span>kg</span><input id="barWeight" type="number" min="0" max="30" step="any" required inputmode="decimal" /></label>
               <label>十次卧推后加重 <span>kg</span><input id="benchIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /><small id="suggestedIncrease"></small></label>
               <label>完整周期轮数<select id="rounds"><option value="2">2 轮 · 40 天</option></select></label>
-              <p class="full-field small-note">保存后根据 eTM 和器械档距自动计算十次卧推重量。</p>
+              <p class="full-field small-note">默认第一轮 160 kg、第二轮 170 kg；可分别修改。</p>
               <label>从第几天开始记录<input id="entryDay" type="number" min="1" max="40" step="1" required inputmode="numeric" /><small>新计划从此天开始记录。</small></label>
               <label>下次深蹲起点 <span>kg</span><input id="squatStart" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
               <label>深蹲每次加重 <span>kg</span><input id="squatIncrease" type="number" min="0" max="50" step="any" required inputmode="decimal" /></label>
@@ -112,8 +113,8 @@
             <p class="small-note">已保存的训练保留当时的处方；有记录后开始日期和天数不可更改。</p>
           </form>
           <aside class="settings-aside">
-            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>按指定的 TM 对照表计算：10次75%、8次80%、6次85%、4次90%、2次95%、1次100%；奇数取相邻两档中间值。结果向下配片。</p><p>对照表接近单组极限，五组可能需要降重；卧推使用安全杆或可靠保护。</p></div>
-            <div class="finish-card"><span>完成训练周期后</span><strong>休息至少 5 天</strong><p>正常休息日之后再休息至少 5 个完整日，状态恢复后测试新的卧推 eTM。</p></div>
+            <div class="formula-card"><span class="card-kicker">HOW IT WORKS</span><h3>重量怎么计算？</h3><p>根据每轮估算极限、组次和末组目标 RPE 7–8 推算，并随总组数下调；重量按器械档距向下取整。</p><p>这是起始估算，RPE 会受当天状态和个人差异影响。若末组超过 8，减重 2.5–5 kg。</p></div>
+            <div class="finish-card"><span>完成训练周期后</span><strong>休息至少 5 天</strong><p>正常休息日之后再休息至少 5 个完整日，状态恢复后测试并更新两轮估算极限。</p></div>
           </aside>
         </div>
       </section>
@@ -124,7 +125,8 @@
         <div class="reset-card" id="cycleFinish" hidden>
           <div><p class="eyebrow">NEXT CHAPTER</p><h3>这一周期完成了</h3><p id="finishDescription"></p></div>
           <form id="nextCycleForm" class="next-cycle-form">
-            <label>新卧推 eTM <span>kg</span><input id="newTm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
+            <label>新周期第一轮估算极限 <span>kg</span><input id="newTm" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
+            <label>新周期第二轮估算极限 <span>kg</span><input id="newTm2" type="number" min="20" max="400" step="any" required inputmode="decimal" /></label>
 
             <label>下周期深蹲起点 <span>kg</span><input id="newSquat" type="number" min="0" max="400" step="any" required inputmode="decimal" /></label>
             <label>下一周期开始日期<input id="nextStart" type="date" required /></label>

@@ -17,7 +17,7 @@ test("胸背腿休四天节奏、腿A/B交替和默认120kg",()=>{
 test("参考极限、配片、周期加重和日期边界",()=>{
  const c=config({tm:165,benchWeights:P.seedBench(165,2.5,20)}); assert.equal(P.plan(c)[0].weight,115);
  assert.deepEqual(P.plan({...c,benchWeights:P.seedBench(167.5,2.5,20)}).filter(x=>x.type==='chest').map(x=>x.weight),[115,125,137.5,90]);
- assert.match(P.validate(config({tm:0})),/参考极限/); assert.match(P.validate(config({benchIncrease:3})),/整数倍/); assert.match(P.validate(config({entryDay:17})),/最后一个训练日/);
+ assert.match(P.validate(config({tm:0})),/估算极限/); assert.match(P.validate(config({benchIncrease:3})),/整数倍/); assert.match(P.validate(config({entryDay:17})),/最后一个训练日/);
 });
 test("延期和暂停顺延日期；休息日不必打卡",()=>{
  const c=config(), rows=P.plan(c,{1:{date:'2026-01-04'}},{},[{day:2,date:'2026-01-06'}]); assert.equal(rows[0].date,'2026-01-04');assert.equal(rows[1].date,'2026-01-06');assert.equal(rows[2].date,'2026-01-07');

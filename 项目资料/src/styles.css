@@ -236,3 +236,80 @@ input:disabled,select:disabled { background: #f2f6f9; color: #899fab; }
   .cell-foot { font-size: 7px; padding-top: 4px; }
   .cell-status .icon { width: 9px; height: 9px; }
 }
+
+/* 固定模板板：四种卧推与背、腿模板分别排布。 */
+.calendar-grid { grid-template-columns: minmax(0,2fr) minmax(0,1fr); }
+.bench-templates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; min-width: 0; }
+.other-templates { display: grid; gap: 14px; min-width: 0; }
+.other-templates .calendar-cell { min-height: 0; }
+.cell-category { display: inline-flex; align-items: center; gap: 7px; color: #6b8795; font-size: 11px; font-weight: 550; }
+.cell-category .icon { width: 19px; height: 19px; color: #709ba4; }
+.cell-main { font-size: 20px; }
+.cell-exercise { margin-top: 4px; color: #5e7c8d; font-size: 12px; }
+.cell-aux-row small { display: block; margin-top: 2px; color: #7d94a0; font-size: 10px; }
+.history-panel > summary > span:first-child { color: #607d8c; font-size: 12px; }
+.history-panel[open] > summary > span:first-child { transform: none; }
+#historyCount { display: inline-block; min-width: 21px; margin-left: 6px; padding: 1px 5px; border-radius: 5px; color: #7893a2; background: #edf3f7; text-align: center; font-size: 10px; font-weight: 550; }
+.history-dose { display: inline-block; margin-left: 8px; font-size: 10px; color: #8198a5; font-weight: 400; }
+.history-weights { font-variant-numeric: tabular-nums; }
+.edit-record { min-height: 32px; padding: 5px 9px; border: 1px solid #dce7ed; border-radius: 7px; background: #fff; color: #6c8999; font-size: 11px; }
+.record-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; margin-top: 19px; border: 1px solid #e1eaf1; border-radius: 10px; background: #f5f9fc; }
+.record-main strong { font-size: 14px; font-weight: 600; }
+.record-main > div > span { display: inline-block; margin-left: 8px; color: #6b8a9c; font-size: 12px; }
+.record-main > small { color: #6b8d98; font-size: 11px; white-space: nowrap; }
+.set-log { position: relative; padding: 10px 0 0; margin: 20px 0 0; border: 0; min-width: 0; }
+.set-log legend { color: #4f7184; padding: 0; font-size: 12px; font-weight: 550; }
+.set-log legend > span { color: #8aa0ad; font-size: 10px; font-weight: 400; }
+.copy-weight { position: absolute; right: 0; top: -17px; border: 0; padding: 0; color: #7093a4; background: none; font-size: 11px; }
+.weight-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 7px; }
+.weight-grid label { color: #8198a5; text-align: center; font-size: 10px; }
+.weight-grid input { padding: 8px 5px; text-align: center; font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
+.weight-grid input::-webkit-inner-spin-button,.weight-grid input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.record-extra { margin-top: 19px; padding-top: 14px; border-top: 1px solid var(--line); }
+.record-extra summary { cursor: pointer; color: #7893a3; font-size: 11px; }
+.record-extra .record-fields { margin-top: 14px; }
+@media(max-width:900px) {
+  .calendar-grid { grid-template-columns: minmax(0,1fr); gap: 14px; }
+  .other-templates { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:600px) {
+  .bench-templates { gap: 10px; }
+  .other-templates { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .other-templates .calendar-cell { padding: 17px; }
+  .other-templates .cell-aux { max-width: 100%; }
+  .other-templates .cell-main { font-size: 19px; }
+  .other-templates .cell-top { margin-bottom: 12px; }
+}
+@media(max-width:480px) {
+  .cell-top { margin-bottom: 14px; }
+  .cell-main { font-size: 18px; }
+  .cell-category { font-size: 10px; gap: 5px; }
+  .cell-category .icon { width: 16px; height: 16px; }
+  .cell-exercise { font-size: 11px; }
+  .cell-aux-row small { font-size: 9px; }
+  .history-panel > summary > span:first-child { font-size: 11px; }
+  .history-day { font-size: 10px; }
+  .history-row { grid-template-columns: 65px minmax(0,1fr) auto; gap: 9px; }
+  .history-row strong { font-size: 12px; }
+  .history-dose { margin-left: 5px; font-size: 9px; }
+  .history-row p { font-size: 10px; line-height: 1.7; }
+  .edit-record { padding-inline: 7px; font-size: 10px; }
+  .record-main { flex-wrap: wrap; padding: 12px; }
+  .record-main strong { font-size: 13px; }
+}
+@media(max-width:350px) { .bench-templates { gap: 8px; } .cell-main { font-size: 16px; } .cell-exercise { font-size: 10px; } .weight-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media print {
+  .calendar-grid { grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 8px; }
+  .bench-templates { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .other-templates { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .calendar-cell { height: auto; min-height: 210px; padding: 12px; }
+  .other-templates .calendar-cell { min-height: 0; }
+  .cell-category { font-size: 9px; }
+  .cell-category .icon { width: 15px; height: 15px; }
+  .cell-top { margin-bottom: 10px; }
+  .cell-main { font-size: 15px; }
+  .cell-exercise { font-size: 10px; }
+  .cell-aux-row { font-size: 10px; }
+  .cell-aux-row small { font-size: 8px; }
+  .cell-aux-row > span:last-child { font-size: 9px; }
+}

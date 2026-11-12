@@ -10,11 +10,11 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(url);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
-    assert.equal(await page.locator(".calendar-cell").count(), 12);
+    assert.equal(await page.locator(".calendar-cell").count(), 7);
     const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.day));
     assert.deepEqual(overflow, [], `日历内容溢出：${width}px`);
-    await page.locator('[data-day="13"]').click();
-    assert.match(await page.locator("#sessionCard").innerText(), /无腿卧推/);
+    await page.locator('[data-template="bench-d"]').click();
+    assert.match(await page.locator(".record-main").innerText(), /无腿卧推/);
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -23,7 +23,8 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
   await page.goto(url);
   await page.screenshot({ path: path.join(examples, "手机首页.png") });
   await page.locator("#schedule").screenshot({ path: path.join(examples, "手机计划表.png") });
-  await page.locator("#openWorkout").click();
+  await page.locator("#historyLink").click();
+  await page.locator('[data-record="confirmed-2026-11-12-bench-b"]').click();
   await page.screenshot({ path: path.join(examples, "手机训练.png") });
   await mobile.close();
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1100 }, acceptDownloads: true });
@@ -36,7 +37,7 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
   await page.locator("#exportCsv").click();
   await (await download).saveAs(path.join(examples, "训练记录.csv"));
   await page.emulateMedia({ media: "print" });
-  await page.pdf({ path: path.join(examples, "16天训练计划.pdf"), format: "A4", landscape: true, printBackground: true });
+  await page.pdf({ path: path.join(examples, "训练模板.pdf"), format: "A4", landscape: true, printBackground: true });
   await browser.close();
-  console.log("五种屏幕宽度无溢出；日历和手机预览已更新。");
+  console.log("五种屏幕宽度无溢出；模板和手机预览已更新。");
 })().catch(error => { console.error(error); process.exit(1); });

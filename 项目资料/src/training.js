@@ -1,75 +1,63 @@
-/* 16天一轮：胸、背、腿、休息重复；重量由训练者自行选择并记录。 */
+/* 固定训练模板。参考重量不参与实际训练记录的计算。 */
 (function (root) {
   "use strict";
-  const CYCLE_DAYS = 16;
-  const BENCH = [
-    { name: "容量日", sets: 5, reps: 8, referenceWeight: 120, style: "快速卧推", cue: "下放稳定，向上快速推起；不弹胸。" },
-    { name: "控制日", sets: 5, reps: 5, referenceWeight: 135, style: "停顿卧推", cue: "触胸停稳约1秒，不反弹，练启动力。" },
-    { name: "赛推日", sets: 5, reps: 3, referenceWeight: 150, style: "赛推", cue: "按比赛停顿，练腿驱动、陷胸承接和固定推起路线。" },
-    { name: "减载日", sets: 5, reps: 8, referenceWeight: 100, style: "无腿卧推", cue: "双脚放松，不蹬腿；全程控制，轻松完成。" },
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function freeze(value) { Object.values(value).forEach(x => { if (x && typeof x === "object") freeze(x); }); return Object.freeze(value); }
+  const arms = () => [
+    { id: "triceps", name: "三头任选", sets: 5, reps: "10–15" },
+    { id: "curl", name: "哑铃弯举", sets: 1, reps: "12", referenceWeight: 22.5 },
+    { id: "core", name: "平板支撑 / 卷腹", sets: 2, reps: "" },
   ];
-  const TYPES = ["chest", "back", "legs", "rest"];
-  const LABELS = { chest: "胸", back: "背", legs: "腿", rest: "休息" };
-  function today() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }
+  const TEMPLATES = freeze([
+    { id: "bench-a", title: "卧推 A", kind: "容量日", type: "chest", main: { name: "快速卧推", sets: 5, reps: "8", referenceWeight: 120 }, accessories: [{ id: "press", name: "实力推", sets: 2, reps: "" }, ...arms()] },
+    { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "" }, ...arms()] },
+    { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 2, reps: "" }, ...arms()] },
+    { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 100 }, accessories: [] },
+    { id: "back", title: "背部", kind: "引体日", type: "back", main: { name: "引体向上", sets: 3, reps: "5–8" }, accessories: [{ id: "pulldown", name: "高位下拉", sets: 2, reps: "8–12" }, { id: "row", name: "器械划船", sets: 2, reps: "8–12" }] },
+    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", main: { name: "杠铃深蹲", sets: 5, reps: "5" }, accessories: [{ id: "hack", name: "哈克深蹲", sets: 2, reps: "8–12" }, { id: "extension", name: "腿屈伸", sets: 2, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 2, reps: "10–15" }] },
+    { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 3, reps: "8–10 / 腿", note: "自重 / 哑铃" }, accessories: [] },
+  ]);
+  const REST = freeze({ id: "rest", title: "休息", kind: "休息", type: "rest", main: null, accessories: [] });
+  function templates(includeRest = false) { return includeRest ? [...TEMPLATES, REST] : [...TEMPLATES]; }
+  function template(id) { return templates(true).find(x => x.id === id) || null; }
+  function today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
   function validDate(value) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return false;
     const d = new Date(`${value}T12:00:00`);
     return !Number.isNaN(d.getTime()) && `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` === value;
   }
-  function addDays(value, n) {
-    const d = new Date(`${value}T12:00:00`);
-    d.setDate(d.getDate() + n);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  function dose(exercise) { return exercise?.sets ? exercise.reps ? `${exercise.sets}×${exercise.reps}` : `${exercise.sets}组` : ""; }
+  function seedRecords() {
+    return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-10", "rest"], ["2026-11-11", "squat-a"], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]]].map(([date, templateId, weights]) => ({
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", snapshot: clone(template(templateId)),
+    }));
   }
-  function defaults(startDate = today()) { return { startDate, entryDay: 1 }; }
-  function validate(c) {
-    if (!c || !validDate(c.startDate)) return "请选择有效的开始日期。";
-    if (!Number.isInteger(c.entryDay) || c.entryDay < 1 || c.entryDay >= CYCLE_DAYS) return "开始记录的天数需在本周期最后一个训练日或之前。";
+  function validateRecord(record, latestDate = today()) {
+    const t = template(record?.templateId);
+    if (!t) return "请选择训练模板。";
+    if (!validDate(record.date) || record.date > latestDate) return "请选择今天或之前的有效日期。";
+    if (!Array.isArray(record.setWeights) || record.setWeights.length !== (t.main?.sets || 0)) return "请检查各组重量。";
+    if (record.setWeights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "每组重量需在0–500 kg之间。";
+    if (!["done", "incomplete", "paused"].includes(record.result)) return "请选择完成情况。";
     return "";
   }
-  function plan(c, records = {}, _unusedOverrides = {}, attempts = []) {
-    let date = addDays(c.startDate, 1 - c.entryDay);
-    return Array.from({ length: CYCLE_DAYS }, (_, i) => {
-      const day = i + 1, micro = Math.floor(i / 4), type = TYPES[i % 4];
-      const record = records[day];
-      const lastAttempt = attempts.filter((a) => a.day === day && validDate(a.date)).map((a) => a.date).sort().at(-1);
-      if (lastAttempt && lastAttempt > date) date = lastAttempt;
-      if (record?.date && validDate(record.date) && record.date > date) date = record.date;
-      const slot = BENCH[micro], legIndex = Math.floor(i / 4), legVariant = legIndex % 2 === 0 ? "A" : "B";
-      const isBench = type === "chest", isLeg = type === "legs";
-      const p = {
-        day, round: 1, micro: micro + 1, type, label: LABELS[type], date, beforeStart: day < c.entryDay,
-        name: isBench ? "卧推" : type === "back" ? "引体向上" : isLeg ? (legVariant === "A" ? "杠铃深蹲" : "保加利亚分腿蹲") : "休息",
-        style: isBench ? slot.style : null,
-        cue: isBench ? slot.cue : null,
-        benchDayName: isBench ? slot.name : null,
-        referenceWeight: isBench ? slot.referenceWeight : null,
-        sets: isBench ? slot.sets : isLeg ? (legVariant === "A" ? 5 : 3) : type === "back" ? 3 : 0,
-        reps: isBench ? String(slot.reps) : isLeg ? (legVariant === "A" ? "5" : "8–10/腿") : type === "back" ? "5–8" : "",
-        weight: null,
-        legVariant: isLeg ? legVariant : null,
-      };
-      date = addDays(date, 1);
-      return p;
-    });
+  function upsertRecord(records, record) {
+    const existing = records.find(x => x.id === record.id) || records.find(x => x.date === record.date && x.templateId === record.templateId);
+    const id = existing?.id || record.id;
+    return [...records.filter(x => x.id !== id && !(x.date === record.date && x.templateId === record.templateId)), { ...clone(record), id }];
   }
-  function nextWorkout(days, records) {
-    return days.find((d) => !d.beforeStart && d.type !== "rest" && !records[d.day]) || null;
+  function fromLegacy(record) {
+    const p = record?.plan;
+    if (!validDate(record?.date) || !p?.type) return null;
+    const templateId = p.type === "chest" ? ["bench-a", "bench-b", "bench-c", "bench-d"][Number(p.micro) - 1] : p.type === "back" ? "back" : p.type === "legs" ? p.legVariant === "B" ? "squat-b" : "squat-a" : "rest";
+    const t = template(templateId); if (!t) return null;
+    return { id: `legacy-v15-${record.date}-${record.day}`, date: record.date, templateId, result: ["done", "incomplete", "paused"].includes(record.result) ? record.result : "done", setWeights: Array(t.main?.sets || 0).fill(null), legacyWeight: Number.isFinite(record.actualWeight) ? record.actualWeight : null, notes: [record.actual, record.notes].filter(Boolean).join(" · "), triceps: record.triceps || "", snapshot: clone(t) };
   }
-  function backfillCompleted(c, records, attempts, beforeDate) {
-    const result = { ...records };
-    for (const d of plan(c, records, {}, attempts)) {
-      if (d.type === "rest" || d.date >= beforeDate || result[d.day]) continue;
-      result[d.day] = { day: d.day, date: d.date, plan: { ...d }, result: "done", actual: "", actualWeight: null, notes: "", triceps: "", backfilled: true };
-    }
-    return result;
+  function initialRecords(previous) {
+    const rows = previous?.version === 15 ? [...Object.values(previous.records || {}), ...(previous.attempts || [])].map(fromLegacy).filter(Boolean).filter(x => x.date < "2026-11-09" || x.date > "2026-11-12") : [];
+    return [...rows, ...seedRecords()];
   }
-  function testDate(days) { return addDays(days[days.length - 1].date, 6); }
-  function weightText(weight) { return Number.isFinite(weight) ? `${weight} kg` : ""; }
-  const api = { CYCLE_DAYS, BENCH, LABELS, today, validDate, addDays, defaults, validate, plan, backfillCompleted, nextWorkout, testDate, weightText };
+  const api = { templates, template, dose, today, validDate, seedRecords, validateRecord, upsertRecord, initialRecords };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.TrainingPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);

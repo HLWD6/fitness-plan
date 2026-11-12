@@ -28,83 +28,35 @@
           <span><strong>健身计划</strong><small>YOUR TRAINING SPACE</small></span>
         </a>
         <nav class="desktop-nav" aria-label="主导航">
-          <a href="#workout">当前训练</a><a href="#schedule">周期计划</a><a href="#settings">训练安排</a><a href="#history">记录</a>
+          <a href="#schedule">16天计划</a><a href="#workout">训练记录</a><a href="#history">历史</a>
         </nav>
-        <span class="header-tag"><span class="status-dot"></span>我的训练计划</span>
+        <span class="header-tag"><span class="status-dot"></span>胸 · 背 · 腿 · 休息</span>
       </div>
     </header>
 
     <main class="shell" id="top">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-content">
-          <p class="eyebrow hero-eyebrow"><span></span> PERSONAL STRENGTH PLAN</p>
-          <h1 id="hero-title">专注这一练，<br /><em>进步自然发生。</em></h1>
-          <p class="hero-copy">容量、控制、赛推、减载。<br />按计划训练，按实际记录。</p>
-          <a href="#workout" class="hero-link">查看当前训练 <svg class="icon"><use href="#i-arrow" /></svg></a>
+      <section class="plan-section" id="schedule" aria-labelledby="schedule-title">
+        <div class="plan-heading">
+          <div><p class="eyebrow">PERSONAL TRAINING PLAN</p><h1 id="schedule-title">16 天训练计划</h1><p class="section-sub">胸、背、腿、休息，每四天一组。</p></div>
+          <div class="plan-progress" aria-label="训练进度">
+            <div><strong id="progressCount">1</strong><span id="progressDenominator">/ 12 次训练</span></div>
+            <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+            <p id="progressText">下一次训练</p>
+          </div>
         </div>
-        <div class="hero-detail"><span>TRAIN · RECOVER · REPEAT</span><strong>04 <i>/</i> 16 <i>/</i> 01</strong><small>四天一组 · 四种卧推 · 16天一轮</small></div>
-      </section>
-
-      <section class="rhythm-strip" aria-label="训练周期结构">
-        <article><span class="rhythm-number">01</span><div><strong>4 天</strong><p>胸 / 背 / 腿 / 休</p></div></article>
-        <article><span class="rhythm-number">02</span><div><strong>16 天</strong><p>四种卧推各一次</p></div></article>
-        <article><span class="rhythm-number">03</span><div><strong>实重</strong><p>每次训练后记录</p></div></article>
+        <div class="plan-legend"><span><i class="legend-swatch completed"></i>已完成</span><span><i class="legend-swatch upcoming"></i>下一次训练</span><span class="plan-legend-hint">选择一天可记录训练</span></div>
+        <div class="plan-table-wrap">
+          <table class="plan-table" id="planTable" aria-label="16天训练计划表">
+            <thead><tr><th>天数 / 日期</th><th>训练日</th><th>主项</th><th>辅助与补充</th><th>状态</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="plan-note">卧推参考：5×8 120 kg · 5×5 135 kg · 5×3 150 kg · 无腿驱动5×8约100 kg。参考值按状态调整，实重另行记录。</p>
       </section>
 
       <section class="section workout-section" id="workout" aria-labelledby="workout-title">
-        <div class="section-head">
-          <div><p class="eyebrow">01 / YOUR SESSION</p><h2 id="workout-title">当前训练</h2><p class="section-sub">照着今天的卡片练就好。</p></div>
-          <a href="#schedule" class="section-link">查看完整周期 <svg class="icon"><use href="#i-arrow" /></svg></a>
-        </div>
-        <div class="workout-layout">
-          <article class="session-card" id="sessionCard" aria-live="polite"></article>
-          <aside class="session-side">
-            <div class="side-card progress-card">
-              <div class="side-card-heading"><span>周期进度</span><svg class="icon"><use href="#i-grid" /></svg></div>
-              <div class="progress-total"><strong id="progressCount">0</strong><span id="progressDenominator">/ 12 次训练</span></div>
-              <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
-              <p id="progressText">下一项：容量日</p>
-            </div>
-            <div class="side-card focus-card"><span class="focus-marker">✳</span><div><strong>按状态选择重量</strong><p>计划只安排动作与组次。负重自行选择，训练后记录实际重量。</p></div></div>
-            <div class="side-card compact-card"><span>最近卧推实重</span><strong id="summaryTm">待记录</strong><a href="#history">查看训练记录 ↗</a></div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section plan-section" id="schedule" aria-labelledby="schedule-title">
-        <div class="section-head">
-          <div><p class="eyebrow">02 / THE CYCLE</p><h2 id="schedule-title">16 天训练计划</h2><p class="section-sub">每一格都可以点开查看训练内容。</p></div>
-        </div>
-        <div class="schedule-panel">
-          <div class="schedule-panel-head"><div><span class="mini-label">CURRENT PLAN</span><h3 id="roundTitle">第 1 轮</h3></div><span class="schedule-meta" id="roundMeta"></span></div>
-          <div class="schedule-grid" id="scheduleGrid"></div>
-          <p class="schedule-note" id="scheduleNote"></p>
-        </div>
-        <div class="print-only">
-          <p>卧推日依次练快速容量、胸前停顿、赛推技术和无腿驱动减载；参考重量供调整，实重另行记录。</p>
-          <p>背：引体向上、高位下拉、器械划船。</p>
-          <p>腿日交替安排杠铃深蹲与保加利亚分腿蹲。</p>
-          <p>四种卧推完成后休息至少5天，再开启新周期。</p>
-          <div id="printSchedule"></div>
-        </div>
-      </section>
-
-      <section class="section" id="settings" aria-labelledby="settings-title">
-        <div class="section-head"><div><p class="eyebrow">03 / THE METHOD</p><h2 id="settings-title">训练安排</h2><p class="section-sub">动作与组次固定，训练重量按当天状态选择并记录。</p></div></div>
-        <div class="settings-layout">
-          <div class="settings-card">
-            <div class="card-title"><div><span class="card-kicker">16 DAY CYCLE</span><h3>胸 · 背 · 腿 · 休息</h3></div><svg class="icon"><use href="#i-grid" /></svg></div>
-            <div class="method-list">
-              <p><strong>卧推</strong><span>容量、控制、赛推、减载，四次训练依次轮换。</span></p>
-              <p><strong>练腿</strong><span>杠铃深蹲日与保加利亚分腿蹲日交替。</span></p>
-              <p><strong>卧推参考</strong><span>容量 120、控制 135、赛推 150、减载约 100 kg；实际重量按状态调整并另行记录。</span></p>
-            </div>
-          </div>
-          <aside class="settings-aside">
-            <div class="formula-card"><span class="card-kicker">TRAINING LOG</span><h3>参考重量与实重分开</h3><p>首日 5×8、120 kg 已记为实际训练。</p><p>后续参考：5×5 约 135 kg，5×3 约 150 kg；无腿驱动 5×8 先按约 100 kg。</p><p>参考值只作起点，实重按当天状态调整并记录。</p></div>
-            <div class="finish-card"><span>完成四种卧推后</span><strong>休息至少 5 天</strong><p>留足5个完整休息日，再复测并手动开启新周期。</p></div>
-          </aside>
-        </div>
+        <div class="section-head"><div><p class="eyebrow">TRAINING LOG</p><h2 id="workout-title">训练详情与记录</h2><p class="section-sub">从计划表选择一天，查看完整动作并记录实际训练。</p></div></div>
+        <article class="session-card" id="sessionCard" aria-live="polite"></article>
       </section>
 
       <section class="section history-section" id="history" aria-labelledby="history-title">
@@ -122,7 +74,7 @@
     </main>
     <footer class="site-footer"><div class="shell footer-inner"><span>健身计划 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="../docs/使用说明.md" download="使用说明.md">使用说明</a><a href="../docs/重建计划与研究依据.md" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
     <nav class="mobile-nav" aria-label="手机导航">
-      <a href="#workout"><svg class="icon"><use href="#i-barbell" /></svg><span>训练</span></a><a href="#schedule"><svg class="icon"><use href="#i-calendar" /></svg><span>计划</span></a><a href="#settings"><svg class="icon"><use href="#i-settings" /></svg><span>设置</span></a><a href="#history"><svg class="icon"><use href="#i-history" /></svg><span>记录</span></a>
+      <a href="#schedule"><svg class="icon"><use href="#i-calendar" /></svg><span>计划</span></a><a href="#workout"><svg class="icon"><use href="#i-barbell" /></svg><span>训练</span></a><a href="#history"><svg class="icon"><use href="#i-history" /></svg><span>历史</span></a>
     </nav>
     <script src="training.js"></script>
     <script src="app.js"></script>

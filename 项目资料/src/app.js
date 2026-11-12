@@ -37,10 +37,25 @@
   let viewedDay = null;
   const days = () => P.plan(state.config, state.records, {}, state.attempts);
   const next = () => P.nextWorkout(days(), state.records);
-  const count = () => Object.keys(state.records).length;
+  const count = () => Object.values(state.records).filter((r) => r.result === "done").length;
   const displayDate = (date) => date ? `${Number(date.slice(5, 7))}月${Number(date.slice(8, 10))}日` : "";
   const actualWeightText = (r) => Number.isFinite(r?.actualWeight) ? `${r.actualWeight} kg` : "";
   const referenceWeightText = (d) => Number.isFinite(d?.referenceWeight) ? `参考约 ${d.referenceWeight} kg` : "";
+  function planParts(d) {
+    if (d.type === "chest") {
+      const auxiliary = d.micro === 4 ? ["无腿驱动", "减载日不安排辅助动作"] : [
+        "温宁热身：侧平板、卷腹、轻夹胸推、胸托后束飞鸟、轻臂屈伸、轻面拉（2轮，每项约25次）",
+        `一级：${["实力推", "上斜卧推", "自重臂屈伸"][d.micro - 1]}（2组）`,
+        "二级：三头（自重/直杆/绳索/过顶臂屈伸任选）+哑铃弯举，各2×10–15",
+        "核心：平板支撑或卷腹（2组）",
+      ];
+      return { focus: `卧推 · ${d.benchDayName}`, main: `${d.style} · ${d.sets}×${d.reps}`, reference: referenceWeightText(d), auxiliary };
+    }
+    if (d.type === "back") return { focus: "背部", main: "引体向上 · 3×5–8", reference: "", auxiliary: ["高位下拉 · 2×8–12", "器械划船 · 2×8–12"] };
+    if (d.type === "legs" && d.legVariant === "A") return { focus: "腿部 · 深蹲日", main: "杠铃深蹲 · 5×5", reference: "", auxiliary: ["哈克深蹲 · 2×8–12", "腿屈伸 · 2×10–15", "腿弯举 · 2×10–15"] };
+    if (d.type === "legs") return { focus: "腿部 · 单腿日", main: "保加利亚分腿蹲 · 3×8–10 / 每腿", reference: "", auxiliary: ["自重或哑铃负重", "不安排其他辅助动作"] };
+    return { focus: "恢复日", main: "休息", reference: "", auxiliary: ["可散步或轻活动"] };
+  }
   function warmupText(d) {
     return d.type === "legs" && d.legVariant === "B" ? "徒手热身，逐步熟悉动作" : "空杆或轻重量起步，逐步加到当天合适重量";
   }
@@ -55,7 +70,7 @@
       if (d.micro === 4) return `<div class="warmup-box"><div><span class="warmup-kicker">减载要点</span><strong>无腿驱动 · 动作轻松</strong></div><p>双脚放松，不蹬腿；这一天不做大重量辅助动作。</p></div><p class="ramp-line"><b>上杠准备</b> ${warmupText(d)}</p><div class="exercise-list">${main}</div>`;
       const selector = `<label class="choice-label">三头动作 <select name="triceps" form="logForm" ${record ? "disabled" : ""}>${choices.map((x) => `<option ${x === selected ? "selected" : ""}>${x}</option>`).join("")}</select></label>`;
       const accessory = ["实力推", "上斜卧推", "自重臂屈伸"][d.micro - 1];
-      const warmup = `<div class="warmup-box"><div><span class="warmup-kicker">卧推前准备</span><strong>轻松活动肩背与胸部</strong></div><p>做几组不疲劳的肩胛、胸椎和手臂热身；保持轻松，发沉就减少。</p></div>`;
+      const warmup = `<div class="warmup-box"><div><span class="warmup-kicker">温宁热身</span><strong>6 个动作 · 2 轮</strong></div><p>侧平板、卷腹、轻夹胸推、胸托后束飞鸟、轻臂屈伸、轻面拉；每项约25次，侧平板左右分开，保持轻松。</p></div>`;
       return `${warmup}<p class="ramp-line"><b>上杠准备</b> ${warmupText(d)}</p>
         <div class="exercise-list">${main}${exerciseRow("02", "辅助", accessory, "2 组 · 留有余力，重量现场调整")}${exerciseRow("03", "手臂", "三头任选一项 + 哑铃弯举", "各 2 组 × 10–15 次", selector)}${exerciseRow("04", "核心", "平板支撑或卷腹", "各选一项，做 2 组")}</div>`;
     }
@@ -112,28 +127,29 @@
   }
   function renderSchedule() {
     const all = days(), upcoming = next();
-    $("#roundTitle").textContent = "16 天 · 四种卧推循环";
-    $("#roundMeta").textContent = "容量 → 控制 → 赛推 → 减载";
-    $("#scheduleGrid").innerHTML = Array.from({ length: 4 }, (_, row) => {
-      const group = all.filter((d) => d.micro === row + 1);
-      return `<div class="schedule-row"><div class="schedule-row-label"><strong>0${row + 1}</strong><span>${["容量日", "控制稳定", "赛推专项", "减载日"][row]}</span></div><div class="schedule-cells">${group.map((d) => {
-        const r = state.records[d.day], selected = d.day === viewedDay;
-        const detail = r && actualWeightText(r) ? ` · 实重${actualWeightText(r)}` : "";
-        const desc = d.type === "chest" ? `${d.style} · ${d.sets}×${d.reps} · 参考约${d.referenceWeight}kg${detail}` : d.type === "legs" ? (d.legVariant === "A" ? `杠铃深蹲 · 5×5${detail}` : "保加利亚分腿蹲 · 3×8–10/腿") : d.type === "back" ? "引体向上" : "休息";
-        return `<button type="button" class="schedule-cell ${d.type} ${selected ? "selected" : ""} ${r ? "done" : ""}" data-day="${d.day}" aria-label="第${d.day}天 ${d.label} ${esc(desc)}${r ? " 已记录" : d.beforeStart ? " 此前未记录" : upcoming?.day === d.day ? " 下一次训练" : ""}"><span>DAY ${String(d.day).padStart(2, "0")} ${r ? "✓" : d.beforeStart ? "· 此前" : upcoming?.day === d.day ? "· 下次" : ""}</span><strong>${d.label}</strong><small>${esc(desc)}</small></button>`;
-      }).join("")}</div></div>`;
+    $("#planTable tbody").innerHTML = all.map((d) => {
+      const r = state.records[d.day], parts = planParts(d), weight = actualWeightText(r);
+      const complete = r?.result === "done", incomplete = r?.result === "incomplete";
+      const paused = !r && state.attempts.some((a) => a.day === d.day), isUpcoming = upcoming?.day === d.day;
+      const rowClass = [complete ? "completed" : "", incomplete ? "incomplete" : "", isUpcoming ? "upcoming" : "", viewedDay === d.day ? "selected" : ""].filter(Boolean).join(" ");
+      const status = complete ? "已完成" : incomplete ? "未完成" : paused ? "已暂停" : d.type === "rest" ? "休息" : d.beforeStart ? "未记录" : isUpcoming ? "下一次" : "待训练";
+      const statusClass = complete ? "complete" : incomplete || paused ? "caution" : isUpcoming ? "next" : "";
+      const action = d.type === "rest" ? "查看" : complete ? "详情" : "记录";
+      return `<tr class="plan-row ${d.type} ${rowClass}" data-day="${d.day}" tabindex="0" aria-label="第${d.day}天，${d.label}，${esc(parts.main)}，${status}">
+        <td class="plan-day"><strong>DAY ${String(d.day).padStart(2, "0")}</strong><span>${esc(displayDate(r?.date || d.date))}</span></td>
+        <td class="plan-focus"><span class="type-mark ${d.type}">${esc(parts.focus)}</span></td>
+        <td class="plan-main"><strong>${esc(parts.main)}</strong>${parts.reference ? `<span class="plan-reference">${esc(parts.reference)}</span>` : ""}${weight ? `<span class="plan-actual">实重 ${esc(weight)}</span>` : ""}</td>
+        <td class="plan-aux"><ul>${parts.auxiliary.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></td>
+        <td class="plan-status"><span class="status-label ${statusClass}">${status}</span><button type="button" class="row-action">${action}</button></td>
+      </tr>`;
     }).join("");
-    $("#scheduleNote").textContent = "胸、背、腿、休息四天一组；腿日的杠铃深蹲与保加利亚分腿蹲交替。卧推参考值供调整，训练后另记实重。";
-    $("#printSchedule").innerHTML = `<h3>16 天循环</h3><table><thead><tr><th>天数 / 日期</th><th>训练</th><th>主项 / 组次</th><th>参考 / 实际</th></tr></thead><tbody>${all.map((d) => { const r = state.records[d.day], p = r?.plan || d; const title = d.type === "chest" ? p.style : d.name; const sets = d.type === "rest" ? "" : `${p.sets} × ${p.reps}`; const load = actualWeightText(r); const note = d.type === "chest" ? `${referenceWeightText(d)}${load ? `；实重 ${load}` : ""}` : d.type === "legs" && d.legVariant === "A" ? (load ? `实重 ${load}` : "实重自记") : d.legVariant === "B" ? "负重自选" : "—"; return `<tr><td>${d.day} / ${esc(r?.date || d.date)}${d.beforeStart && !r ? "（参考）" : ""}</td><td>${d.label}</td><td>${esc(title)} ${sets}</td><td>${esc(note)}</td></tr>`; }).join("")}</tbody></table>`;
   }
   function renderProgress() {
     const upcoming = next(), total = days().filter((d) => d.type !== "rest").length;
     $("#progressCount").textContent = count();
     $("#progressDenominator").textContent = `/ ${total} 次训练`;
     $("#progressBar").style.width = `${Math.min(100, count() / total * 100)}%`;
-    $("#progressText").textContent = upcoming ? `下一项：DAY ${String(upcoming.day).padStart(2, "0")} · ${upcoming.type === "chest" ? upcoming.benchDayName : upcoming.label}` : "循环训练已完成";
-    const latestBench = Object.values(state.records).filter((r) => r.plan?.type === "chest" && Number.isFinite(r.actualWeight)).sort((a, b) => b.day - a.day)[0];
-    $("#summaryTm").innerHTML = latestBench ? `${esc(latestBench.actualWeight)} <small>kg</small>` : "待记录";
+    $("#progressText").textContent = upcoming ? `下一次：DAY ${String(upcoming.day).padStart(2, "0")} · ${upcoming.type === "chest" ? upcoming.benchDayName : upcoming.label}` : "本轮训练已完成";
   }
   function historyRow(r) {
     const result = r.result === "done" ? "完成" : r.result === "paused" ? "暂停" : "未完成";
@@ -168,9 +184,14 @@
     }
   }
   function renderAll() { renderProgress(); renderSession(); renderSchedule(); renderHistory(); }
-  $("#scheduleGrid").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-day]"); if (!b) return;
-    viewedDay = Number(b.dataset.day); renderSession(); renderSchedule(); $("#workout").scrollIntoView({ behavior: "smooth" });
+  $("#planTable").addEventListener("click", (e) => {
+    const row = e.target.closest("[data-day]"); if (!row) return;
+    viewedDay = Number(row.dataset.day); renderSession(); renderSchedule(); $("#workout").scrollIntoView({ behavior: "smooth" });
+  });
+  $("#planTable").addEventListener("keydown", (e) => {
+    if (e.target.closest("button") || (e.key !== "Enter" && e.key !== " ")) return;
+    const row = e.target.closest(".plan-row"); if (!row) return;
+    e.preventDefault(); viewedDay = Number(row.dataset.day); renderSession(); renderSchedule(); $("#workout").scrollIntoView({ behavior: "smooth" });
   });
   $("#sessionCard").addEventListener("input", saveDraft);
   $("#sessionCard").addEventListener("change", saveDraft);

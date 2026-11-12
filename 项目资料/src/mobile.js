@@ -4,8 +4,8 @@
   const links = [...document.querySelectorAll(".mobile-nav a")];
   function highlight() {
     const y = window.scrollY + window.innerHeight * .32;
-    let active = "workout";
-    for (const id of ["workout", "schedule", "settings", "history"]) {
+    let active = "schedule";
+    for (const id of ["schedule", "workout", "history"]) {
       const el = document.getElementById(id);
       if (el && el.offsetTop <= y) active = id;
     }

@@ -19,6 +19,7 @@
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
       <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3" /><path d="M8 3v4m8-4v4M4 11h16m-11 4h2m4 0h2m-8 3h2" /></symbol>
       <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 7M4 5v6h6m2-4v5l3 2" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6" /></symbol>
       <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7zm10-3h.01" /></symbol>
     </svg>
     <header class="site-header shell">
@@ -40,7 +41,7 @@
         <summary><span>训练记录 <b id="historyCount"></b></span><span aria-hidden="true">＋</span></summary>
         <div class="history-content">
           <div class="history-actions"><button type="button" class="outline-button" id="exportCsv">导出 CSV</button><button type="button" class="outline-button" id="exportJson">备份记录</button></div>
-          <div id="historyList"></div><div class="legacy-note" id="legacyNote"></div>
+          <div id="historyCalendar" class="history-calendar"></div><div class="history-day-heading"><h3 id="historyDate"></h3><button type="button" class="outline-button" id="recordSelectedDay">记录训练</button></div><div id="historyList"></div><div class="legacy-note" id="legacyNote"></div>
           <p class="data-note">记录保存在当前浏览器，换设备前请备份。</p>
         </div>
       </details>

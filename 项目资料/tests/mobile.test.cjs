@@ -11,10 +11,15 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
     await page.goto(url);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
     assert.equal(await page.locator(".calendar-cell").count(), 7);
-    const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.day));
-    assert.deepEqual(overflow, [], `日历内容溢出：${width}px`);
+    const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.template));
+    assert.deepEqual(overflow, [], `模板内容溢出：${width}px`);
     await page.locator('[data-template="bench-d"]').click();
     assert.match(await page.locator(".record-main").innerText(), /无腿卧推/);
+    await page.keyboard.press("Escape");
+    await page.locator("#historyLink").click();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    await page.locator('[data-log-date="2026-11-11"]').click();
+    assert.match(await page.locator("#historyList").innerText(), /120 \/ 120 \/ 120 \/ 120 \/ 120/);
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -24,6 +29,9 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
   await page.screenshot({ path: path.join(examples, "手机首页.png") });
   await page.locator("#schedule").screenshot({ path: path.join(examples, "手机计划表.png") });
   await page.locator("#historyLink").click();
+  await page.locator('[data-log-date="2026-11-11"]').click();
+  await page.locator("#history").screenshot({ path: path.join(examples, "手机记录.png") });
+  await page.locator('[data-log-date="2026-11-12"]').click();
   await page.locator('[data-record="confirmed-2026-11-12-bench-b"]').click();
   await page.screenshot({ path: path.join(examples, "手机训练.png") });
   await mobile.close();
@@ -33,6 +41,8 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
   await page.screenshot({ path: path.join(examples, "界面预览.png") });
   await page.locator("#schedule").screenshot({ path: path.join(examples, "完整计划表.png") });
   await page.locator("#historyLink").click();
+  await page.locator('[data-log-date="2026-11-11"]').click();
+  await page.locator("#history").screenshot({ path: path.join(examples, "训练日历.png") });
   const download = page.waitForEvent("download");
   await page.locator("#exportCsv").click();
   await (await download).saveAs(path.join(examples, "训练记录.csv"));

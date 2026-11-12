@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f5f8f7" />
+    <meta name="theme-color" content="#f3f7fa" />
     <meta name="apple-mobile-web-app-title" content="健身计划" />
     <meta name="application-name" content="健身计划" />
     <meta property="og:title" content="健身计划" />
@@ -17,20 +17,22 @@
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></symbol>
       <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3" /><path d="M8 3v4m8-4v4M4 11h16m-11 4h2m4 0h2m-8 3h2" /></symbol>
+      <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 7M4 5v6h6m2-4v5l3 2" /></symbol>
+      <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7zm10-3h.01" /></symbol>
     </svg>
     <header class="site-header shell">
-      <a class="brand" href="#top"><svg class="icon"><use href="#i-barbell" /></svg><span>健身计划</span></a>
-      <nav aria-label="工具"><a href="#history" id="historyLink">历史记录</a><button type="button" id="printButton">打印</button></nav>
+      <a class="brand" href="#top"><span class="brand-mark"><svg class="icon"><use href="#i-barbell" /></svg></span><span>健身计划</span></a>
+      <nav aria-label="工具"><a href="#history" id="historyLink"><svg class="icon"><use href="#i-history" /></svg>历史记录</a><button type="button" id="printButton"><svg class="icon"><use href="#i-print" /></svg>打印</button></nav>
     </header>
     <main class="shell" id="top">
       <section id="schedule" aria-labelledby="schedule-title">
         <div class="calendar-heading">
-          <div><h1 id="schedule-title">16 天训练日历</h1><p id="calendarRange"></p></div>
+          <div><h1 id="schedule-title">16 天训练日历</h1><p class="calendar-range"><svg class="icon"><use href="#i-calendar" /></svg><span id="calendarRange"></span></p></div>
           <button type="button" class="primary-button" id="openWorkout"><svg class="icon"><use href="#i-plus" /></svg>记录训练</button>
         </div>
-        <div class="calendar-meta"><span id="progressText"></span><div class="calendar-legend"><span><i class="legend-dot completed"></i>已完成</span><span><i class="legend-dot upcoming"></i>下一次</span></div></div>
+        <div class="calendar-meta"><div class="calendar-progress"><span id="progressText"></span><span class="progress-track" aria-hidden="true"><i id="progressFill"></i></span></div><div class="calendar-legend"><span><i class="legend-dot completed"></i>已完成</span><span><i class="legend-dot upcoming"></i>下一次</span></div></div>
         <div class="calendar-board">
-          <div class="calendar-columns" aria-hidden="true"><span>胸</span><span>背</span><span>腿</span></div>
           <div class="calendar-grid" id="planCalendar" aria-label="16天训练计划"></div>
         </div>
       </section>

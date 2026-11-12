@@ -106,19 +106,21 @@
       const classes = [d.type, complete ? "completed" : "", isUpcoming ? "upcoming" : "", incomplete ? "incomplete" : ""].filter(Boolean).join(" ");
       const status = complete ? "已完成" : incomplete ? "未完成" : paused ? "已暂停" : isUpcoming ? "下一次" : "";
       const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date(`${date}T12:00:00`).getDay()];
+      const kind = d.type === "chest" ? d.benchDayName : d.type === "back" ? "背日" : d.legVariant === "A" ? "深蹲日" : "单腿日";
+      const load = weight ? `实重 ${weight}` : Number.isFinite(d.referenceWeight) ? `参考 ${d.referenceWeight} kg` : parts.note;
       return `<button type="button" class="calendar-cell ${classes}" data-day="${d.day}" aria-haspopup="dialog" aria-label="第${d.day}天，${esc(parts.focus)}，${esc(parts.main)} ${parts.dose}${status ? `，${status}` : ""}">
-        <span class="cell-date"><span class="cell-number">${String(d.day).padStart(2, "0")}</span><time datetime="${date}">${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))} ${weekday}</time></span>
-        ${d.type !== "rest" ? `<span class="cell-kind">${esc(parts.focus)}</span>` : ""}
+        <span class="cell-top"><span class="cell-date"><span class="cell-number">${String(d.day).padStart(2, "0")}</span><time datetime="${date}"><span>${date.slice(5).replace("-", "/")}</span><small>${weekday}</small></time></span><span class="cell-kind">${esc(kind)}</span></span>
         <strong class="cell-main">${esc(parts.main)}</strong>
-        ${parts.dose ? `<span class="cell-dose"><span>${parts.dose}</span>${Number.isFinite(d.referenceWeight) ? `<em>参考 ${d.referenceWeight} kg</em>` : parts.note ? `<em>${esc(parts.note)}</em>` : ""}</span>` : ""}
+        <span class="cell-dose"><span>${parts.dose}</span>${load ? `<em>${esc(load)}</em>` : ""}</span>
         ${parts.auxiliary.length ? `<span class="cell-aux">${parts.auxiliary.map(([name, dose]) => `<span class="cell-aux-row"><span>${esc(name)}</span><span>${dose}</span></span>`).join("")}</span>` : ""}
-        <span class="cell-foot"><span class="cell-status">${complete ? '<svg class="icon"><use href="#i-check" /></svg>' : ""}${status}</span>${weight ? `<span class="cell-actual">实重 ${esc(weight)}</span>` : ""}</span>
+        ${status ? `<span class="cell-foot"><span class="cell-status">${complete ? '<svg class="icon"><use href="#i-check" /></svg>' : ""}${status}</span></span>` : ""}
       </button>`;
     }).join("");
   }
   function renderProgress() {
     const all = days(), total = all.filter((d) => d.type !== "rest").length;
     $("#progressText").textContent = `已完成 ${count()} / ${total}`;
+    $("#progressFill").style.width = `${Math.min(100, count() / total * 100)}%`;
     $("#calendarRange").textContent = `${displayDate(all[0].date)} — ${displayDate(all.at(-1).date)}`;
   }
   function historyRow(r) {

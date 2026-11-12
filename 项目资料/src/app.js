@@ -100,7 +100,7 @@
   }
   function renderSchedule() {
     const upcoming = next();
-    $("#planCalendar").innerHTML = days().map((d) => {
+    $("#planCalendar").innerHTML = days().filter((d) => d.type !== "rest").map((d) => {
       const r = state.records[d.day], parts = planParts(d), weight = actualWeightText(r), date = r?.date || d.date;
       const complete = r?.result === "done", incomplete = r?.result === "incomplete", paused = !r && state.attempts.some((a) => a.day === d.day), isUpcoming = upcoming?.day === d.day;
       const classes = [d.type, complete ? "completed" : "", isUpcoming ? "upcoming" : "", incomplete ? "incomplete" : ""].filter(Boolean).join(" ");

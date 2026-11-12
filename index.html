@@ -26,7 +26,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 ::selection { background: #d6e9de; }
 .svg-library { position: absolute; width: 0; height: 0; overflow: hidden; }
 .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
-.shell { width: min(1160px, calc(100% - 80px)); margin-inline: auto; }
+.shell { width: min(1040px, calc(100% - 80px)); margin-inline: auto; }
 .site-header { display: flex; align-items: center; justify-content: space-between; height: 88px; border-bottom: 1px solid var(--line); }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 650; text-decoration: none; }
 .brand .icon { color: var(--green); width: 23px; height: 23px; }
@@ -47,16 +47,15 @@ h1 { font-size: 28px; letter-spacing: -.025em; font-weight: 650; line-height: 1.
 .legend-dot.completed { background: #b2d5bc; }
 .legend-dot.upcoming { background: #bad1e3; }
 .calendar-board { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--line); box-shadow: 0 8px 30px #2d4b3d04; }
-.calendar-columns { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; padding-bottom: 1px; color: #6a8079; text-align: center; font-size: 12px; letter-spacing: .15em; }
+.calendar-columns { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; padding-bottom: 1px; color: #6a8079; text-align: center; font-size: 12px; letter-spacing: .15em; }
 .calendar-columns span { padding: 11px; background: #f0f5f2; }
-.calendar-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; }
-.calendar-cell { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 282px; aspect-ratio: 1; padding: 19px 19px 15px; border: 0; border-radius: 0; background: #fff; color: var(--ink); text-align: left; transition: box-shadow .16s,background .16s; }
+.calendar-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; }
+.calendar-cell { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 282px; aspect-ratio: 1.2; padding: 19px 19px 15px; border: 0; border-radius: 0; background: #fff; color: var(--ink); text-align: left; transition: box-shadow .16s,background .16s; }
 .calendar-cell:hover { z-index: 1; box-shadow: inset 0 0 0 2px #b7cfc3; }
 .calendar-cell:focus-visible { z-index: 2; outline-offset: -3px; }
 .calendar-cell.completed { background: var(--mint); }
 .calendar-cell.upcoming { background: var(--blue); }
 .calendar-cell.incomplete { background: #fbf5e9; }
-.calendar-cell.rest { background: #f9fbf9; }
 .cell-date { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; margin-bottom: 17px; }
 .cell-number { font-size: 23px; line-height: 1; color: #84958c; font-weight: 450; font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
 .cell-date time { color: #7c8f86; font-size: 11px; white-space: nowrap; }
@@ -66,7 +65,6 @@ h1 { font-size: 28px; letter-spacing: -.025em; font-weight: 650; line-height: 1.
 .back .cell-kind::before { background: #abc5d0; }
 .legs .cell-kind { color: #899772; }
 .legs .cell-kind::before { background: #b5c49a; }
-.rest .cell-kind::before { background: #c1cbc4; }
 .cell-main { display: block; font-size: 16px; font-weight: 650; line-height: 1.4; letter-spacing: -.015em; }
 .cell-dose { display: flex; flex-wrap: wrap; gap: 3px 10px; color: #627b73; font-size: 12px; margin-top: 5px; font-variant-numeric: tabular-nums; }
 .cell-dose em { font-style: normal; color: #788d80; }
@@ -80,7 +78,6 @@ h1 { font-size: 28px; letter-spacing: -.025em; font-weight: 650; line-height: 1.
 .upcoming .cell-status { color: #7296ab; }
 .incomplete .cell-status { color: #a08c63; }
 .cell-actual { color: #719381; }
-.rest .cell-main { font-size: 23px; font-weight: 400; color: #a1b2a5; padding-top: 5px; }
 .history-panel { margin-top: 25px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .history-panel > summary { display: flex; justify-content: space-between; align-items: center; padding: 18px 1px; cursor: pointer; list-style: none; color: #667e72; font-size: 13px; }
 .history-panel > summary::-webkit-details-marker { display: none; }
@@ -148,11 +145,11 @@ input:disabled,select:disabled { background: #f3f7f3; color: #8c9d90; }
 .completed-note p { margin-top: 3px; }
 .mini-warning { background: #f8f1e3; color: #9b865f; }
 @media(max-width:1000px) { .shell { width: calc(100% - 48px); } .calendar-cell { min-height: 270px; aspect-ratio: auto; padding: 16px 14px 12px; } .cell-main { font-size: 14px; } .cell-aux-row { font-size: 11px; } .cell-aux-row > span:last-child { font-size: 10px; } .cell-dose { gap: 2px 7px; font-size: 11px; } }
-@media(max-width:760px) { .calendar-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .calendar-columns { display: none; } .calendar-cell { aspect-ratio: 1; min-height: 270px; padding: 19px; } .cell-main { font-size: 16px; } .cell-aux-row { font-size: 12px; } .cell-aux-row > span:last-child { font-size: 11px; } }
+@media(max-width:760px) { .calendar-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .calendar-columns { display: none; } .calendar-cell { aspect-ratio: 1.2; min-height: 270px; padding: 19px; } .cell-main { font-size: 16px; } .cell-aux-row { font-size: 12px; } .cell-aux-row > span:last-child { font-size: 11px; } }
 @media(max-width:480px) { .shell { width: calc(100% - 28px); } .site-header { height: 66px; } .brand { font-size: 15px; } .site-header nav { gap: 17px; font-size: 12px; } .calendar-heading { padding-top: 25px; gap: 8px; } h1 { font-size: 23px; } #calendarRange { font-size: 11px; margin-top: 5px; } #openWorkout { min-height: 38px; padding: 8px 11px; font-size: 12px; } #openWorkout .icon { display: none; } .calendar-meta { padding-top: 20px; font-size: 11px; } .calendar-legend { gap: 12px; } .calendar-board { border-radius: 10px; } .calendar-cell { min-height: 248px; aspect-ratio: auto; padding: 14px 12px 11px; } .cell-date { margin-bottom: 15px; gap: 4px; } .cell-number { font-size: 21px; } .cell-date time { font-size: 10px; } .cell-kind { font-size: 10px; } .cell-main { font-size: 14px; } .cell-dose { font-size: 11px; gap: 2px 6px; } .cell-aux { padding-top: 10px; margin-top: 10px; gap: 5px; } .cell-aux-row { font-size: 11px; gap: 3px; } .cell-aux-row > span:last-child { font-size: 10px; } .cell-foot { font-size: 10px; } .history-panel { margin-top: 18px; } .history-row { grid-template-columns: 60px minmax(0,1fr); font-size: 12px; } .history-result { display: none; } .workout-dialog { padding: 19px; } .record-fields { gap: 10px; } input,select { font-size: 16px; } .next-cycle-form { grid-template-columns: 1fr; } }
 @media(max-width:350px) { .calendar-cell { padding-inline: 10px; min-height: 256px; } .cell-date time { font-size: 9px; } .cell-number { font-size: 19px; } .cell-aux-row { font-size: 10px; } .cell-aux-row > span:last-child { font-size: 9px; } .cell-main { font-size: 13px; } .cell-dose { font-size: 10px; } h1 { font-size: 21px; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } .calendar-cell { transition: none; } }
-@media print { @page { size: A4 landscape; margin: 8mm; } body { background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; } .shell { width: 100%; } .site-header,.history-panel,.site-footer,.workout-dialog,.save-status,#openWorkout { display: none !important; } .calendar-heading { padding-top: 0; } h1 { font-size: 21px; } #calendarRange { font-size: 10px; } .calendar-meta { padding: 8px 0; font-size: 9px; } .calendar-grid { grid-template-columns: repeat(4,minmax(0,1fr)); } .calendar-columns { display: grid; font-size: 9px; } .calendar-columns span { padding: 4px; } .calendar-cell { aspect-ratio: auto; min-height: 0; height: 151px; padding: 8px 11px 6px; break-inside: avoid; } .cell-date { margin-bottom: 5px; } .cell-number { font-size: 17px; } .cell-date time,.cell-kind,.cell-foot { font-size: 8px; } .cell-kind { margin-bottom: 1px; } .cell-main { font-size: 11px; } .cell-dose { margin-top: 1px; font-size: 9px; } .cell-aux { margin-top: 5px; padding-top: 5px; gap: 1px; } .cell-aux-row { font-size: 9px; line-height: 1.25; } .cell-aux-row > span:last-child { font-size: 8px; } .cell-foot { padding-top: 3px; min-height: 12px; } .rest .cell-main { font-size: 18px; } }
+@media print { @page { size: A4 landscape; margin: 8mm; } body { background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; } .shell { width: 100%; } .site-header,.history-panel,.site-footer,.workout-dialog,.save-status,#openWorkout { display: none !important; } .calendar-heading { padding-top: 0; } h1 { font-size: 21px; } #calendarRange { font-size: 10px; } .calendar-meta { padding: 8px 0; font-size: 9px; } .calendar-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .calendar-columns { display: grid; font-size: 9px; } .calendar-columns span { padding: 4px; } .calendar-cell { aspect-ratio: auto; min-height: 0; height: 151px; padding: 8px 11px 6px; break-inside: avoid; } .cell-date { margin-bottom: 5px; } .cell-number { font-size: 17px; } .cell-date time,.cell-kind,.cell-foot { font-size: 8px; } .cell-kind { margin-bottom: 1px; } .cell-main { font-size: 11px; } .cell-dose { margin-top: 1px; font-size: 9px; } .cell-aux { margin-top: 5px; padding-top: 5px; gap: 1px; } .cell-aux-row { font-size: 9px; line-height: 1.25; } .cell-aux-row > span:last-child { font-size: 8px; } .cell-foot { padding-top: 3px; min-height: 12px; } }
 
 </style>
   </head>
@@ -175,7 +172,7 @@ input:disabled,select:disabled { background: #f3f7f3; color: #8c9d90; }
         </div>
         <div class="calendar-meta"><span id="progressText"></span><div class="calendar-legend"><span><i class="legend-dot completed"></i>已完成</span><span><i class="legend-dot upcoming"></i>下一次</span></div></div>
         <div class="calendar-board">
-          <div class="calendar-columns" aria-hidden="true"><span>胸</span><span>背</span><span>腿</span><span>休息</span></div>
+          <div class="calendar-columns" aria-hidden="true"><span>胸</span><span>背</span><span>腿</span></div>
           <div class="calendar-grid" id="planCalendar" aria-label="16天训练计划"></div>
         </div>
       </section>
@@ -197,7 +194,7 @@ input:disabled,select:disabled { background: #f3f7f3; color: #8c9d90; }
       <div class="dialog-heading"><h2 id="workout-title">训练记录</h2><button type="button" class="icon-button" id="closeWorkout" aria-label="关闭"><svg class="icon"><use href="#i-close" /></svg></button></div>
       <article id="sessionCard"></article>
     </dialog>
-    <footer class="site-footer shell"><span>胸 · 背 · 腿 · 休息</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCjE25aSp5LiA6L2u77yM6IO444CB6IOM44CB6IW/44CB5LyR5oGv77yM5q+PNOWkqeS4gOe7hOOAguaXpeWOhuavj+WkqeS4gOagvO+8jOeCueaXpeacn+iusOW9leiuree7g+OAggoK5reh57u/5Li65bey5a6M5oiQ77yM5reh6JOd5Li65LiL5LiA5qyh44CC6YeN6YeP5Li65Y+C6ICD77yM5a6e6YeN5Y2V54us6K6w5b2V44CCCgp8IOWNp+aOqOaXpSB8IOS4u+mhuSB8IOWPguiAgyB8IOS4gOe6p+i+heWKqSB8CnwtLS18LS0tfC0tLXwtLS18Cnwg5a656YeP5pelIHwg5b+r6YCf5Y2n5o6oIDXDlzggfCAxMjAga2cgfCDlrp7lipvmjqggMue7hCB8Cnwg5o6n5Yi25pelIHwg5YGc6aG/5Y2n5o6oIDXDlzUgfCAxMzUga2cgfCDoh6rph43oh4LlsYjkvLggMue7hCB8Cnwg6LWb5o6o5pelIHwg6LWb5o6oIDXDlzMgfCAxNTAga2cgfCDkv6/ljafmkpEgMue7hCB8Cnwg5YeP6L295pelIHwg5peg6IW/5Y2n5o6oIDXDlzggfCAxMDAga2cgfCDigJQgfAoK5YmN5LiJ5qyh5Y2n5o6o5ZCO77ya5LiJ5aS05Lu76YCJ44CB5ZOR6ZOD5byv5Li+5ZCEMsOXMTDigJMxNe+8m+W5s+adv+aUr+aSkeaIluWNt+iFuTLnu4TjgIIKCuiDjOaXpe+8muW8leS9k+WQkeS4ijPDlzXigJM477yM6auY5L2N5LiL5ouJ44CB5Zmo5qKw5YiS6Ii55ZCEMsOXOOKAkzEy44CCCgrohb/ml6XkuqTmm7/vvJrmt7HoubI1w5c177yM6YWN5ZOI5YWL5rex6LmyMsOXOOKAkzEy44CB6IW/5bGI5Ly45ZKM6IW/5byv5Li+5ZCEMsOXMTDigJMxNe+8m+S4i+S4gOasoeS4uuS/neWKoOWIqeS6muWIhuiFv+i5sjPDlzjigJMxMC/ohb/vvIzoh6rph43miJblk5Hpk4PotJ/ph43jgIIKCuiusOW9leS7heWtmOWcqOW9k+WJjea1j+iniOWZqOOAguWPr+WcqOKAnOWOhuWPsuiusOW9leKAneWvvOWHukNTVuaIluWkh+S7vUpTT07jgILpppbmnaHorrDlvZXkuLrljafmjqg1w5c444CBMTIwIGtn44CC5a6M5oiQ5pys6L2u5ZCO6Iez5bCR5LyR5oGvNeWkqe+8jOWGjeW8gOWQr+aWsOS4gOi9ruOAggo=" download="使用说明.md">使用说明</a></footer>
+    <footer class="site-footer shell"><span>胸 · 背 · 腿 · 休息</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCjE25aSp5LiA6L2u77yM6IO444CB6IOM44CB6IW/44CB5LyR5oGv77yM5q+PNOWkqeS4gOe7hOOAguaXpeWOhuS7heWxleekujEy5qyh6K6t57uD77yM54K55pel5pyf6K6w5b2V44CCCgrmt6Hnu7/kuLrlt7LlrozmiJDvvIzmt6Hok53kuLrkuIvkuIDmrKHjgILph43ph4/kuLrlj4LogIPvvIzlrp7ph43ljZXni6zorrDlvZXjgIIKCnwg5Y2n5o6o5pelIHwg5Li76aG5IHwg5Y+C6ICDIHwg5LiA57qn6L6F5YqpIHwKfC0tLXwtLS18LS0tfC0tLXwKfCDlrrnph4/ml6UgfCDlv6vpgJ/ljafmjqggNcOXOCB8IDEyMCBrZyB8IOWunuWKm+aOqCAy57uEIHwKfCDmjqfliLbml6UgfCDlgZzpob/ljafmjqggNcOXNSB8IDEzNSBrZyB8IOiHqumHjeiHguWxiOS8uCAy57uEIHwKfCDotZvmjqjml6UgfCDotZvmjqggNcOXMyB8IDE1MCBrZyB8IOS/r+WNp+aSkSAy57uEIHwKfCDlh4/ovb3ml6UgfCDml6Dohb/ljafmjqggNcOXOCB8IDEwMCBrZyB8IOKAlCB8CgrliY3kuInmrKHljafmjqjlkI7vvJrkuInlpLTku7vpgInjgIHlk5Hpk4PlvK/kuL7lkIQyw5cxMOKAkzE177yb5bmz5p2/5pSv5pKR5oiW5Y236IW5Mue7hOOAggoK6IOM5pel77ya5byV5L2T5ZCR5LiKM8OXNeKAkzjvvIzpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlkIQyw5c44oCTMTLjgIIKCuiFv+aXpeS6pOabv++8mua3sei5sjXDlzXvvIzphY3lk4jlhYvmt7HoubIyw5c44oCTMTLjgIHohb/lsYjkvLjlkozohb/lvK/kuL7lkIQyw5cxMOKAkzE177yb5LiL5LiA5qyh5Li65L+d5Yqg5Yip5Lqa5YiG6IW/6LmyM8OXOOKAkzEwL+iFv++8jOiHqumHjeaIluWTkemTg+i0n+mHjeOAggoK6K6w5b2V5LuF5a2Y5Zyo5b2T5YmN5rWP6KeI5Zmo44CC5Y+v5Zyo4oCc5Y6G5Y+y6K6w5b2V4oCd5a+85Ye6Q1NW5oiW5aSH5Lu9SlNPTuOAgummluadoeiusOW9leS4uuWNp+aOqDXDlzjjgIExMjAga2fjgILlrozmiJDmnKzova7lkI7oh7PlsJHkvJHmga815aSp77yM5YaN5byA5ZCv5paw5LiA6L2u44CCCg==" download="使用说明.md">使用说明</a></footer>
     <script>
 /* 16天一轮：胸、背、腿、休息重复；重量由训练者自行选择并记录。 */
 (function (root) {
@@ -378,7 +375,7 @@ input:disabled,select:disabled { background: #f3f7f3; color: #8c9d90; }
   }
   function renderSchedule() {
     const upcoming = next();
-    $("#planCalendar").innerHTML = days().map((d) => {
+    $("#planCalendar").innerHTML = days().filter((d) => d.type !== "rest").map((d) => {
       const r = state.records[d.day], parts = planParts(d), weight = actualWeightText(r), date = r?.date || d.date;
       const complete = r?.result === "done", incomplete = r?.result === "incomplete", paused = !r && state.attempts.some((a) => a.day === d.day), isUpcoming = upcoming?.day === d.day;
       const classes = [d.type, complete ? "completed" : "", isUpcoming ? "upcoming" : "", incomplete ? "incomplete" : ""].filter(Boolean).join(" ");

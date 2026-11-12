@@ -4,9 +4,9 @@
   const CYCLE_DAYS = 16;
   const BENCH = [
     { name: "容量日", sets: 5, reps: 8, referenceWeight: 120, style: "快速卧推", cue: "下放稳定，向上快速推起；不弹胸。" },
-    { name: "控制稳定日", sets: 5, reps: 5, referenceWeight: 135, style: "胸前停顿卧推", cue: "触胸停稳约1秒，不反弹，练启动力。" },
-    { name: "赛推专项日", sets: 5, reps: 3, referenceWeight: 150, style: "比赛式卧推", cue: "按比赛停顿，练腿驱动、陷胸承接和固定推起路线。" },
-    { name: "减载日", sets: 5, reps: 8, referenceWeight: 100, style: "无腿驱动卧推", cue: "双脚放松，不蹬腿；全程控制，轻松完成。" },
+    { name: "控制日", sets: 5, reps: 5, referenceWeight: 135, style: "停顿卧推", cue: "触胸停稳约1秒，不反弹，练启动力。" },
+    { name: "赛推日", sets: 5, reps: 3, referenceWeight: 150, style: "赛推", cue: "按比赛停顿，练腿驱动、陷胸承接和固定推起路线。" },
+    { name: "减载日", sets: 5, reps: 8, referenceWeight: 100, style: "无腿卧推", cue: "双脚放松，不蹬腿；全程控制，轻松完成。" },
   ];
   const TYPES = ["chest", "back", "legs", "rest"];
   const LABELS = { chest: "胸", back: "背", legs: "腿", rest: "休息" };

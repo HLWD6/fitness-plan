@@ -3,81 +3,56 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3f9f8" />
+    <meta name="theme-color" content="#f5f8f7" />
     <meta name="apple-mobile-web-app-title" content="健身计划" />
     <meta name="application-name" content="健身计划" />
     <meta property="og:title" content="健身计划" />
-    <meta name="description" content="简单清晰的胸、背、腿训练计划，记录每次训练的实际重量与表现。" />
+    <meta name="description" content="16天训练日历，清楚安排每天的动作、组次与重量。" />
     <title>健身计划</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <symbol id="i-barbell" viewBox="0 0 24 24"><path d="M2 9v6M5 6v12M19 6v12M22 9v6M5 12h14" /></symbol>
-      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" /></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></symbol>
-      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 10h18" /></symbol>
-      <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6" /></symbol>
-      <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 4h16v17H4zM8 9h8M8 13h8M8 17h5" /></symbol>
-      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2" /><rect x="14" y="3" width="7" height="7" rx="2" /><rect x="3" y="14" width="7" height="7" rx="2" /><rect x="14" y="14" width="7" height="7" rx="2" /></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
     </svg>
-    <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="#top" aria-label="健身计划首页">
-          <span class="brand-icon"><svg class="icon"><use href="#i-barbell" /></svg></span>
-          <span><strong>健身计划</strong><small>YOUR TRAINING SPACE</small></span>
-        </a>
-        <nav class="desktop-nav" aria-label="主导航">
-          <a href="#schedule">16天计划</a><a href="#workout">训练记录</a><a href="#history">历史</a>
-        </nav>
-        <span class="header-tag"><span class="status-dot"></span>胸 · 背 · 腿 · 休息</span>
-      </div>
+    <header class="site-header shell">
+      <a class="brand" href="#top"><svg class="icon"><use href="#i-barbell" /></svg><span>健身计划</span></a>
+      <nav aria-label="工具"><a href="#history" id="historyLink">历史记录</a><button type="button" id="printButton">打印</button></nav>
     </header>
-
     <main class="shell" id="top">
-      <section class="plan-section" id="schedule" aria-labelledby="schedule-title">
-        <div class="plan-heading">
-          <div><p class="eyebrow">PERSONAL TRAINING PLAN</p><h1 id="schedule-title">16 天训练计划</h1><p class="section-sub">胸、背、腿、休息，每四天一组。</p></div>
-          <div class="plan-progress" aria-label="训练进度">
-            <div><strong id="progressCount">1</strong><span id="progressDenominator">/ 12 次训练</span></div>
-            <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
-            <p id="progressText">下一次训练</p>
+      <section id="schedule" aria-labelledby="schedule-title">
+        <div class="calendar-heading">
+          <div><h1 id="schedule-title">16 天训练日历</h1><p id="calendarRange"></p></div>
+          <button type="button" class="primary-button" id="openWorkout"><svg class="icon"><use href="#i-plus" /></svg>记录训练</button>
+        </div>
+        <div class="calendar-meta"><span id="progressText"></span><div class="calendar-legend"><span><i class="legend-dot completed"></i>已完成</span><span><i class="legend-dot upcoming"></i>下一次</span></div></div>
+        <div class="calendar-board">
+          <div class="calendar-columns" aria-hidden="true"><span>胸</span><span>背</span><span>腿</span><span>休息</span></div>
+          <div class="calendar-grid" id="planCalendar" aria-label="16天训练计划"></div>
+        </div>
+      </section>
+      <details class="history-panel" id="history">
+        <summary>历史记录<span aria-hidden="true">＋</span></summary>
+        <div class="history-content">
+          <div class="history-actions"><button type="button" class="outline-button" id="exportCsv">导出 CSV</button><button type="button" class="outline-button" id="exportJson">备份记录</button></div>
+          <div id="historyList"></div><div class="legacy-note" id="legacyNote"></div>
+          <div class="reset-card" id="cycleFinish" hidden>
+            <h2>本轮结束</h2><p id="finishDescription"></p>
+            <form id="nextCycleForm" class="next-cycle-form"><label>下一轮开始日期<input id="nextStart" type="date" required /></label><button type="submit" class="primary-button">开启新一轮</button><p class="form-message" id="cycleStatus" role="status"></p></form>
           </div>
+          <p class="data-note">记录保存在当前浏览器，换设备前请备份。</p>
         </div>
-        <div class="plan-legend"><span><i class="legend-swatch completed"></i>已完成</span><span><i class="legend-swatch upcoming"></i>下一次训练</span><span class="plan-legend-hint">选择一天可记录训练</span></div>
-        <div class="plan-table-wrap">
-          <table class="plan-table" id="planTable" aria-label="16天训练计划表">
-            <thead><tr><th>天数 / 日期</th><th>训练日</th><th>主项</th><th>辅助与补充</th><th>状态</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <p class="plan-note">卧推参考：5×8 120 kg · 5×5 135 kg · 5×3 150 kg · 无腿驱动5×8约100 kg。参考值按状态调整，实重另行记录。</p>
-      </section>
-
-      <section class="section workout-section" id="workout" aria-labelledby="workout-title">
-        <div class="section-head"><div><p class="eyebrow">TRAINING LOG</p><h2 id="workout-title">训练详情与记录</h2><p class="section-sub">从计划表选择一天，查看完整动作并记录实际训练。</p></div></div>
-        <article class="session-card" id="sessionCard" aria-live="polite"></article>
-      </section>
-
-      <section class="section history-section" id="history" aria-labelledby="history-title">
-        <div class="section-head"><div><p class="eyebrow">04 / YOUR JOURNAL</p><h2 id="history-title">训练记录</h2><p class="section-sub">每一次训练，都留在这里。</p></div><div class="history-actions"><button type="button" class="outline-button" id="exportCsv">下载训练表</button><button type="button" class="outline-button" id="exportJson">导出全部记录</button></div></div>
-        <div class="history-card"><div id="historyList"></div><div class="legacy-note" id="legacyNote"></div></div>
-        <div class="reset-card" id="cycleFinish" hidden>
-          <div><p class="eyebrow">NEXT CHAPTER</p><h3>这一周期完成了</h3><p id="finishDescription"></p></div>
-          <form id="nextCycleForm" class="next-cycle-form">
-            <label>下一周期开始日期<input id="nextStart" type="date" required /></label>
-            <button type="submit" class="primary-button">保存并开启新周期</button><p class="form-message" id="cycleStatus" role="status"></p>
-          </form>
-        </div>
-        <p class="data-note">记录只保存在此浏览器。换设备前请导出备份；旧版本记录会保留在原处。</p>
-      </section>
+      </details>
+      <p class="save-status" id="saveStatus" role="status"></p>
     </main>
-    <footer class="site-footer"><div class="shell footer-inner"><span>健身计划 <small>TRAIN AT YOUR OWN PACE</small></span><div><a href="../docs/使用说明.md" download="使用说明.md">使用说明</a><a href="../docs/重建计划与研究依据.md" download="训练计划与依据.md">训练计划与依据</a><button type="button" id="printButton">打印计划</button></div></div></footer>
-    <nav class="mobile-nav" aria-label="手机导航">
-      <a href="#schedule"><svg class="icon"><use href="#i-calendar" /></svg><span>计划</span></a><a href="#workout"><svg class="icon"><use href="#i-barbell" /></svg><span>训练</span></a><a href="#history"><svg class="icon"><use href="#i-history" /></svg><span>历史</span></a>
-    </nav>
-    <script src="training.js"></script>
-    <script src="app.js"></script>
-    <script src="mobile.js"></script>
+    <dialog class="workout-dialog" id="workout" aria-labelledby="workout-title">
+      <div class="dialog-heading"><h2 id="workout-title">训练记录</h2><button type="button" class="icon-button" id="closeWorkout" aria-label="关闭"><svg class="icon"><use href="#i-close" /></svg></button></div>
+      <article id="sessionCard"></article>
+    </dialog>
+    <footer class="site-footer shell"><span>胸 · 背 · 腿 · 休息</span><a href="../docs/使用说明.md" download="使用说明.md">使用说明</a></footer>
+    <script src="training.js"></script><script src="app.js"></script><script src="mobile.js"></script>
   </body>
 </html>

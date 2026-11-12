@@ -1,8 +1,42 @@
 "use strict";
-const assert=require('node:assert/strict'),path=require('node:path'),{pathToFileURL}=require('node:url');
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'/tmp/fitness-plan-tools/node_modules/playwright');
-const root=path.resolve(__dirname,'../..'),url=pathToFileURL(path.join(root,'index.html')).href,examples=path.join(root,'项目资料/示例');
-(async()=>{const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true});
-for(const width of [320,390,680,768,1440]){const context=await b.newContext({viewport:{width,height:844},isMobile:width<=680,hasTouch:width<=680,acceptDownloads:true});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);assert.equal(await page.locator('.plan-row').count(),16);await page.locator('[data-day="13"]').click();assert.match(await page.locator('#sessionCard').innerText(),/参考约 100 kg/);assert.match(await page.locator('#sessionCard').innerText(),/无腿驱动卧推/);assert.deepEqual(errors,[]);await context.close();}
-const context=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});let p=await context.newPage();await p.goto(url);await p.screenshot({path:path.join(examples,'手机首页.png')});await p.locator('#workout').scrollIntoViewIfNeeded();await p.screenshot({path:path.join(examples,'手机训练.png')});const tablePage=await context.newPage();await tablePage.goto(url);await tablePage.addStyleTag({content:'.site-header{position:static!important}.mobile-nav{display:none!important}'});await tablePage.locator('#schedule').screenshot({path:path.join(examples,'手机计划表.png')});await context.close();
-const desktop=await b.newContext({viewport:{width:1440,height:1100},acceptDownloads:true});p=await desktop.newPage();await p.goto(url);await p.screenshot({path:path.join(examples,'界面预览.png')});await p.locator('#schedule').screenshot({path:path.join(examples,'完整计划表.png')});const promise=p.waitForEvent('download');await p.locator('#exportCsv').click();await (await promise).saveAs(path.join(examples,'训练记录.csv'));await p.emulateMedia({media:'print'});await p.pdf({path:path.join(examples,'16天训练计划.pdf'),format:'A4',landscape:true,printBackground:true});await desktop.close();await b.close();console.log('完整计划表、手机布局和训练记录示例已更新。');})().catch(e=>{console.error(e);process.exit(1)});
+const assert = require("node:assert/strict"), path = require("node:path"), { pathToFileURL } = require("node:url");
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/fitness-plan-tools/node_modules/playwright");
+const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(root, "index.html")).href, examples = path.join(root, "项目资料/示例");
+(async () => {
+  const browser = await chromium.launch({ executablePath: "/usr/bin/google-chrome", headless: true });
+  for (const width of [320, 390, 680, 768, 1440]) {
+    const context = await browser.newContext({ viewport: { width, height: 844 }, isMobile: width <= 680, hasTouch: width <= 680 });
+    const page = await context.newPage(), errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.goto(url);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    assert.equal(await page.locator(".calendar-cell").count(), 16);
+    const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.day));
+    assert.deepEqual(overflow, [], `日历内容溢出：${width}px`);
+    await page.locator('[data-day="13"]').click();
+    assert.match(await page.locator("#sessionCard").innerText(), /无腿卧推/);
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  let page = await mobile.newPage();
+  await page.goto(url);
+  await page.screenshot({ path: path.join(examples, "手机首页.png") });
+  await page.locator("#schedule").screenshot({ path: path.join(examples, "手机计划表.png") });
+  await page.locator("#openWorkout").click();
+  await page.screenshot({ path: path.join(examples, "手机训练.png") });
+  await mobile.close();
+  const desktop = await browser.newContext({ viewport: { width: 1440, height: 1100 }, acceptDownloads: true });
+  page = await desktop.newPage();
+  await page.goto(url);
+  await page.screenshot({ path: path.join(examples, "界面预览.png") });
+  await page.locator("#schedule").screenshot({ path: path.join(examples, "完整计划表.png") });
+  await page.locator("#historyLink").click();
+  const download = page.waitForEvent("download");
+  await page.locator("#exportCsv").click();
+  await (await download).saveAs(path.join(examples, "训练记录.csv"));
+  await page.emulateMedia({ media: "print" });
+  await page.pdf({ path: path.join(examples, "16天训练计划.pdf"), format: "A4", landscape: true, printBackground: true });
+  await browser.close();
+  console.log("五种屏幕宽度无溢出；日历和手机预览已更新。");
+})().catch(error => { console.error(error); process.exit(1); });

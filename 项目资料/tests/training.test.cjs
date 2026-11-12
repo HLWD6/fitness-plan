@@ -5,7 +5,7 @@ test("四种卧推依次轮换并提供参考重量，不覆盖实际重量记�
  const p=P.plan(config()), b=p.filter(x=>x.type==='chest');
  assert.equal(p.length,16); assert.deepEqual(b.map(x=>x.day),[1,5,9,13]);
  assert.deepEqual(b.map(x=>`${x.sets}×${x.reps}`),['5×8','5×5','5×3','5×8']);
- assert.deepEqual(b.map(x=>x.benchDayName),['容量日','控制稳定日','赛推专项日','减载日']);
+ assert.deepEqual(b.map(x=>x.benchDayName),['容量日','控制日','赛推日','减载日']);
  assert.deepEqual(b.map(x=>x.referenceWeight),[120,135,150,100]); assert.ok(b.every(x=>x.weight===null));
 });
 test("胸背腿休四天节奏，腿日交替深蹲和保加利亚分腿蹲",()=>{

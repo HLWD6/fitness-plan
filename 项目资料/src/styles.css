@@ -63,12 +63,12 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .cell-main { display: block; font-size: var(--font-title); font-weight: 600; line-height: 1.35; }
 .cell-exercise { margin-top: 5px; color: #506e7e; font-size: var(--font-exercise); line-height: 1.6; }
 .cell-dose { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 11px; font-size: var(--font-dose); font-variant-numeric: tabular-nums; line-height: 1.5; }
-.cell-dose > span { display: inline-block; padding: 3px 8px; border: 1px solid #e0e9ee; border-radius: 6px; background: #f4f7f9; color: #456575; font-weight: 600; }
+.cell-dose > span { display: inline-block; max-width: 100%; padding: 3px 8px; border: 1px solid #e0e9ee; border-radius: 6px; background: #f4f7f9; color: #456575; font-weight: 600; }
 .cell-dose em { font-style: normal; font-size: 16px; color: #4d707b; }
 .completed .cell-dose > span { border-color: #d6e8dc; background: #ffffffa0; color: #48785d; }
 .cell-aux { display: grid; gap: 8px; padding-top: 17px; margin-top: 17px; border-top: 1px solid #e2ebf0; }
 .cell-aux-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; gap: 12px; color: #465f6f; font-size: var(--font-aux); line-height: 1.6; }
-.cell-aux-row > span:last-child { color: #5e7483; white-space: nowrap; font-size: var(--font-small); font-variant-numeric: tabular-nums; }
+.cell-aux-row > span:last-child { color: #5e7483; white-space: normal; text-align: right; font-size: var(--font-small); font-variant-numeric: tabular-nums; }
 .cell-aux-row small { display: block; margin-top: 3px; color: #607b88; font-size: var(--font-note); line-height: 1.5; }
 .completed .cell-aux { border-color: #d5e7dc; }
 .cell-foot { display: flex; align-items: center; margin-top: auto; padding-top: 19px; color: #49775b; font-size: var(--font-note); line-height: 1.6; }
@@ -96,8 +96,15 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .record-day-number { font-size: 18px; line-height: 1.35; font-variant-numeric: tabular-nums; }
 .record-day.has-records { background: #eef7f1; border-color: #c7dece; color: #3f6c50; }
 .record-day.selected { border-color: #477d89; box-shadow: inset 0 0 0 1px #477d89; background: #edf5fa; }
-.day-templates { display: grid; gap: 3px; color: #507563; font-size: 14px; line-height: 1.45; }
-.day-indicator { display: none; }
+.month-scroll { overflow-x: auto; max-width: 100%; min-width: 0; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: #aac3cf #f1f6f8; }
+.month-content { min-width: 560px; }
+.day-records { display: grid; gap: 9px; width: 100%; }
+.day-record { display: grid; gap: 4px; color: #456b55; font-size: 14px; line-height: 1.5; }
+.day-record + .day-record { border-top: 1px solid #d3e3d9; padding-top: 8px; }
+.day-record strong { font-size: 15px; font-weight: 600; }
+.day-record-weights { color: #42685b; font-size: 14px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.calendar-scroll-hint { display: none; margin-top: 10px; color: var(--muted); font-size: 14px; }
+.history-main-lift { color: #496a7b; }
 .history-day-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 24px; }
 .history-day-heading h3 { font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .history-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
@@ -152,8 +159,10 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .calendar-grid { grid-template-columns: minmax(0,1fr); gap: 16px; }
   .other-templates { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
   .calendar-cell { padding: 20px; }
+  .other-templates .cell-aux-row { grid-template-columns: minmax(0,1fr); gap: 2px; }
+  .other-templates .cell-aux-row > span:last-child { text-align: left; }
 }
-@media(max-width:680px) { .other-templates { grid-template-columns: minmax(0,1fr); } }
+@media(max-width:680px) { .other-templates { grid-template-columns: minmax(0,1fr); } .calendar-scroll-hint { display: block; } }
 @media(max-width:600px) {
   :root { --font-body: 16px; --font-title: 25px; --font-exercise: 17px; --font-dose: 16px; --font-aux: 15px; --font-small: 15px; --font-note: 14px; }
   .shell { width: calc(100% - 28px); }
@@ -180,7 +189,8 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .cell-dose > span { padding: 2px 6px; }
   .cell-dose em { font-size: 15px; }
   .cell-aux { margin-top: 15px; padding-top: 15px; gap: 8px; }
-  .cell-aux-row { gap: 8px; }
+  .cell-aux-row { grid-template-columns: minmax(0,1fr); gap: 2px; }
+  .cell-aux-row > span:last-child { text-align: left; }
   .cell-foot { padding-top: 16px; }
   .other-templates .calendar-cell { padding: 20px; }
   .history-panel { margin-top: 22px; }
@@ -192,12 +202,9 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .month-toolbar .icon-button { width: 40px; height: 40px; }
   .record-weekdays { gap: 4px; font-size: 14px; }
   .record-calendar-grid { gap: 4px; }
-  .record-day,.calendar-blank { min-height: 60px; padding: 7px 2px; border-radius: 7px; }
-  .record-day { align-items: center; gap: 7px; }
+  .record-day,.calendar-blank { min-height: 60px; padding: 8px; border-radius: 7px; }
+  .record-day { align-items: flex-start; gap: 7px; }
   .record-day-number { font-size: 18px; }
-  .day-templates { display: none; }
-  .day-indicator { display: grid; place-items: center; width: 7px; height: 7px; border-radius: 50%; background: #75a589; font-size: 14px; line-height: 1; }
-  .day-indicator:not(:empty) { width: 20px; height: 20px; color: #fff; }
   .history-day-heading { margin-top: 22px; gap: 10px; }
   .history-day-heading h3 { font-size: 18px; }
   .history-day-heading .outline-button { font-size: 14px; padding-inline: 10px; }
@@ -251,7 +258,9 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .cell-dose > span { padding: 1px 4px; }
   .cell-dose em { font-size: 12px; }
   .cell-aux { margin-top: 8px; padding-top: 8px; gap: 2px; }
+  .cell-aux-row { grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
   .cell-aux-row,.cell-aux-row > span:last-child { font-size: 12px; line-height: 1.25; }
+  .cell-aux-row > span:last-child { text-align: right; }
   .cell-aux-row small { margin-top: 1px; font-size: 11px; line-height: 1.3; }
   .cell-foot { font-size: 10px; padding-top: 6px; line-height: 1.25; }
   .cell-status .icon { width: 11px; height: 11px; }

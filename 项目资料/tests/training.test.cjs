@@ -4,15 +4,15 @@ test("七种模板不绑定日期，参考重量不限制实重", () => {
   const all = P.templates(), bench = all.filter(x => x.type === "chest");
   assert.equal(all.length, 7); assert.equal(all.some(x => x.type === "rest" || "date" in x), false);
   assert.equal(P.template("rest"), null);
-  assert.deepEqual(bench.map(x => P.dose(x.main)), ["5×8", "5×5", "5×3", "5×8"]);
+  assert.deepEqual(bench.map(x => P.dose(x.main)), ["5组8次", "5组5次", "5组3次", "5组8次"]);
   assert.deepEqual(bench.map(x => x.main.referenceWeight), [120, 135, 150, 100]);
 });
 test("辅助组次和弯举参考准确", () => {
   assert.equal(P.template("bench-b").accessories[0].sets, 4);
-  for (const t of P.templates().slice(0, 3)) {
+  for (const t of P.templates().slice(0, 4)) {
     assert.equal(t.accessories.find(x => x.id === "triceps").sets, 5);
     const curl = t.accessories.find(x => x.id === "curl");
-    assert.equal(P.dose(curl), "1×12"); assert.equal(curl.referenceWeight, 22.5);
+    assert.equal(P.dose(curl), "1组12次"); assert.equal(curl.referenceWeight, 22.5);
   }
 });
 test("仅保留训练记录，11月11日深蹲五组120kg", () => {
@@ -54,4 +54,25 @@ test("月历按周一对齐，兼容跨年、闰年和空白格", () => {
   assert.equal(november.filter(Boolean).length, 30);
   assert.equal(P.monthSlots("2028-02").filter(Boolean).at(-1), "2028-02-29");
   assert.equal(P.shiftMonth("2026-12", 1), "2027-01"); assert.equal(P.shiftMonth("2026-01", -1), "2025-12");
+});
+
+test("固定三头动作、所有组数下限和统一处方格式", () => {
+  const bench = P.templates().slice(0, 4);
+  assert.deepEqual(bench.map(t => t.accessories.find(a => a.id === "triceps").name), ["直杆臂屈伸", "绳索臂屈伸", "直杆臂屈伸", "JM卧推"]);
+  for (const t of P.templates()) for (const exercise of [t.main, ...t.accessories]) {
+    assert.ok(exercise.id === "curl" ? exercise.sets === 1 : exercise.sets >= 4);
+  }
+  assert.equal(P.prescription(P.template("bench-a").accessories[0]), "4组10次40kg");
+  assert.equal(P.prescription(P.template("bench-b").accessories[0]), "4组12次自重");
+  assert.equal(P.prescription(P.template("bench-c").accessories[0]), "4组25次自重");
+  assert.equal(P.prescription(P.template("squat-a").main), "5组5次120kg");
+  assert.equal(P.prescription(bench[0].accessories.find(a => a.id === "curl")), "1组12次22.5kg");
+});
+test("日历显示实际主项重量，空值不替换为参考重量", () => {
+  const records = P.seedRecords(), squat = records.find(r => r.templateId === "squat-a"), bench = records.find(r => r.templateId === "bench-b");
+  assert.equal(P.actualWeightSummary(squat), "5组5次120kg");
+  assert.equal(P.actualWeightSummary(bench), "5组5次120 / 125 / 125 / 130 / 130kg");
+  assert.equal(P.actualWeightSummary({ ...bench, setWeights: Array(5).fill(null) }), "重量未填");
+  assert.equal(P.actualWeightSummary({ ...bench, setWeights: [120, null, 125, null, null] }), "5组5次120 / — / 125 / — / —kg");
+  assert.equal(P.actualWeightSummary({ ...bench, setWeights: Array(5).fill(null), legacyWeight: 120 }), "120kg");
 });

@@ -18,6 +18,8 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
     await page.keyboard.press("Escape");
     await page.locator("#historyLink").click();
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    assert.equal(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').isVisible(), true);
+    assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
     await page.locator('[data-log-date="2026-11-11"]').click();
     assert.match(await page.locator("#historyList").innerText(), /120 \/ 120 \/ 120 \/ 120 \/ 120/);
     assert.deepEqual(errors, []);

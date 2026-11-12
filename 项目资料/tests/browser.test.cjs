@@ -12,6 +12,11 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await page.locator("#historyLink").click();
   assert.match(await page.locator(".month-toolbar strong").innerText(), /2026年11月/);
   assert.equal(await page.locator(".record-day").count(), 30);
+  assert.match(await page.locator('[data-log-date="2026-11-11"] .day-record-weights').innerText(), /5组5次120kg/);
+  assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
+  assert.doesNotMatch(await page.locator("#planCalendar").innerText(), /三头任选|2组|3组|参考 22.5/);
+  assert.match(await page.locator('[data-template="bench-a"]').innerText(), /4组10次40kg/);
+  assert.match(await page.locator('[data-template="bench-d"]').innerText(), /JM卧推/);
   const empty = page.locator('[data-log-date="2026-11-10"]');
   assert.equal(await empty.evaluate(e => e.classList.contains("has-records")), false);
   await empty.click(); assert.equal(await page.locator("#historyList").innerText(), "");
@@ -29,10 +34,11 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await page.reload(); await page.locator("#historyLink").click();
   let state = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
   assert.equal(state.records.find(r => r.templateId === "squat-a").setWeights[0], 122.5);
+  assert.match(await page.locator('[data-log-date="2026-11-11"] .day-record-weights').innerText(), /122.5 \/ 120 \/ 120 \/ 120 \/ 120kg/);
   await page.locator('[data-log-date="2026-11-12"]').click();
   await page.locator('[data-record="confirmed-2026-11-12-bench-b"]').click();
   assert.deepEqual(await page.locator(".weight-grid input").evaluateAll(inputs => inputs.map(x => Number(x.value))), [120, 125, 125, 130, 130]);
-  assert.match(await page.locator(".record-main").innerText(), /参考 135 kg/);
+  assert.match(await page.locator(".record-main").innerText(), /5组5次135kg/);
   await page.keyboard.press("Escape");
   await page.locator('[data-template="bench-a"]').click();
   await page.locator('[name="date"]').fill("2026-11-06");
@@ -51,6 +57,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   state = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
   assert.ok(state.records.find(x => x.date === "2026-11-05").setWeights.every(x => x === null));
   const count = state.records.length;
+  assert.equal(await page.locator('[data-log-date="2026-11-05"] .day-record-weights').innerText(), "重量未填");
   await page.locator('[data-log-date="2026-11-12"]').click();
   await page.locator('[data-record="confirmed-2026-11-12-bench-b"]').click();
   await page.locator('[name="weight-3"]').fill("132.5"); await page.locator("#logForm button[type=submit]").click();
@@ -61,6 +68,9 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   const exported = page.waitForEvent("download"); await page.locator("#exportCsv").click();
   const download = await exported, fs = require("node:fs"), csv = fs.readFileSync(await download.path(), "utf8");
   assert.match(csv, /"120","125","125","132.5","130"/); assert.doesNotMatch(csv, /休息/);
+  await page.locator('[data-log-date="2026-11-12"]').click();
+  assert.match(await page.locator("#historyList .history-main-lift").innerText(), /停顿卧推/);
+  assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /132.5/);
   assert.deepEqual(errors, []); await context.close();
 
   const previous = { version: 16, records: [...P.seedRecords().map(r => r.templateId === "squat-a" ? { ...r, setWeights: Array(5).fill(null) } : r), { id: "rest", date: "2026-11-10", templateId: "rest", setWeights: [] }] };

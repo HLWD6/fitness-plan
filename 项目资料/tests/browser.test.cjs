@@ -7,7 +7,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   const context = await browser.newContext({ acceptDownloads: true }), page = await context.newPage(), errors = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto(url);
-  assert.equal(await page.locator(".calendar-cell").count(), 7);
+  assert.equal(await page.locator(".calendar-cell").count(), 8);
   assert.equal(await page.locator("#planCalendar time").count(), 0);
   await page.locator("#historyLink").click();
   assert.match(await page.locator(".month-toolbar strong").innerText(), /2026年11月/);
@@ -68,10 +68,40 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   const exported = page.waitForEvent("download"); await page.locator("#exportCsv").click();
   const download = await exported, fs = require("node:fs"), csv = fs.readFileSync(await download.path(), "utf8");
   assert.match(csv, /"120","125","125","132.5","130"/); assert.doesNotMatch(csv, /休息/);
+  assert.match(csv, /"2026-11-13","背部","高位下拉","5组10次","50","50","50","50","50","50"/);
+  assert.match(csv, /"2026-11-13","背部","器械划船","5组10次","50","50","50","50","50","50"/);
   await page.locator('[data-log-date="2026-11-12"]').click();
   assert.match(await page.locator("#historyList .history-main-lift").innerText(), /停顿卧推/);
   assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /132.5/);
+  await page.locator('[data-log-date="2026-11-13"]').click();
+  assert.match(await page.locator("#historyList").innerText(), /高位下拉[\s\S]*50kg[\s\S]*器械划船[\s\S]*50kg/);
+  await page.locator('[data-record="confirmed-2026-11-13-back"]').click();
+  assert.equal(await page.locator(".weight-grid input").count(), 10);
+  await page.locator('[name="extra-row-0"]').fill("55");
+  await page.locator('[data-copy="row"]').click();
+  assert.equal(await page.locator('[name="weight-0"]').inputValue(), "50");
+  await page.locator("#logForm button[type=submit]").click();
+  await page.reload();
+  state = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
+  const back = state.records.filter(r => r.date === "2026-11-13" && r.templateId === "back");
+  assert.equal(back.length, 1); assert.deepEqual(back[0].additionalWeights.row, Array(5).fill(55));
+  assert.deepEqual(back[0].setWeights, Array(5).fill(50));
+  await page.locator('[data-template="deadlift"]').click();
+  assert.match(await page.locator(".record-main").innerText(), /5组5次130kg/);
+  await page.keyboard.press("Escape");
   assert.deepEqual(errors, []); await context.close();
+
+  const v17 = await browser.newContext(), v17page = await v17.newPage();
+  await v17page.goto(url);
+  await v17page.evaluate(key => localStorage.setItem(key, JSON.stringify({ version: 17, records: [{ id: "custom", date: "2026-11-08", templateId: "bench-a", setWeights: [99, 99, 99, 99, 99], result: "done" }], draft: null })), KEY);
+  await v17page.reload();
+  const upgraded = await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
+  assert.equal(upgraded.records.length, 2);
+  assert.deepEqual(upgraded.records[0].setWeights, [99, 99, 99, 99, 99]);
+  assert.deepEqual(upgraded.records[1].additionalWeights.row, Array(5).fill(50));
+  await v17page.reload();
+  assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.length, KEY), 2);
+  await v17.close();
 
   const previous = { version: 16, records: [...P.seedRecords().map(r => r.templateId === "squat-a" ? { ...r, setWeights: Array(5).fill(null) } : r), { id: "rest", date: "2026-11-10", templateId: "rest", setWeights: [] }] };
   previous.draft = { recordId: null, templateId: "bench-c", date: "2026-11-10", setWeights: [140, 140, 140, 140, 140], result: "done", notes: "草稿", triceps: "" };
@@ -79,7 +109,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await migrated.addInitScript(x => localStorage.setItem("fitness-templates-v16", JSON.stringify(x)), previous);
   const old = await migrated.newPage(); await old.goto(url);
   const result = await old.evaluate(key => ({ current: JSON.parse(localStorage.getItem(key)), old: JSON.parse(localStorage.getItem("fitness-templates-v16")) }), KEY);
-  assert.deepEqual(result.old, previous); assert.deepEqual(result.current.draft, previous.draft); assert.equal(result.current.records.length, 3);
+  assert.deepEqual(result.old, previous); assert.deepEqual(result.current.draft, previous.draft); assert.equal(result.current.records.length, 4);
   assert.deepEqual(result.current.records.find(r => r.templateId === "squat-a").setWeights, [120, 120, 120, 120, 120]);
   assert.ok(result.current.records.every(r => r.templateId !== "rest"));
   await migrated.close(); await browser.close();

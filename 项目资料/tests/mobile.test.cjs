@@ -10,7 +10,7 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(url);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
-    assert.equal(await page.locator(".calendar-cell").count(), 7);
+    assert.equal(await page.locator(".calendar-cell").count(), 8);
     const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.template));
     assert.deepEqual(overflow, [], `模板内容溢出：${width}px`);
     await page.locator('[data-template="bench-d"]').click();

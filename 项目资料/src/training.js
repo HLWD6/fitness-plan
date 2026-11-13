@@ -13,9 +13,10 @@
     { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "12", note: "自重" }, ...arms("绳索臂屈伸")] },
     { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 4, reps: "25", note: "自重" }, ...arms("直杆臂屈伸")] },
     { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 100 }, accessories: arms("JM卧推") },
-    { id: "back", title: "背部", kind: "引体日", type: "back", main: { name: "引体向上", sets: 4, reps: "8–12", showWeight: false }, accessories: [{ id: "pulldown", name: "高位下拉", sets: 4, reps: "8–12" }, { id: "row", name: "器械划船", sets: 4, reps: "8–12" }] },
+    { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: { id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, accessories: [{ id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }] },
     { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
     { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [{ id: "hip-abduction", name: "髋外展", sets: 4, reps: "8–12" }, { id: "hip-adduction", name: "髋内收", sets: 4, reps: "8–12" }] },
+    { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 130 }, accessories: [], optionalNote: "可加练手臂" },
   ]);
   function templates() { return [...TEMPLATES]; }
   function template(id) { return TEMPLATES.find(x => x.id === id) || null; }
@@ -34,7 +35,9 @@
     if (exercise?.showWeight === false) return dose(exercise);
     return `${dose(exercise)}${Number.isFinite(exercise?.referenceWeight) ? `${exercise.referenceWeight}kg` : exercise?.note || "重量自定"}`;
   }
+  function recordedExercises(t) { return t ? [t.main, ...(t.equalExercises ? t.accessories : [])] : []; }
   function actualWeightSummary(record) {
+    if (record.snapshot?.equalExercises) return recordedExercises(record.snapshot).map((exercise, i) => `${exercise.name} ${actualWeightSummary({ setWeights: i ? record.additionalWeights?.[exercise.id] : record.setWeights, snapshot: { main: exercise } })}`).join("；");
     const weights = record.setWeights || [], main = record.snapshot?.main || template(record.templateId)?.main;
     if (weights.some(x => Number.isFinite(x))) {
       const complete = weights.every(x => Number.isFinite(x));
@@ -44,16 +47,20 @@
     return Number.isFinite(record.legacyWeight) ? `${record.legacyWeight}kg` : "重量未填";
   }
   function seedRecords() {
-    return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]]].map(([date, templateId, weights]) => ({
-      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", snapshot: clone(template(templateId)),
+    return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]], ["2026-11-13", "back", [50, 50, 50, 50, 50]]].map(([date, templateId, weights]) => ({
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(template(templateId)),
     }));
   }
   function validateRecord(record, latestDate = today()) {
-    const t = template(record?.templateId);
-    if (!t) return "请选择训练模板。";
+    const current = template(record?.templateId), t = record?.snapshot || current;
+    if (!current) return "请选择训练模板。";
     if (!validDate(record.date) || record.date > latestDate) return "请选择今天或之前的有效日期。";
     if (!Array.isArray(record.setWeights) || record.setWeights.length !== (t.main?.sets || 0)) return "请检查各组重量。";
     if (record.setWeights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "每组重量需在0–500 kg之间。";
+    for (const exercise of t.equalExercises ? t.accessories : []) {
+      const weights = record.additionalWeights?.[exercise.id];
+      if (!Array.isArray(weights) || weights.length !== exercise.sets || weights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "请检查各动作的逐组重量。";
+    }
     if (!["done", "incomplete", "paused"].includes(record.result)) return "请选择完成情况。";
     return "";
   }
@@ -68,6 +75,7 @@
     const templateId = p.type === "chest" ? ["bench-a", "bench-b", "bench-c", "bench-d"][Number(p.micro) - 1] : p.type === "back" ? "back" : p.type === "legs" ? p.legVariant === "B" ? "squat-b" : "squat-a" : "rest";
     const t = template(templateId); if (!t) return null;
     const snapshot = clone(t);
+    if (templateId === "back") { delete snapshot.equalExercises; snapshot.main = { name: "引体向上", sets: 4, reps: "8–12" }; snapshot.accessories = []; }
     if (snapshot.main && Number.isInteger(p.sets) && p.sets > 0) snapshot.main.sets = p.sets;
     if (snapshot.main && p.reps) snapshot.main.reps = String(p.reps);
     if (snapshot.main && p.style) snapshot.main.name = p.style;
@@ -89,7 +97,7 @@
     const d = new Date(`${month}-01T12:00:00`); d.setMonth(d.getMonth() + delta);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }
-  const api = { templates, template, dose, prescription, actualWeightSummary, today, validDate, seedRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
+  const api = { templates, template, dose, prescription, recordedExercises, actualWeightSummary, today, validDate, seedRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.TrainingPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);

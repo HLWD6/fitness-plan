@@ -10,6 +10,10 @@
   const previous = read("fitness-templates-v16") || read("fitness-cycle-v15"), saved = read(KEY);
   let state = saved?.version === 17 && Array.isArray(saved.records) ? saved : { version: 17, records: P.initialRecords(previous), draft: previous?.version === 16 && P.template(previous.draft?.templateId) ? clone(previous.draft) : null };
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch { return false; } }
+  if (!state.backRecordNov13) {
+    if (!state.records.some(r => r.date === "2026-11-13" && r.templateId === "back")) state.records.push(P.seedRecords().find(r => r.templateId === "back"));
+    state.backRecordNov13 = true; persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);
@@ -21,9 +25,10 @@
     const category = t.type === "chest" ? "卧推" : t.type === "back" ? "背部" : "腿部";
     return `<button type="button" class="calendar-cell ${t.type} ${count ? "completed" : ""}" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
       <span class="cell-top"><span class="cell-category"><svg class="icon"><use href="#i-barbell" /></svg>${category}</span><span class="cell-kind">${t.kind}</span></span>
-      <strong class="cell-main">${t.title}</strong><span class="cell-exercise">${t.main.name}</span>
+      <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-exercise">${t.main.name}</span>
       <span class="cell-dose"><span>${P.prescription(t.main)}</span></span>
-      ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}
+      ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}` }
+      ${t.optionalNote ? `<span class="cell-aux">${esc(t.optionalNote)}</span>` : ""}
       ${count ? `<span class="cell-foot"><span class="cell-status"><svg class="icon"><use href="#i-check" /></svg>已练 ${count} 次</span></span>` : ""}
     </button>`;
   }
@@ -35,6 +40,7 @@
   }
   function historyRow(record) {
     const t = record.snapshot || P.template(record.templateId), weight = weightText(record);
+    if (t?.equalExercises) return `<div class="history-row"><div><strong>${esc(t.title)}</strong>${P.recordedExercises(t).map((a, i) => `<p class="history-main-lift">${esc(a.name)}</p><p class="history-weights">${esc(P.actualWeightSummary({ snapshot: { main: a }, setWeights: i ? record.additionalWeights?.[a.id] : record.setWeights }))}</p>`).join("")}${record.notes ? `<p>${esc(record.notes)}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}">编辑</button></div>`;
     const result = record.result === "paused" ? "暂停" : record.result === "incomplete" ? "未完成" : "";
     return `<div class="history-row"><div><strong>${esc(t?.title || "训练")}${t?.main ? `<span class="history-dose">${P.dose(t.main)}</span>` : ""}</strong>${t?.main ? `<p class="history-main-lift">${esc(t.main.name)}</p>` : ""}<p class="history-weights">主项实重：${esc(weight || "未填写")}</p>${result || record.notes ? `<p>${esc([result, record.notes].filter(Boolean).join(" · "))}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}" aria-label="编辑${dateText(record.date)}${esc(t?.title)}">编辑</button></div>`;
   }
@@ -52,7 +58,7 @@
     $("#historyCalendar").innerHTML = `<div class="month-toolbar"><button type="button" class="icon-button" data-month-step="-1" aria-label="上一月"><svg class="icon"><use href="#i-chevron" /></svg></button><strong>${monthText}</strong><button type="button" class="icon-button next-month" data-month-step="1" aria-label="下一月"><svg class="icon"><use href="#i-chevron" /></svg></button></div><div class="month-scroll" tabindex="0" aria-label="训练月历，可横向滚动"><div class="month-content"><div class="record-weekdays">${["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map(x => `<span>${x}</span>`).join("")}</div><div class="record-calendar-grid">${P.monthSlots(displayedMonth).map(date => {
       if (!date) return '<span class="calendar-blank" aria-hidden="true"></span>';
       const records = state.records.filter(r => r.date === date), names = records.map(r => (r.snapshot || P.template(r.templateId)).title);
-      const summary = records.map(r => `${(r.snapshot || P.template(r.templateId)).title}，主项实重${P.actualWeightSummary(r)}`).join("；");
+      const summary = records.map(r => `${(r.snapshot || P.template(r.templateId)).title}，${P.actualWeightSummary(r)}`).join("；");
       return `<button type="button" class="record-day ${records.length ? "has-records" : ""} ${date === selectedDate ? "selected" : ""}" data-log-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${dateText(date)}${summary ? `，${esc(summary)}` : ""}"><span class="record-day-number">${Number(date.slice(8))}</span>${records.length ? `<span class="day-records">${records.map(r => `<span class="day-record"><strong>${esc((r.snapshot || P.template(r.templateId)).title)}</strong><span class="day-record-weights">${esc(P.actualWeightSummary(r))}</span></span>`).join("")}</span>` : ""}</button>`;
     }).join("")}</div></div></div><p class="calendar-scroll-hint">左右滑动查看整周</p>`;
     $("#historyCalendar .month-scroll").scrollLeft = oldScroll;
@@ -69,14 +75,14 @@
     else if (cell.left < box.left) viewport.scrollLeft -= box.left - cell.left;
   }
   $("#history").addEventListener("toggle", () => { if ($("#history").open) ensureSelectedDayVisible(); });
-  function freshDraft(templateId = "") { return { recordId: null, templateId, date: P.today(), setWeights: Array(P.template(templateId)?.main?.sets || 0).fill(null), result: "done", notes: "", triceps: P.template(templateId)?.accessories.find(a => a.id === "triceps")?.name || "" }; }
+  function freshDraft(templateId = "") { return { recordId: null, templateId, date: P.today(), setWeights: Array(P.template(templateId)?.main?.sets || 0).fill(null), additionalWeights: Object.fromEntries((P.template(templateId)?.equalExercises ? P.template(templateId).accessories : []).map(a => [a.id, Array(a.sets).fill(null)])), result: "done", notes: "", triceps: P.template(templateId)?.accessories.find(a => a.id === "triceps")?.name || "" }; }
   function fromRecord(r) { return { ...clone(r), recordId: r.id }; }
   function renderSession() {
-    const t = P.template(draft.templateId), main = t?.main;
+    const t = draft.snapshot || P.template(draft.templateId);
     $("#workout-title").textContent = draft.recordId ? "编辑记录" : "记录训练";
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
-      ${main ? `<div class="record-main"><div><strong>${main.name}</strong></div><small>模板：${P.prescription(main)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" id="copyWeight">同首组</button><div class="weight-grid">${Array.from({ length: main.sets }, (_, i) => `<label>第${i + 1}组<input name="weight-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(draft.setWeights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>` : ""}
+      ${P.recordedExercises(t).map((exercise, index) => { const prefix = index ? `extra-${exercise.id}` : "weight", weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights; return `<div class="record-main"><div><strong>${exercise.name}</strong></div><small>模板：${P.prescription(exercise)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button><div class="weight-grid">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>`; }).join("")}
       ${t && t.type !== "rest" ? `<details class="record-extra"><summary>补充记录</summary><div class="record-fields"><label>完成情况<select name="result">${[["done", "完成"], ["incomplete", "未完成"], ["paused", "暂停"]].map(([value, label]) => `<option value="${value}" ${draft.result === value ? "selected" : ""}>${label}</option>`).join("")}</select></label><label class="full-field">备注<input name="notes" type="text" maxlength="300" placeholder="动作感受、辅助重量等" value="${esc(draft.notes)}" /></label></div></details>` : ""}
       <div class="record-actions"><button type="submit" class="primary-button">保存记录</button></div><p class="form-message" id="recordStatus" role="status"></p>
     </form>`;
@@ -90,8 +96,9 @@
     $("#workout").scrollTop = 0;
   }
   function collectDraft() {
-    const form = new FormData($("#logForm")), t = P.template(form.get("templateId"));
-    return { ...draft, templateId: String(form.get("templateId") || ""), date: String(form.get("date") || ""), result: String(form.get("result") || "done"), notes: String(form.get("notes") ?? draft.notes ?? "").trim(), triceps: draft.triceps || t?.accessories.find(a => a.id === "triceps")?.name || "", setWeights: Array.from({ length: t?.main?.sets || 0 }, (_, i) => { const raw = String(form.get(`weight-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); }) };
+    const form = new FormData($("#logForm")), t = draft.snapshot && draft.templateId === form.get("templateId") ? draft.snapshot : P.template(form.get("templateId"));
+    const additionalWeights = Object.fromEntries((t?.equalExercises ? t.accessories : []).map(a => [a.id, Array.from({ length: a.sets }, (_, i) => { const raw = String(form.get(`extra-${a.id}-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); })]));
+    return { ...draft, additionalWeights, templateId: String(form.get("templateId") || ""), date: String(form.get("date") || ""), result: String(form.get("result") || "done"), notes: String(form.get("notes") ?? draft.notes ?? "").trim(), triceps: draft.triceps || t?.accessories.find(a => a.id === "triceps")?.name || "", setWeights: Array.from({ length: t?.main?.sets || 0 }, (_, i) => { const raw = String(form.get(`weight-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); }) };
   }
   $("#planCalendar").addEventListener("click", e => { const card = e.target.closest("[data-template]"); if (card) openWorkout(card.dataset.template); });
   $("#openWorkout").addEventListener("click", () => openWorkout());
@@ -113,21 +120,22 @@
   $("#sessionCard").addEventListener("change", e => {
     if (!["templateId", "date"].includes(e.target.name)) return;
     draft = collectDraft();
-    if (e.target.name === "templateId") { draft.setWeights = Array(P.template(draft.templateId)?.main?.sets || 0).fill(null); delete draft.legacyWeight; draft.triceps = P.template(draft.templateId)?.accessories.find(a => a.id === "triceps")?.name || ""; }
+    if (e.target.name === "templateId") { delete draft.snapshot; draft.setWeights = Array(P.template(draft.templateId)?.main?.sets || 0).fill(null); draft.additionalWeights = freshDraft(draft.templateId).additionalWeights; delete draft.legacyWeight; draft.triceps = P.template(draft.templateId)?.accessories.find(a => a.id === "triceps")?.name || ""; }
     const existing = state.records.find(r => r.date === draft.date && r.templateId === draft.templateId);
     if (existing) draft = fromRecord(existing);
     state.draft = clone(draft); persist(); renderSession();
   });
   $("#sessionCard").addEventListener("click", e => {
-    if (e.target.id !== "copyWeight") return;
-    const first = $("#logForm [name='weight-0']");
+    const button = e.target.closest("[data-copy]"); if (!button) return;
+    const id = button.dataset.copy;
+    const first = $(`#logForm [name="${id === "main" ? "weight" : `extra-${id}`}-0"]`);
     if (!first?.value) { $("#recordStatus").textContent = "先填写第1组重量。"; return; }
-    draft = collectDraft(); draft.setWeights.fill(Number(first.value)); state.draft = clone(draft); persist(); renderSession();
+    draft = collectDraft(); (id === "main" ? draft.setWeights : draft.additionalWeights[id]).fill(Number(first.value)); state.draft = clone(draft); persist(); renderSession();
   });
   $("#sessionCard").addEventListener("submit", e => {
     if (e.target.id !== "logForm") return;
     e.preventDefault(); draft = collectDraft();
-    const record = { id: draft.recordId || crypto.randomUUID(), date: draft.date, templateId: draft.templateId, result: draft.result, setWeights: draft.setWeights, notes: draft.notes.slice(0, 300), triceps: draft.triceps, snapshot: clone(P.template(draft.templateId)) };
+    const record = { id: draft.recordId || crypto.randomUUID(), date: draft.date, templateId: draft.templateId, result: draft.result, setWeights: draft.setWeights, additionalWeights: draft.additionalWeights, notes: draft.notes.slice(0, 300), triceps: draft.triceps, snapshot: clone(draft.snapshot || P.template(draft.templateId)) };
     if (Number.isFinite(draft.legacyWeight)) record.legacyWeight = draft.legacyWeight;
     const error = P.validateRecord(record);
     if (error) { $("#recordStatus").textContent = error; return; }
@@ -141,8 +149,8 @@
   $("#exportJson").addEventListener("click", () => { const legacy = {}; OLD_KEYS.forEach(key => { try { const raw = localStorage.getItem(key); if (raw !== null) { try { legacy[key] = JSON.parse(raw); } catch { legacy[key] = { raw }; } } } catch {} }); download(JSON.stringify({ exportedAt: new Date().toISOString(), current: state, templates: P.templates(), legacy }, null, 2), "application/json", "健身计划-全部记录.json"); });
   $("#exportCsv").addEventListener("click", () => {
     const cell = value => { let text = String(value ?? ""); if (/^\s*[=+\-@\t\r]/.test(text)) text = `'${text}`; return `"${text.replace(/"/g, '""')}"`; };
-    const rows = [["日期", "模板", "主项", "参考组次", "参考重量kg", "第1组kg", "第2组kg", "第3组kg", "第4组kg", "第5组kg", "旧版实重kg", "完成情况", "三头动作", "备注"]];
-    [...state.records].sort((a, b) => a.date.localeCompare(b.date)).forEach(r => { const t = r.snapshot || P.template(r.templateId); rows.push([r.date, t?.title, t?.main?.name, P.dose(t?.main), t?.main?.referenceWeight ?? "", ...Array.from({ length: 5 }, (_, i) => r.setWeights?.[i] ?? ""), r.legacyWeight ?? "", r.result === "done" ? "完成" : r.result === "paused" ? "暂停" : "未完成", r.triceps || "", r.notes || ""]); });
+    const rows = [["日期", "模板", "动作", "参考组次", "参考重量kg", "第1组kg", "第2组kg", "第3组kg", "第4组kg", "第5组kg", "旧版实重kg", "完成情况", "三头动作", "备注"]];
+    [...state.records].sort((a, b) => a.date.localeCompare(b.date)).forEach(r => { const t = r.snapshot || P.template(r.templateId); P.recordedExercises(t).forEach((a, index) => rows.push([r.date, t?.title, a.name, P.dose(a), a.referenceWeight ?? "", ...Array.from({ length: 5 }, (_, i) => (index ? r.additionalWeights?.[a.id] : r.setWeights)?.[i] ?? ""), r.legacyWeight ?? "", r.result === "done" ? "完成" : r.result === "paused" ? "暂停" : "未完成", r.triceps || "", r.notes || ""])); });
     download("\ufeff" + rows.map(row => row.map(cell).join(",")).join("\r\n"), "text/csv;charset=utf-8", "健身计划-训练记录.csv");
   });
   $("#printButton").addEventListener("click", () => window.print());

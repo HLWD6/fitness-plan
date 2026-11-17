@@ -6,7 +6,7 @@ test("八种模板不绑定日期，参考重量不限制实重", () => {
   assert.equal(P.template("rest"), null);
   assert.deepEqual(bench.map(x => P.dose(x.main)), ["5组8次", "5组5次", "5组3次", "5组8次"]);
   assert.deepEqual(bench.map(x => x.main.referenceWeight), [120, 135, 150, 100]);
-  assert.equal(P.prescription(P.template("back").main), "5组10次50kg");
+  assert.equal(P.prescription(P.template("back").main), "5组8次自重");
   assert.deepEqual(P.template("squat-a").accessories.map(x => x.name), ["腿屈伸", "腿弯举"]);
   assert.deepEqual(P.template("squat-b").accessories.map(x => x.name), ["髋外展", "髋内收"]);
 });
@@ -89,6 +89,6 @@ test("背部双动作实重独立验证，不以参考值补全", () => {
   assert.equal(record.setWeights[0], 50);
   record.additionalWeights.row[0] = -1;
   assert.match(P.validateRecord(record, "2026-11-13"), /逐组重量/);
-  assert.equal(P.prescription(P.template("deadlift").main), "5组5次130kg");
-  assert.deepEqual(P.template("deadlift").accessories, []);
+  assert.equal(P.prescription(P.template("deadlift").main), "5组5次100kg");
+  assert.deepEqual(P.template("deadlift").accessories.map(a => a.name), ["高位下拉", "器械划船"]);
 });

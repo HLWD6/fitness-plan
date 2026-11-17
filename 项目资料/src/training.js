@@ -8,15 +8,17 @@
     { id: "curl", name: "哑铃弯举", sets: 1, reps: "12", referenceWeight: 22.5 },
     { id: "core", name: "平板支撑 / 卷腹", sets: 4, reps: "", note: "自重" },
   ];
+  const backExercises = () => [{ id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, { id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }];
+  const oldBack = { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: backExercises()[0], accessories: backExercises().slice(1) };
   const TEMPLATES = freeze([
     { id: "bench-a", title: "卧推 A", kind: "容量日", type: "chest", main: { name: "快速卧推", sets: 5, reps: "8", referenceWeight: 120 }, accessories: [{ id: "press", name: "实力推", sets: 4, reps: "10", referenceWeight: 40 }, ...arms("直杆臂屈伸")] },
     { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "12", note: "自重" }, ...arms("绳索臂屈伸")] },
     { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 4, reps: "25", note: "自重" }, ...arms("直杆臂屈伸")] },
     { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 100 }, accessories: arms("JM卧推") },
-    { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: { id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, accessories: [{ id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }] },
-    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
+    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: [] },
+    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
     { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [{ id: "hip-abduction", name: "髋外展", sets: 4, reps: "8–12" }, { id: "hip-adduction", name: "髋内收", sets: 4, reps: "8–12" }] },
-    { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 130 }, accessories: [], optionalNote: "可加练手臂" },
+    { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 100 }, accessories: backExercises() },
   ]);
   function templates() { return [...TEMPLATES]; }
   function template(id) { return TEMPLATES.find(x => x.id === id) || null; }
@@ -48,7 +50,12 @@
   }
   function seedRecords() {
     return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]], ["2026-11-13", "back", [50, 50, 50, 50, 50]]].map(([date, templateId, weights]) => ({
-      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(template(templateId)),
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(templateId === "back" ? oldBack : template(templateId)),
+    }));
+  }
+  function recentRecords() {
+    return [["2026-11-15", "bench-c", Array(5).fill(null)], ["2026-11-16", "deadlift", Array(5).fill(100)]].map(([date, templateId, setWeights]) => ({
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights, notes: "", triceps: "", snapshot: clone(template(templateId)),
     }));
   }
   function validateRecord(record, latestDate = today()) {
@@ -97,7 +104,7 @@
     const d = new Date(`${month}-01T12:00:00`); d.setMonth(d.getMonth() + delta);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }
-  const api = { templates, template, dose, prescription, recordedExercises, actualWeightSummary, today, validDate, seedRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
+  const api = { templates, template, dose, prescription, recordedExercises, actualWeightSummary, today, validDate, seedRecords, recentRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.TrainingPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);

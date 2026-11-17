@@ -87,7 +87,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.equal(back.length, 1); assert.deepEqual(back[0].additionalWeights.row, Array(5).fill(55));
   assert.deepEqual(back[0].setWeights, Array(5).fill(50));
   await page.locator('[data-template="deadlift"]').click();
-  assert.match(await page.locator(".record-main").innerText(), /5组5次130kg/);
+  assert.match(await page.locator(".record-main").innerText(), /5组5次100kg/);
   await page.keyboard.press("Escape");
   assert.deepEqual(errors, []); await context.close();
 
@@ -96,11 +96,11 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await v17page.evaluate(key => localStorage.setItem(key, JSON.stringify({ version: 17, records: [{ id: "custom", date: "2026-11-08", templateId: "bench-a", setWeights: [99, 99, 99, 99, 99], result: "done" }], draft: null })), KEY);
   await v17page.reload();
   const upgraded = await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
-  assert.equal(upgraded.records.length, 2);
+  assert.equal(upgraded.records.length, 4);
   assert.deepEqual(upgraded.records[0].setWeights, [99, 99, 99, 99, 99]);
   assert.deepEqual(upgraded.records[1].additionalWeights.row, Array(5).fill(50));
   await v17page.reload();
-  assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.length, KEY), 2);
+  assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.length, KEY), 4);
   await v17.close();
 
   const previous = { version: 16, records: [...P.seedRecords().map(r => r.templateId === "squat-a" ? { ...r, setWeights: Array(5).fill(null) } : r), { id: "rest", date: "2026-11-10", templateId: "rest", setWeights: [] }] };
@@ -109,7 +109,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await migrated.addInitScript(x => localStorage.setItem("fitness-templates-v16", JSON.stringify(x)), previous);
   const old = await migrated.newPage(); await old.goto(url);
   const result = await old.evaluate(key => ({ current: JSON.parse(localStorage.getItem(key)), old: JSON.parse(localStorage.getItem("fitness-templates-v16")) }), KEY);
-  assert.deepEqual(result.old, previous); assert.deepEqual(result.current.draft, previous.draft); assert.equal(result.current.records.length, 4);
+  assert.deepEqual(result.old, previous); assert.deepEqual(result.current.draft, previous.draft); assert.equal(result.current.records.length, 6);
   assert.deepEqual(result.current.records.find(r => r.templateId === "squat-a").setWeights, [120, 120, 120, 120, 120]);
   assert.ok(result.current.records.every(r => r.templateId !== "rest"));
   await migrated.close(); await browser.close();

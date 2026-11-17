@@ -60,8 +60,10 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .calendar-legend > span { display: inline-flex; align-items: center; gap: 8px; }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: #82ad91; box-shadow: 0 0 0 3px #ffffff80; }
 .calendar-board { min-width: 0; }
-.calendar-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
-.bench-templates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; min-width: 0; }
+.calendar-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; }
+.bench-templates { display: grid; grid-template-columns: repeat(4,minmax(240px,1fr)); gap: 18px; min-width: 0; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
+.bench-templates .calendar-cell { scroll-snap-align: start; }
+.equipment-note { display: block; margin-top: 14px; color: #456f65; font-size: 14px; line-height: 1.6; }
 .other-templates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; min-width: 0; }
 .calendar-cell { display: flex; flex-direction: column; min-width: 0; padding: 23px; border: 1px solid #dce6ed; border-radius: 17px; background: #fff; color: var(--ink); text-align: left; box-shadow: var(--shadow); transition: border-color .18s,box-shadow .18s,transform .18s; }
 .calendar-cell > * { flex-shrink: 0; }
@@ -240,7 +242,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .site-header nav .icon { display: none; }
   h1 { font-size: 29px; }
   #openWorkout .icon { display: none; }
-  .bench-templates { grid-template-columns: minmax(0,1fr); }
+  .bench-templates { grid-template-columns: repeat(4,minmax(240px,1fr)); }
   .calendar-cell { padding: 20px; }
   .record-fields { grid-template-columns: minmax(0,1fr); }
   .workout-dialog { padding-inline: 18px; }
@@ -328,7 +330,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
       <div class="dialog-heading"><h2 id="workout-title">训练记录</h2><button type="button" class="icon-button" id="closeWorkout" aria-label="关闭"><svg class="icon"><use href="#i-close" /></svg></button></div>
       <article id="sessionCard"></article>
     </dialog>
-    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuWPr+W3puWPs+a7keWKqOaciOWOhuOAggoK5qih5p2/57uf5LiA5oyJ4oCc57uE5pWw77yL5qyh5pWw77yL6YeN6YeP4oCd5Lmm5YaZ77yb5pyJ5pWw5YC855qE6YeN6YeP6YO95piv5Y+C6ICD77yM6Ieq6YeN5aaC5a6e5qCH5rOo77yM5pyq57uZ6YeN6YeP55qE5Yqo5L2c6Ieq6KGM6YCJ5oup44CCCgp8IOaooeadvyB8IOS4u+mhuSB8IOS4gOe6p+i+heWKqSB8IOS4ieWktCB8CnwtLS18LS0tfC0tLXwtLS18Cnwg5Y2n5o6oQSB8IOW/q+mAn+WNp+aOqDXnu4Q45qyhMTIwa2cgfCDlrp7lipvmjqg057uEMTDmrKE0MGtnIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEIgfCDlgZzpob/ljafmjqg157uENeasoTEzNWtnIHwg6Ieq6YeN6IeC5bGI5Ly4NOe7hDEy5qyhIHwg57uz57Si6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEMgfCDotZvmjqg157uEM+asoTE1MGtnIHwg5L+v5Y2n5pKRNOe7hDI15qyhIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEQgfCDml6Dohb/ljafmjqg157uEOOasoTEwMGtnIHwg4oCUIHwgSk3ljafmjqg157uEMTDigJMxNeasoSB8Cgrlm5vnp43ljafmjqjlj6bliqDlk5Hpk4PlvK/kuL4x57uEMTLmrKEyMi41a2fjgIHlubPmnb/mlK/mkpHmiJbljbfohbk057uE44CCCgrog4zpg6jvvJrpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlkIQ157uEMTDmrKE1MGtn77yM5LiN5YiG5Li76L6F6aG544CCCgrmt7HoubJB77ya5p2g6ZOD5rex6LmyNee7hDXmrKExMjBrZ++8jOiFv+WxiOS8uOOAgeiFv+W8r+S4vuWQhDTnu4QxMOKAkzE15qyh44CCCgrmt7HoubJC77ya5L+d5Yqg5Yip5Lqa5YiG6IW/6Lmy5q+P6IW/NOe7hDjigJMxMOasoe+8jOiHqumHjeaIluWTkemTg++8m+S+neasoeWKoOmri+WkluWxleOAgemri+WGheaUtuWQhDTnu4Q44oCTMTLmrKHvvIzph43ph4/oh6rlrprjgIIKCumZpOWTkemTg+W8r+S4vjHnu4TlpJbvvIzlhbbku5bliqjkvZzoh7PlsJE057uE44CC5qC45b+D5qyh5pWw5oiW5pe26ZW/6Ieq6KGM5a6J5o6S44CCCgrlt7LorrDlhaUyMDI25bm0MTHmnIg55pel5Y2n5o6oQeOAgTEx5pel5rex6LmyQeOAgTEy5pel5Y2n5o6oQuOAgjEx5pel5rex6Lmy5LqU57uEMTIwa2fvvJsxMuaXpeWNp+aOqELkuLoxMjDjgIExMjXjgIExMjXjgIExMzDjgIExMzBrZ+OAguWunumHjeS4jeS8muimhuebluaooeadv+WPguiAg+WAvO+8jOacquWhq+mHjemHj+S4jeS8muWll+eUqOWPguiAg+WAvOOAggoK6K6w5b2V5L+d5a2Y5Zyo5b2T5YmN5rWP6KeI5Zmo77yM5Y+v57yW6L6R44CB5a+85Ye6Q1NW5oiW5aSH5Lu9SlNPTuOAggoK56Gs5ouJ77yaNee7hDXmrKExMzBrZ++8jOaXoOWbuuWumui+heWKqemhue+8jOWPr+WKoOe7g+aJi+iHguOAggoKMjAyNuW5tDEx5pyIMTPml6Xog4zpg6jvvJrpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlnYfkuLo157uEMTDmrKE1MGtn44CC6IOM6YOo5Lik5Liq5Yqo5L2c5YiG5Yir6K6w5b2V6YCQ57uE5a6e6YeN77yM5pel5Y6G44CB5piO57uG5Y+K5a+85Ye65Z2H5L+d55WZ5Lik5Liq5Yqo5L2c44CCCg==" download="使用说明.md">使用说明</a></footer>
+    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuWPr+W3puWPs+a7keWKqOaciOWOhuOAggoK5qih5p2/57uf5LiA5oyJ4oCc57uE5pWw77yL5qyh5pWw77yL6YeN6YeP4oCd5Lmm5YaZ77yb5pyJ5pWw5YC855qE6YeN6YeP6YO95piv5Y+C6ICD77yM6Ieq6YeN5aaC5a6e5qCH5rOo77yM5pyq57uZ6YeN6YeP55qE5Yqo5L2c6Ieq6KGM6YCJ5oup44CCCgp8IOaooeadvyB8IOS4u+mhuSB8IOS4gOe6p+i+heWKqSB8IOS4ieWktCB8CnwtLS18LS0tfC0tLXwtLS18Cnwg5Y2n5o6oQSB8IOW/q+mAn+WNp+aOqDXnu4Q45qyhMTIwa2cgfCDlrp7lipvmjqg057uEMTDmrKE0MGtnIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEIgfCDlgZzpob/ljafmjqg157uENeasoTEzNWtnIHwg6Ieq6YeN6IeC5bGI5Ly4NOe7hDEy5qyhIHwg57uz57Si6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEMgfCDotZvmjqg157uEM+asoTE1MGtnIHwg5L+v5Y2n5pKRNOe7hDI15qyhIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEQgfCDml6Dohb/ljafmjqg157uEOOasoTEwMGtnIHwg4oCUIHwgSk3ljafmjqg157uEMTDigJMxNeasoSB8Cgrlm5vnp43ljafmjqjlj6bliqDlk5Hpk4PlvK/kuL4x57uEMTLmrKEyMi41a2fjgIHlubPmnb/mlK/mkpHmiJbljbfohbk057uE44CCCgrlvJXkvZPml6XvvJroh6rph43lvJXkvZPlkJHkuIo157uEOOasoeOAggoK5rex6LmyQe+8muaXoOijhe+8jOS4jeS9v+eUqOiFsOW4puOAgeWKqeWKm+W4puetieijheWkh+OAguadoOmTg+a3sei5sjXnu4Q15qyhMTIwa2fvvIzohb/lsYjkvLjjgIHohb/lvK/kuL7lkIQ057uEMTDigJMxNeasoeOAggoK5rex6LmyQu+8muS/neWKoOWIqeS6muWIhuiFv+i5suavj+iFvzTnu4Q44oCTMTDmrKHvvIzoh6rph43miJblk5Hpk4PvvJvkvp3mrKHliqDpq4vlpJblsZXjgIHpq4vlhoXmlLblkIQ057uEOOKAkzEy5qyh77yM6YeN6YeP6Ieq5a6a44CCCgrpmaTlk5Hpk4PlvK/kuL4x57uE5aSW77yM5YW25LuW5Yqo5L2c6Iez5bCRNOe7hOOAguaguOW/g+asoeaVsOaIluaXtumVv+iHquihjOWuieaOkuOAggoK5bey6K6w5YWlMjAyNuW5tDEx5pyIOeaXpeWNp+aOqEHjgIExMeaXpea3sei5skHjgIExMuaXpeWNp+aOqELjgIIxMeaXpea3sei5suS6lOe7hDEyMGtn77ybMTLml6XljafmjqhC5Li6MTIw44CBMTI144CBMTI144CBMTMw44CBMTMwa2fjgILlrp7ph43kuI3kvJropobnm5bmqKHmnb/lj4LogIPlgLzvvIzmnKrloavph43ph4/kuI3kvJrlpZfnlKjlj4LogIPlgLzjgIIKCuiusOW9leS/neWtmOWcqOW9k+WJjea1j+iniOWZqO+8jOWPr+e8lui+keOAgeWvvOWHukNTVuaIluWkh+S7vUpTT07jgIIKCuehrOaLie+8muaXoOijhe+8jOS4jeS9v+eUqOiFsOW4puOAgeWKqeWKm+W4puetieijheWkh+OAguS4u+mhuTXnu4Q15qyhMTAwa2fvvJvovoXliqnkuLrpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlkIQ157uEMTDmrKE1MGtn44CCCgoyMDI25bm0MTHmnIgxM+aXpeiDjOmDqO+8mumrmOS9jeS4i+aLieOAgeWZqOaisOWIkuiIueWdh+S4ujXnu4QxMOasoTUwa2fjgILog4zpg6jkuKTkuKrliqjkvZzliIbliKvorrDlvZXpgJDnu4Tlrp7ph43vvIzml6XljobjgIHmmI7nu4blj4rlr7zlh7rlnYfkv53nlZnkuKTkuKrliqjkvZzjgIIKCjIwMjblubQxMeaciDE15pel5bey6K6w5Y2n5o6oQ++8jOWunumHjeacquaPkOS+m++8jOeVmeepuu+8mzEx5pyIMTbml6Xnoazmi4nkupTnu4TlnYforrAxMDBrZ+OAgummluasoeabtOaWsOaXtuS7heihpeWFpee8uuWkseiusOW9le+8jOS4jeimhuebluW3suacieWQjOaXpeWQjOaooeadv+iusOW9leOAguWNp+aOqEHigJNE5L+d5oyB5ZCM5o6S77yM56qE5bGP5Y+v5qiq5ZCR5ruR5Yqo44CCCg==" download="使用说明.md">使用说明</a></footer>
     <script>
 /* 固定训练模板。参考重量不参与实际训练记录的计算。 */
 (function (root) {
@@ -340,15 +342,17 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     { id: "curl", name: "哑铃弯举", sets: 1, reps: "12", referenceWeight: 22.5 },
     { id: "core", name: "平板支撑 / 卷腹", sets: 4, reps: "", note: "自重" },
   ];
+  const backExercises = () => [{ id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, { id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }];
+  const oldBack = { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: backExercises()[0], accessories: backExercises().slice(1) };
   const TEMPLATES = freeze([
     { id: "bench-a", title: "卧推 A", kind: "容量日", type: "chest", main: { name: "快速卧推", sets: 5, reps: "8", referenceWeight: 120 }, accessories: [{ id: "press", name: "实力推", sets: 4, reps: "10", referenceWeight: 40 }, ...arms("直杆臂屈伸")] },
     { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "12", note: "自重" }, ...arms("绳索臂屈伸")] },
     { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 4, reps: "25", note: "自重" }, ...arms("直杆臂屈伸")] },
     { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 100 }, accessories: arms("JM卧推") },
-    { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: { id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, accessories: [{ id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }] },
-    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
+    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: [] },
+    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
     { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [{ id: "hip-abduction", name: "髋外展", sets: 4, reps: "8–12" }, { id: "hip-adduction", name: "髋内收", sets: 4, reps: "8–12" }] },
-    { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 130 }, accessories: [], optionalNote: "可加练手臂" },
+    { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 100 }, accessories: backExercises() },
   ]);
   function templates() { return [...TEMPLATES]; }
   function template(id) { return TEMPLATES.find(x => x.id === id) || null; }
@@ -380,7 +384,12 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   }
   function seedRecords() {
     return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]], ["2026-11-13", "back", [50, 50, 50, 50, 50]]].map(([date, templateId, weights]) => ({
-      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(template(templateId)),
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(templateId === "back" ? oldBack : template(templateId)),
+    }));
+  }
+  function recentRecords() {
+    return [["2026-11-15", "bench-c", Array(5).fill(null)], ["2026-11-16", "deadlift", Array(5).fill(100)]].map(([date, templateId, setWeights]) => ({
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights, notes: "", triceps: "", snapshot: clone(template(templateId)),
     }));
   }
   function validateRecord(record, latestDate = today()) {
@@ -429,7 +438,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     const d = new Date(`${month}-01T12:00:00`); d.setMonth(d.getMonth() + delta);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }
-  const api = { templates, template, dose, prescription, recordedExercises, actualWeightSummary, today, validDate, seedRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
+  const api = { templates, template, dose, prescription, recordedExercises, actualWeightSummary, today, validDate, seedRecords, recentRecords, validateRecord, upsertRecord, initialRecords, monthSlots, shiftMonth };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.TrainingPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -451,6 +460,12 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     if (!state.records.some(r => r.date === "2026-11-13" && r.templateId === "back")) state.records.push(P.seedRecords().find(r => r.templateId === "back"));
     state.backRecordNov13 = true; persist();
   }
+  if (!state.confirmedRecordsNov17) {
+    for (const record of P.recentRecords()) {
+      if (!state.records.some(r => r.date === record.date && r.templateId === record.templateId)) state.records.push(record);
+    }
+    state.confirmedRecordsNov17 = true; persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);
@@ -465,7 +480,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
       <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-exercise">${t.main.name}</span>
       <span class="cell-dose"><span>${P.prescription(t.main)}</span></span>
       ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}` }
-      ${t.optionalNote ? `<span class="cell-aux">${esc(t.optionalNote)}</span>` : ""}
+      ${t.equipmentNote ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
       ${count ? `<span class="cell-foot"><span class="cell-status"><svg class="icon"><use href="#i-check" /></svg>已练 ${count} 次</span></span>` : ""}
     </button>`;
   }
@@ -519,6 +534,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     $("#workout-title").textContent = draft.recordId ? "编辑记录" : "记录训练";
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
+      ${t?.equipmentNote ? `<p class="equipment-note">${esc(t.equipmentNote)}</p>` : ""}
       ${P.recordedExercises(t).map((exercise, index) => { const prefix = index ? `extra-${exercise.id}` : "weight", weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights; return `<div class="record-main"><div><strong>${exercise.name}</strong></div><small>模板：${P.prescription(exercise)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button><div class="weight-grid">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>`; }).join("")}
       ${t && t.type !== "rest" ? `<details class="record-extra"><summary>补充记录</summary><div class="record-fields"><label>完成情况<select name="result">${[["done", "完成"], ["incomplete", "未完成"], ["paused", "暂停"]].map(([value, label]) => `<option value="${value}" ${draft.result === value ? "selected" : ""}>${label}</option>`).join("")}</select></label><label class="full-field">备注<input name="notes" type="text" maxlength="300" placeholder="动作感受、辅助重量等" value="${esc(draft.notes)}" /></label></div></details>` : ""}
       <div class="record-actions"><button type="submit" class="primary-button">保存记录</button></div><p class="form-message" id="recordStatus" role="status"></p>

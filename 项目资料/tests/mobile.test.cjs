@@ -11,6 +11,15 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
     await page.goto(url);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
     assert.equal(await page.locator(".calendar-cell").count(), 8);
+    const cardSizes = await page.locator(".calendar-cell").evaluateAll(cells => cells.map(cell => {
+      const style = getComputedStyle(cell);
+      return { width: cell.getBoundingClientRect().width, padding: style.padding, radius: style.borderRadius };
+    }));
+    for (const card of cardSizes) {
+      assert.ok(Math.abs(card.width - cardSizes[0].width) < 1, `所有模板卡片宽度一致：${width}px`);
+      assert.equal(card.padding, cardSizes[0].padding);
+      assert.equal(card.radius, cardSizes[0].radius);
+    }
     const overflow = await page.locator(".calendar-cell").evaluateAll(cells => cells.filter(cell => cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.dataset.template));
     assert.deepEqual(overflow, [], `模板内容溢出：${width}px`);
     await page.locator('[data-template="bench-d"]').click();

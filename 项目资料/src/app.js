@@ -20,6 +20,11 @@
     }
     state.confirmedRecordsNov17 = true; persist();
   }
+  if (!state.benchCNov15WeightConfirmed) {
+    state.records = state.records.map(record => record.date === "2026-11-15" && record.templateId === "bench-c" ? { ...record, setWeights: Array(5).fill(150) } : record);
+    if (state.draft?.date === "2026-11-15" && state.draft.templateId === "bench-c") state.draft.setWeights = Array(5).fill(150);
+    state.benchCNov15WeightConfirmed = true; persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);

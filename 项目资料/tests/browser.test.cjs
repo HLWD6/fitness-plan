@@ -12,6 +12,7 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   await page.locator("#historyLink").click();
   assert.match(await page.locator(".month-toolbar strong").innerText(), /2026年11月/);
   assert.equal(await page.locator(".record-day").count(), 30);
+  assert.equal(await page.locator('[data-log-date="2026-11-15"] .day-record-weights').innerText(), "5组3次150kg");
   assert.match(await page.locator('[data-log-date="2026-11-11"] .day-record-weights').innerText(), /5组5次120kg/);
   assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
   assert.doesNotMatch(await page.locator("#planCalendar").innerText(), /三头任选|2组|3组|参考 22.5/);
@@ -101,6 +102,24 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.deepEqual(upgraded.records[1].additionalWeights.row, Array(5).fill(50));
   await v17page.reload();
   assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.length, KEY), 4);
+  await v17page.evaluate(key => {
+    const state = JSON.parse(localStorage.getItem(key));
+    delete state.benchCNov15WeightConfirmed;
+    state.records.find(r => r.date === "2026-11-15" && r.templateId === "bench-c").setWeights.fill(null);
+    localStorage.setItem(key, JSON.stringify(state));
+  }, KEY);
+  await v17page.reload();
+  const corrected = await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
+  assert.equal(corrected.records.length, 4);
+  assert.deepEqual(corrected.records.find(r => r.date === "2026-11-15").setWeights, Array(5).fill(150));
+  assert.deepEqual(corrected.records.find(r => r.id === "custom").setWeights, Array(5).fill(99));
+  await v17page.locator("#historyLink").click();
+  await v17page.locator('[data-log-date="2026-11-15"]').click();
+  await v17page.locator('[data-record="confirmed-2026-11-15-bench-c"]').click();
+  await v17page.locator('[name="weight-0"]').fill("147.5");
+  await v17page.locator("#logForm button[type=submit]").click();
+  await v17page.reload();
+  assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.find(r => r.date === "2026-11-15").setWeights[0], KEY), 147.5);
   await v17.close();
 
   const previous = { version: 16, records: [...P.seedRecords().map(r => r.templateId === "squat-a" ? { ...r, setWeights: Array(5).fill(null) } : r), { id: "rest", date: "2026-11-10", templateId: "rest", setWeights: [] }] };

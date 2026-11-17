@@ -54,7 +54,7 @@
     }));
   }
   function recentRecords() {
-    return [["2026-11-15", "bench-c", Array(5).fill(null)], ["2026-11-16", "deadlift", Array(5).fill(100)]].map(([date, templateId, setWeights]) => ({
+    return [["2026-11-15", "bench-c", Array(5).fill(150)], ["2026-11-16", "deadlift", Array(5).fill(100)]].map(([date, templateId, setWeights]) => ({
       id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights, notes: "", triceps: "", snapshot: clone(template(templateId)),
     }));
   }

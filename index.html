@@ -75,6 +75,7 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .back .cell-kind { color: #527c6b; background: #ecf5ef; }
 .legs .cell-kind { color: #637c56; background: #f0f4e9; }
 .cell-main { display: block; font-size: var(--font-title); font-weight: 600; line-height: 1.35; }
+.cell-primary { display: contents; }
 .cell-exercise { margin-top: 5px; color: #506e7e; font-size: var(--font-exercise); line-height: 1.6; }
 .cell-dose { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 11px; font-size: var(--font-dose); font-variant-numeric: tabular-nums; line-height: 1.5; }
 .cell-dose > span { display: inline-block; max-width: 100%; padding: 3px 8px; border: 1px solid #e0e9ee; border-radius: 6px; background: #f4f7f9; color: #456575; font-weight: 600; }
@@ -101,6 +102,7 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .history-calendar { padding: 18px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
 .month-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 16px; }
 .month-toolbar strong { font-size: 22px; font-weight: 600; }
+.calendar-weight-unit { display: none; }
 .next-month .icon { transform: rotate(180deg); }
 .record-weekdays { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; margin-bottom: 8px; color: #607b8d; text-align: center; font-size: 15px; }
 .record-calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
@@ -114,6 +116,7 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .month-content { min-width: 560px; }
 .day-records { display: grid; gap: 9px; width: 100%; }
 .day-record { display: grid; gap: 4px; color: #456b55; font-size: 14px; line-height: 1.5; }
+.day-record-load { display: none; }
 .day-record + .day-record { border-top: 1px solid #d3e3d9; padding-top: 8px; }
 .day-record strong { font-size: 15px; font-weight: 600; }
 .day-record-weights { color: #42685b; font-size: 14px; line-height: 1.6; font-variant-numeric: tabular-nums; }
@@ -156,7 +159,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
 .set-log legend { color: #40667a; padding: 0; font-size: 16px; font-weight: 500; }
 .set-log legend > span { color: #617f91; font-size: 14px; font-weight: 400; }
 .copy-weight { position: absolute; right: 0; top: -23px; border: 0; padding: 0; color: #4e778e; background: none; font-size: 14px; }
-.weight-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
+.weight-grid { display: grid; grid-template-columns: repeat(var(--set-count,5),minmax(0,1fr)); gap: 10px; }
 .weight-grid label { color: #5f7e90; text-align: center; font-size: 14px; }
 .weight-grid input { padding: 9px 6px; text-align: center; font-size: 18px; font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
 .weight-grid input::-webkit-inner-spin-button,.weight-grid input::-webkit-outer-spin-button { appearance: none; margin: 0; }
@@ -171,80 +174,109 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
 @media(max-width:960px) {
   .shell { width: calc(100% - 44px); }
   .calendar-grid { grid-template-columns: minmax(0,1fr); gap: 16px; }
-  .bench-templates,.other-templates { gap: 16px; }
+  .bench-templates,.other-templates { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; overflow: visible; padding-bottom: 0; }
   .calendar-cell { padding: 20px; }
   .cell-aux-row { grid-template-columns: minmax(0,1fr); gap: 2px; }
   .cell-aux-row > span:last-child { text-align: left; }
 }
-@media(max-width:680px) { .calendar-scroll-hint { display: block; } }
-@media(max-width:600px) {
-  :root { --font-body: 16px; --font-title: 25px; --font-exercise: 17px; --font-dose: 16px; --font-aux: 15px; --font-small: 15px; --font-note: 14px; }
+@media screen and (max-width:600px) {
+  :root { --font-body: 16px; --font-title: 24px; --font-exercise: 17px; --font-dose: 16px; --font-aux: 16px; --font-small: 15px; --font-note: 14px; }
+  html { scroll-padding-top: 84px; }
   .shell { width: calc(100% - 28px); }
-  .site-header { min-height: 82px; gap: 8px; }
-  .brand { gap: 8px; font-size: 18px; }
-  .brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+  .site-header { position: sticky; top: 0; z-index: 4; width: 100%; min-height: 70px; padding: max(12px,env(safe-area-inset-top)) 14px 12px; background: #f3f8f9ed; backdrop-filter: blur(16px); border-bottom-color: #dce8e8; }
+  .brand { gap: 8px; font-size: 19px; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
   .brand .icon { width: 21px; height: 21px; }
-  .site-header nav { gap: 0; font-size: 14px; }
-  .site-header nav a,.site-header nav button { gap: 5px; min-height: 42px; padding: 7px 8px; }
-  .site-header nav .icon { width: 16px; height: 16px; }
-  .calendar-heading { padding-top: 28px; gap: 12px; }
-  h1 { font-size: 32px; }
-  .calendar-range { font-size: 15px; margin-top: 8px; }
-  #openWorkout { min-height: 46px; padding: 10px 13px; gap: 6px; font-size: 15px; }
+  .site-header nav { font-size: 15px; }
+  .site-header nav a { min-height: 44px; padding: 8px 10px; background: #fff9; border-color: #dce7ea; }
+  #printButton { display: none; }
+  .calendar-heading { padding-top: 25px; gap: 12px; }
+  h1 { font-size: 30px; }
+  .calendar-range { font-size: 14px; margin-top: 5px; }
+  #openWorkout { min-height: 46px; padding: 10px 13px; font-size: 15px; gap: 5px; }
   #openWorkout .icon { width: 17px; height: 17px; }
-  .calendar-meta { padding: 22px 1px 18px; font-size: 14px; }
-  .bench-templates,.other-templates { gap: 12px; }
-  .calendar-cell { padding: 17px 14px; border-radius: 13px; }
-  .cell-top { gap: 7px; margin-bottom: 16px; }
-  .cell-category { font-size: 14px; gap: 5px; }
-  .cell-category .icon { width: 18px; height: 18px; }
-  .cell-kind { font-size: 14px; padding: 3px 6px; gap: 4px; }
-  .cell-dose { gap: 7px; margin-top: 10px; }
-  .cell-dose > span { padding: 2px 6px; }
-  .cell-dose em { font-size: 15px; }
-  .cell-aux { margin-top: 15px; padding-top: 15px; gap: 8px; }
-  .cell-aux-row { grid-template-columns: minmax(0,1fr); gap: 2px; }
-  .cell-aux-row > span:last-child { text-align: left; }
-  .cell-foot { padding-top: 16px; }
-  .history-panel { margin-top: 22px; }
-  .history-panel > summary { padding: 18px 15px; font-size: 17px; }
-  .history-content { padding: 0 14px 19px; }
-  .history-calendar { padding: 11px; border-radius: 11px; }
-  .month-toolbar { margin-bottom: 14px; gap: 8px; }
-  .month-toolbar strong { font-size: 20px; }
-  .month-toolbar .icon-button { width: 40px; height: 40px; }
-  .record-weekdays { gap: 4px; font-size: 14px; }
-  .record-calendar-grid { gap: 4px; }
-  .record-day,.calendar-blank { min-height: 60px; padding: 8px; border-radius: 7px; }
-  .record-day { align-items: flex-start; gap: 7px; }
-  .record-day-number { font-size: 18px; }
-  .history-day-heading { margin-top: 22px; gap: 10px; }
-  .history-day-heading h3 { font-size: 18px; }
+  .calendar-meta { padding: 19px 2px 14px; font-size: 14px; }
+  .calendar-grid { gap: 12px; }
+  .bench-templates,.other-templates { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .calendar-cell { display: grid; grid-template-columns: minmax(0,1fr) auto; align-content: start; gap: 12px; padding: 18px; border-radius: 17px; }
+  .cell-main { grid-column: 1; grid-row: 1; align-self: center; font-size: 24px; }
+  .cell-top { grid-column: 2; grid-row: 1; margin: 0; }
+  .cell-category { display: none; }
+  .cell-kind { font-size: 14px; padding: 4px 8px; }
+  .cell-primary { grid-column: 1/-1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 7px 10px; }
+  .cell-exercise { margin: 0; }
+  .cell-dose { margin: 0; line-height: 1.5; }
+  .cell-dose > span { padding: 3px 7px; }
+  .cell-aux,.equal-exercises { grid-column: 1/-1; margin: 0; padding-top: 12px; gap: 8px; }
+  .cell-aux-row { grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; }
+  .cell-aux-row > span:last-child { max-width: 185px; text-align: right; }
+  .equipment-note { grid-column: 1/-1; margin: 0; font-size: 14px; }
+  .cell-foot { grid-column: 1/-1; padding: 0; margin: 0; font-size: 14px; }
+  .history-panel { margin-top: 20px; border-radius: 17px; }
+  .history-panel > summary { padding: 16px 14px; font-size: 17px; }
+  .history-content { padding: 0 12px 16px; }
+  .history-actions { gap: 8px; margin: 0 0 14px; }
+  .history-actions .outline-button { flex: 1; }
+  .history-calendar { padding: 10px 7px; border-radius: 12px; }
+  .month-toolbar { margin-bottom: 15px; gap: 8px; }
+  .month-toolbar strong { font-size: 20px; text-align: center; }
+  .calendar-weight-unit { display: block; margin-top: 3px; color: var(--muted); font-size: 14px; font-weight: 400; }
+  .month-content { min-width: 0; }
+  .month-scroll { overflow: visible; }
+  .record-weekdays { gap: 3px; font-size: 14px; }
+  .record-calendar-grid { gap: 3px; }
+  .record-day,.calendar-blank { min-height: 86px; padding: 7px 2px; border-radius: 7px; }
+  .record-day { align-items: center; gap: 5px; text-align: center; }
+  .record-day-number { font-size: 16px; }
+  .day-records { gap: 5px; }
+  .day-record { gap: 3px; line-height: 1.35; }
+  .day-record strong { font-size: 14px; font-weight: 500; letter-spacing: -.3px; }
+  .day-record-weights { display: none; }
+  .day-record-load { display: block; color: #42685b; font-size: 14px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+  .calendar-scroll-hint { display: block; margin-top: 10px; font-size: 14px; text-align: center; }
+  .history-day-heading { margin-top: 20px; gap: 10px; }
+  .history-day-heading h3 { font-size: 19px; }
   .history-day-heading .outline-button { font-size: 14px; padding-inline: 10px; }
-  .history-row { gap: 12px; }
-  .history-row strong { font-size: 19px; }
-  .history-dose { font-size: 15px; margin-left: 8px; }
+  .history-row { gap: 10px; padding-block: 15px; align-items: start; }
+  .history-row strong { font-size: 20px; }
+  .history-dose { margin: 4px 0 0; display: block; font-size: 15px; }
   .history-row p { font-size: 16px; }
-  .site-footer { font-size: 14px; }
-  .workout-dialog { padding: 23px 20px; border-radius: 17px; }
-  .dialog-heading { padding-bottom: 22px; }
+  .site-footer { font-size: 14px; padding-bottom: max(24px,env(safe-area-inset-bottom)); }
+  .save-status { bottom: max(20px,env(safe-area-inset-bottom)); font-size: 15px; }
+  .workout-dialog { position: fixed; inset: auto 0 0; width: 100%; max-width: 100%; max-height: calc(100dvh - 12px); margin: 0; padding: 0 18px max(6px,env(safe-area-inset-bottom)); border: 0; border-radius: 23px 23px 0 0; scroll-padding-block: 80px; }
+  .dialog-heading { position: sticky; top: 0; z-index: 2; margin-inline: -18px; padding: 16px 18px; background: #fffffff5; border-bottom: 1px solid #e5edf1; backdrop-filter: blur(12px); }
   .dialog-heading h2 { font-size: 21px; }
+  #sessionCard { padding-top: 18px; }
   .record-fields { gap: 12px; }
-  .record-main { padding: 13px; }
+  input,select { font-size: 17px; padding-inline: 10px; }
+  .record-main { padding: 12px; margin-top: 20px; }
   .record-main strong { font-size: 17px; }
-  .record-main > div > span,.record-main > small { font-size: 16px; }
-  .weight-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px 10px; }
+  .record-main > small { font-size: 15px; }
+  .set-log { margin-top: 25px; padding-top: 12px; }
+  .set-log legend { font-size: 16px; }
+  .copy-weight { min-height: 40px; top: -33px; padding: 7px 0 7px 8px; }
+  .weight-grid { gap: 7px; }
+  .weight-grid input { min-height: 54px; font-size: 17px; padding-inline: 2px; }
+  .record-actions { position: sticky; bottom: 0; z-index: 1; margin-top: 16px; padding: 12px 0; background: #fff; }
+  .record-actions .primary-button { min-height: 50px; }
 }
-@media(max-width:360px) {
-  .site-header nav a,.site-header nav button { padding-inline: 6px; }
+@media screen and (max-width:360px) {
+  .brand { font-size: 18px; }
+  .site-header nav a { padding-inline: 8px; }
   .site-header nav .icon { display: none; }
-  h1 { font-size: 29px; }
+  h1 { font-size: 27px; }
+  #openWorkout { padding-inline: 10px; }
   #openWorkout .icon { display: none; }
-  .calendar-cell { padding: 20px; }
+  .calendar-cell { padding: 15px; }
+  .cell-aux-row { gap: 7px; font-size: 15px; }
+  .cell-aux-row > span:last-child { max-width: 170px; }
   .record-fields { grid-template-columns: minmax(0,1fr); }
-  .workout-dialog { padding-inline: 18px; }
-  .record-weekdays { font-size: 14px; }
-  .history-calendar { padding: 8px; }
+  .history-content { padding-inline: 9px; }
+  .history-calendar { padding-inline: 5px; }
+  .record-weekdays,.record-calendar-grid { gap: 2px; }
+  .workout-dialog { padding-inline: 14px; }
+  .dialog-heading { margin-inline: -14px; padding-inline: 14px; }
+  .weight-grid { gap: 5px; }
 }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } .calendar-cell,.primary-button { transition: none; } .calendar-cell:hover { transform: none; } }
 @media print {
@@ -327,7 +359,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
       <div class="dialog-heading"><h2 id="workout-title">训练记录</h2><button type="button" class="icon-button" id="closeWorkout" aria-label="关闭"><svg class="icon"><use href="#i-close" /></svg></button></div>
       <article id="sessionCard"></article>
     </dialog>
-    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuWPr+W3puWPs+a7keWKqOaciOWOhuOAggoK5qih5p2/57uf5LiA5oyJ4oCc57uE5pWw77yL5qyh5pWw77yL6YeN6YeP4oCd5Lmm5YaZ77yb5pyJ5pWw5YC855qE6YeN6YeP6YO95piv5Y+C6ICD77yM6Ieq6YeN5aaC5a6e5qCH5rOo77yM5pyq57uZ6YeN6YeP55qE5Yqo5L2c6Ieq6KGM6YCJ5oup44CCCgp8IOaooeadvyB8IOS4u+mhuSB8IOS4gOe6p+i+heWKqSB8IOS4ieWktCB8CnwtLS18LS0tfC0tLXwtLS18Cnwg5Y2n5o6oQSB8IOW/q+mAn+WNp+aOqDXnu4Q45qyhMTIwa2cgfCDlrp7lipvmjqg057uEMTDmrKE0MGtnIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEIgfCDlgZzpob/ljafmjqg157uENeasoTEzNWtnIHwg6Ieq6YeN6IeC5bGI5Ly4NOe7hDEy5qyhIHwg57uz57Si6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEMgfCDotZvmjqg157uEM+asoTE1MGtnIHwg5L+v5Y2n5pKRNOe7hDI15qyhIHwg55u05p2G6IeC5bGI5Ly4Nee7hDEw4oCTMTXmrKEgfAp8IOWNp+aOqEQgfCDml6Dohb/ljafmjqg157uEOOasoTEwMGtnIHwg4oCUIHwgSk3ljafmjqg157uEMTDigJMxNeasoSB8Cgrlm5vnp43ljafmjqjlj6bliqDlk5Hpk4PlvK/kuL4x57uEMTLmrKEyMi41a2fjgIHlubPmnb/mlK/mkpHmiJbljbfohbk057uE44CCCgrlvJXkvZPml6XvvJroh6rph43lvJXkvZPlkJHkuIo157uEOOasoeOAggoK5rex6LmyQe+8muaXoOijhe+8jOS4jeS9v+eUqOiFsOW4puOAgeWKqeWKm+W4puetieijheWkh+OAguadoOmTg+a3sei5sjXnu4Q15qyhMTIwa2fvvIzohb/lsYjkvLjjgIHohb/lvK/kuL7lkIQ057uEMTDigJMxNeasoeOAggoK5rex6LmyQu+8muS/neWKoOWIqeS6muWIhuiFv+i5suavj+iFvzTnu4Q44oCTMTDmrKHvvIzoh6rph43miJblk5Hpk4PvvJvkvp3mrKHliqDpq4vlpJblsZXjgIHpq4vlhoXmlLblkIQ057uEOOKAkzEy5qyh77yM6YeN6YeP6Ieq5a6a44CCCgrpmaTlk5Hpk4PlvK/kuL4x57uE5aSW77yM5YW25LuW5Yqo5L2c6Iez5bCRNOe7hOOAguaguOW/g+asoeaVsOaIluaXtumVv+iHquihjOWuieaOkuOAggoK5bey6K6w5YWlMjAyNuW5tDEx5pyIOeaXpeWNp+aOqEHjgIExMeaXpea3sei5skHjgIExMuaXpeWNp+aOqELjgIIxMeaXpea3sei5suS6lOe7hDEyMGtn77ybMTLml6XljafmjqhC5Li6MTIw44CBMTI144CBMTI144CBMTMw44CBMTMwa2fjgILlrp7ph43kuI3kvJropobnm5bmqKHmnb/lj4LogIPlgLzvvIzmnKrloavph43ph4/kuI3kvJrlpZfnlKjlj4LogIPlgLzjgIIKCuiusOW9leS/neWtmOWcqOW9k+WJjea1j+iniOWZqO+8jOWPr+e8lui+keOAgeWvvOWHukNTVuaIluWkh+S7vUpTT07jgIIKCuehrOaLie+8muaXoOijhe+8jOS4jeS9v+eUqOiFsOW4puOAgeWKqeWKm+W4puetieijheWkh+OAguS4u+mhuTXnu4Q15qyhMTAwa2fvvJvovoXliqnkuLrpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlkIQ157uEMTDmrKE1MGtn44CCCgoyMDI25bm0MTHmnIgxM+aXpeiDjOmDqO+8mumrmOS9jeS4i+aLieOAgeWZqOaisOWIkuiIueWdh+S4ujXnu4QxMOasoTUwa2fjgILog4zpg6jkuKTkuKrliqjkvZzliIbliKvorrDlvZXpgJDnu4Tlrp7ph43vvIzml6XljobjgIHmmI7nu4blj4rlr7zlh7rlnYfkv53nlZnkuKTkuKrliqjkvZzjgIIKCjIwMjblubQxMeaciDE15pel5Y2n5o6oQ+aMieiuoeWIkuWujOaIkDXnu4Qz5qyhMTUwa2fvvJsxMeaciDE25pel56Gs5ouJ5LqU57uE5Z2H6K6wMTAwa2fjgILpppbmrKHmm7TmlrDml7bku4XooaXlhaXnvLrlpLHorrDlvZXvvIzkuI3opobnm5blt7LmnInlkIzml6XlkIzmqKHmnb/orrDlvZXjgILljafmjqhB4oCTROS4gOaOku+8jOW8leS9k+OAgea3sei5skHjgIHmt7HoubJC44CB56Gs5ouJ5LiA5o6S77yM5Y2h54mH5aSn5bCP57uf5LiA77yM56qE5bGP5Z2H5Y+v5qiq5ZCR5ruR5Yqo44CCCg==" download="使用说明.md">使用说明</a></footer>
+    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuaciOWOhuaVtOWRqOaYvuekuu+8jOaXpeacn+S4reaYvuekuuWunumZhemHjemHj++8m+WPmOmHjemHj+iuree7g+aYvuekuuiMg+WbtO+8jOeCuemAieaXpeacn+afpeeci+avj+e7hOWunumHjeOAguaciOWOhumHjemHj+WNleS9jeS4umtn44CCCgrmqKHmnb/nu5/kuIDmjInigJznu4TmlbDvvIvmrKHmlbDvvIvph43ph4/igJ3kuablhpnvvJvmnInmlbDlgLznmoTph43ph4/pg73mmK/lj4LogIPvvIzoh6rph43lpoLlrp7moIfms6jvvIzmnKrnu5nph43ph4/nmoTliqjkvZzoh6rooYzpgInmi6njgIIKCnwg5qih5p2/IHwg5Li76aG5IHwg5LiA57qn6L6F5YqpIHwg5LiJ5aS0IHwKfC0tLXwtLS18LS0tfC0tLXwKfCDljafmjqhBIHwg5b+r6YCf5Y2n5o6oNee7hDjmrKExMjBrZyB8IOWunuWKm+aOqDTnu4QxMOasoTQwa2cgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQiB8IOWBnOmhv+WNp+aOqDXnu4Q15qyhMTM1a2cgfCDoh6rph43oh4LlsYjkvLg057uEMTLmrKEgfCDnu7PntKLoh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQyB8IOi1m+aOqDXnu4Qz5qyhMTUwa2cgfCDkv6/ljafmkpE057uEMjXmrKEgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oRCB8IOaXoOiFv+WNp+aOqDXnu4Q45qyhMTAwa2cgfCDigJQgfCBKTeWNp+aOqDXnu4QxMOKAkzE15qyhIHwKCuWbm+enjeWNp+aOqOWPpuWKoOWTkemTg+W8r+S4vjHnu4QxMuasoTIyLjVrZ+OAgeW5s+adv+aUr+aSkeaIluWNt+iFuTTnu4TjgIIKCuW8leS9k+aXpe+8muiHqumHjeW8leS9k+WQkeS4ijXnu4Q45qyh44CCCgrmt7HoubJB77ya5peg6KOF77yM5LiN5L2/55So6IWw5bim44CB5Yqp5Yqb5bim562J6KOF5aSH44CC5p2g6ZOD5rex6LmyNee7hDXmrKExMjBrZ++8jOiFv+WxiOS8uOOAgeiFv+W8r+S4vuWQhDTnu4QxMOKAkzE15qyh44CCCgrmt7HoubJC77ya5L+d5Yqg5Yip5Lqa5YiG6IW/6Lmy5q+P6IW/NOe7hDjigJMxMOasoe+8jOiHqumHjeaIluWTkemTg++8m+S+neasoeWKoOmri+WkluWxleOAgemri+WGheaUtuWQhDTnu4Q44oCTMTLmrKHvvIzph43ph4/oh6rlrprjgIIKCumZpOWTkemTg+W8r+S4vjHnu4TlpJbvvIzlhbbku5bliqjkvZzoh7PlsJE057uE44CC5qC45b+D5qyh5pWw5oiW5pe26ZW/6Ieq6KGM5a6J5o6S44CCCgrlt7LorrDlhaUyMDI25bm0MTHmnIg55pel5Y2n5o6oQeOAgTEx5pel5rex6LmyQeOAgTEy5pel5Y2n5o6oQuOAgjEx5pel5rex6Lmy5LqU57uEMTIwa2fvvJsxMuaXpeWNp+aOqELkuLoxMjDjgIExMjXjgIExMjXjgIExMzDjgIExMzBrZ+OAguWunumHjeS4jeS8muimhuebluaooeadv+WPguiAg+WAvO+8jOacquWhq+mHjemHj+S4jeS8muWll+eUqOWPguiAg+WAvOOAggoK6K6w5b2V5L+d5a2Y5Zyo5b2T5YmN5rWP6KeI5Zmo77yM5Y+v57yW6L6R44CB5a+85Ye6Q1NW5oiW5aSH5Lu9SlNPTuOAggoK56Gs5ouJ77ya5peg6KOF77yM5LiN5L2/55So6IWw5bim44CB5Yqp5Yqb5bim562J6KOF5aSH44CC5Li76aG5Nee7hDXmrKExMDBrZ++8m+i+heWKqeS4uumrmOS9jeS4i+aLieOAgeWZqOaisOWIkuiIueWQhDXnu4QxMOasoTUwa2fjgIIKCjIwMjblubQxMeaciDEz5pel6IOM6YOo77ya6auY5L2N5LiL5ouJ44CB5Zmo5qKw5YiS6Ii55Z2H5Li6Nee7hDEw5qyhNTBrZ+OAguiDjOmDqOS4pOS4quWKqOS9nOWIhuWIq+iusOW9lemAkOe7hOWunumHje+8jOaXpeWOhuOAgeaYjue7huWPiuWvvOWHuuWdh+S/neeVmeS4pOS4quWKqOS9nOOAggoKMjAyNuW5tDEx5pyIMTXml6XljafmjqhD5oyJ6K6h5YiS5a6M5oiQNee7hDPmrKExNTBrZ++8mzEx5pyIMTbml6Xnoazmi4nkupTnu4TlnYforrAxMDBrZ+OAgummluasoeabtOaWsOaXtuS7heihpeWFpee8uuWkseiusOW9le+8jOS4jeimhuebluW3suacieWQjOaXpeWQjOaooeadv+iusOW9leOAgueUteiEkeS4iuWNp+aOqOS4juiDjOiFv+WQhOS4gOaOku+8jOW5s+adv+WPjOWIl++8jOaJi+acuuWNleWIl++8m+aJi+acuuaJgOacieWKqOS9nOWujOaVtOWxleekuu+8jOaXoOmcgOaoquWQkea7keWKqOOAguiusOW9leW8ueeql+S4reS6lOe7hOmHjemHj+WQjOaOkui+k+WFpe+8jOWPr+eUqOKAnOWQjOmmlue7hOKAneW/q+mAn+Whq+WGmeOAggo=" download="使用说明.md">使用说明</a></footer>
     <script>
 /* 固定训练模板。参考重量不参与实际训练记录的计算。 */
 (function (root) {
@@ -473,14 +505,20 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);
   const weightText = record => record.setWeights?.some(x => x !== null) ? `${record.setWeights.map(x => x === null ? "—" : x).join(" / ")} kg` : Number.isFinite(record.legacyWeight) ? `旧记录 ${record.legacyWeight} kg` : "";
   const dateText = date => P.validDate(date) ? date.replaceAll("-", ".") : "日期未记";
+  function compactWeightText(record) {
+    const weights = [record.setWeights || [], ...Object.values(record.additionalWeights || {})].flat().filter(Number.isFinite);
+    if (!weights.length) return Number.isFinite(record.legacyWeight) ? String(record.legacyWeight) : "未填";
+    const low = Math.min(...weights), high = Math.max(...weights);
+    return String(low === high ? low : `${low}–${high}`);
+  }
   function announce(message) { clearTimeout(noticeTimer); $("#saveStatus").textContent = message; noticeTimer = setTimeout(() => { $("#saveStatus").textContent = ""; }, 3500); }
   function renderCard(t) {
     const count = state.records.filter(r => r.templateId === t.id && r.result === "done").length;
     const category = t.type === "chest" ? "卧推" : t.type === "back" ? "背部" : "腿部";
     return `<button type="button" class="calendar-cell ${t.type} ${count ? "completed" : ""}" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
       <span class="cell-top"><span class="cell-category"><svg class="icon"><use href="#i-barbell" /></svg>${category}</span><span class="cell-kind">${t.kind}</span></span>
-      <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-exercise">${t.main.name}</span>
-      <span class="cell-dose"><span>${P.prescription(t.main)}</span></span>
+      <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
+      <span class="cell-dose"><span>${P.prescription(t.main)}</span></span></span>
       ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}` }
       ${t.equipmentNote ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
       ${count ? `<span class="cell-foot"><span class="cell-status"><svg class="icon"><use href="#i-check" /></svg>已练 ${count} 次</span></span>` : ""}
@@ -509,12 +547,12 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   function renderHistory() {
     const monthText = `${displayedMonth.slice(0, 4)}年${Number(displayedMonth.slice(5))}月`;
     const oldScroll = $("#historyCalendar .month-scroll")?.scrollLeft || 0;
-    $("#historyCalendar").innerHTML = `<div class="month-toolbar"><button type="button" class="icon-button" data-month-step="-1" aria-label="上一月"><svg class="icon"><use href="#i-chevron" /></svg></button><strong>${monthText}</strong><button type="button" class="icon-button next-month" data-month-step="1" aria-label="下一月"><svg class="icon"><use href="#i-chevron" /></svg></button></div><div class="month-scroll" tabindex="0" aria-label="训练月历，可横向滚动"><div class="month-content"><div class="record-weekdays">${["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map(x => `<span>${x}</span>`).join("")}</div><div class="record-calendar-grid">${P.monthSlots(displayedMonth).map(date => {
+    $("#historyCalendar").innerHTML = `<div class="month-toolbar"><button type="button" class="icon-button" data-month-step="-1" aria-label="上一月"><svg class="icon"><use href="#i-chevron" /></svg></button><strong>${monthText}<small class="calendar-weight-unit">实重 · kg</small></strong><button type="button" class="icon-button next-month" data-month-step="1" aria-label="下一月"><svg class="icon"><use href="#i-chevron" /></svg></button></div><div class="month-scroll" tabindex="0" aria-label="训练月历，可横向滚动"><div class="month-content"><div class="record-weekdays">${["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map(x => `<span>${x}</span>`).join("")}</div><div class="record-calendar-grid">${P.monthSlots(displayedMonth).map(date => {
       if (!date) return '<span class="calendar-blank" aria-hidden="true"></span>';
       const records = state.records.filter(r => r.date === date), names = records.map(r => (r.snapshot || P.template(r.templateId)).title);
       const summary = records.map(r => `${(r.snapshot || P.template(r.templateId)).title}，${P.actualWeightSummary(r)}`).join("；");
-      return `<button type="button" class="record-day ${records.length ? "has-records" : ""} ${date === selectedDate ? "selected" : ""}" data-log-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${dateText(date)}${summary ? `，${esc(summary)}` : ""}"><span class="record-day-number">${Number(date.slice(8))}</span>${records.length ? `<span class="day-records">${records.map(r => `<span class="day-record"><strong>${esc((r.snapshot || P.template(r.templateId)).title)}</strong><span class="day-record-weights">${esc(P.actualWeightSummary(r))}</span></span>`).join("")}</span>` : ""}</button>`;
-    }).join("")}</div></div></div><p class="calendar-scroll-hint">左右滑动查看整周</p>`;
+      return `<button type="button" class="record-day ${records.length ? "has-records" : ""} ${date === selectedDate ? "selected" : ""}" data-log-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${dateText(date)}${summary ? `，${esc(summary)}` : ""}"><span class="record-day-number">${Number(date.slice(8))}</span>${records.length ? `<span class="day-records">${records.map(r => `<span class="day-record"><strong>${esc((r.snapshot || P.template(r.templateId)).title)}</strong><span class="day-record-weights">${esc(P.actualWeightSummary(r))}</span><span class="day-record-load">${esc(compactWeightText(r))}</span></span>`).join("")}</span>` : ""}</button>`;
+    }).join("")}</div></div></div><p class="calendar-scroll-hint">点选日期查看逐组重量</p>`;
     $("#historyCalendar .month-scroll").scrollLeft = oldScroll;
     ensureSelectedDayVisible();
     $("#historyDate").textContent = dateText(selectedDate);
@@ -537,7 +575,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
       ${t?.equipmentNote ? `<p class="equipment-note">${esc(t.equipmentNote)}</p>` : ""}
-      ${P.recordedExercises(t).map((exercise, index) => { const prefix = index ? `extra-${exercise.id}` : "weight", weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights; return `<div class="record-main"><div><strong>${exercise.name}</strong></div><small>模板：${P.prescription(exercise)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button><div class="weight-grid">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>`; }).join("")}
+      ${P.recordedExercises(t).map((exercise, index) => { const prefix = index ? `extra-${exercise.id}` : "weight", weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights; return `<div class="record-main"><div><strong>${exercise.name}</strong></div><small>模板：${P.prescription(exercise)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button><div class="weight-grid" style="--set-count:${Math.min(exercise.sets, 5)}">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>`; }).join("")}
       ${t && t.type !== "rest" ? `<details class="record-extra"><summary>补充记录</summary><div class="record-fields"><label>完成情况<select name="result">${[["done", "完成"], ["incomplete", "未完成"], ["paused", "暂停"]].map(([value, label]) => `<option value="${value}" ${draft.result === value ? "selected" : ""}>${label}</option>`).join("")}</select></label><label class="full-field">备注<input name="notes" type="text" maxlength="300" placeholder="动作感受、辅助重量等" value="${esc(draft.notes)}" /></label></div></details>` : ""}
       <div class="record-actions"><button type="submit" class="primary-button">保存记录</button></div><p class="form-message" id="recordStatus" role="status"></p>
     </form>`;

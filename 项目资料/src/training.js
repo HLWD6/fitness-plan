@@ -42,6 +42,7 @@
   function actualWeightSummary(record) {
     if (record.snapshot?.equalExercises) return recordedExercises(record.snapshot).map((exercise, i) => `${exercise.name} ${actualWeightSummary({ setWeights: i ? record.additionalWeights?.[exercise.id] : record.setWeights, snapshot: { main: exercise } })}`).join("；");
     const weights = record.setWeights || [], main = record.snapshot?.main || template(record.templateId)?.main;
+    if (main?.showWeight === false) return dose(main);
     if (weights.some(x => Number.isFinite(x))) {
       const complete = weights.every(x => Number.isFinite(x));
       const load = complete && new Set(weights).size === 1 ? weights[0] : weights.map(x => Number.isFinite(x) ? x : "—").join(" / ");

@@ -39,16 +39,22 @@
     state.confirmedBenchDNov18 = true;
     persist();
   }
-  if (!state.confirmedSquatBNov19) {
+  if (!state.squatBNov19DoseConfirmed) {
     const date = "2026-11-19", templateId = "squat-b";
-    if (!state.records.some(record => record.date === date && record.templateId === templateId)) {
-      const snapshot = clone(P.template(templateId));
-      state.records.push({
-        id: "confirmed-2026-11-19-squat-b", date, templateId, result: "done",
-        setWeights: Array(snapshot.main.sets).fill(null), notes: "", triceps: "", snapshot,
-      });
+    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+    const snapshot = clone(existing?.snapshot || P.template(templateId));
+    snapshot.main = { name: "保加利亚深蹲", sets: 5, reps: "10", showWeight: false };
+    const record = {
+      id: "confirmed-2026-11-19-squat-b", notes: "", triceps: "", ...existing,
+      date, templateId, result: "done", setWeights: Array(snapshot.main.sets).fill(null), snapshot,
+    };
+    delete record.legacyWeight;
+    state.records = P.upsertRecord(state.records, record);
+    if (state.draft?.date === date && state.draft.templateId === templateId) {
+      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(snapshot) };
+      delete state.draft.legacyWeight;
     }
-    state.confirmedSquatBNov19 = true;
+    state.squatBNov19DoseConfirmed = true;
     persist();
   }
   if (state !== saved) persist();
@@ -57,6 +63,8 @@
   const weightText = record => record.setWeights?.some(x => x !== null) ? `${record.setWeights.map(x => x === null ? "—" : x).join(" / ")} kg` : Number.isFinite(record.legacyWeight) ? `旧记录 ${record.legacyWeight} kg` : "";
   const dateText = date => P.validDate(date) ? date.replaceAll("-", ".") : "日期未记";
   function compactWeightText(record) {
+    const main = (record.snapshot || P.template(record.templateId))?.main;
+    if (main?.showWeight === false) return P.dose(main);
     const weights = [record.setWeights || [], ...Object.values(record.additionalWeights || {})].flat().filter(Number.isFinite);
     if (!weights.length) return Number.isFinite(record.legacyWeight) ? String(record.legacyWeight) : "未填";
     const low = Math.min(...weights), high = Math.max(...weights);
@@ -85,7 +93,8 @@
     const t = record.snapshot || P.template(record.templateId), weight = weightText(record);
     if (t?.equalExercises) return `<div class="history-row"><div><strong>${esc(t.title)}</strong>${P.recordedExercises(t).map((a, i) => `<p class="history-main-lift">${esc(a.name)}</p><p class="history-weights">${esc(P.actualWeightSummary({ snapshot: { main: a }, setWeights: i ? record.additionalWeights?.[a.id] : record.setWeights }))}</p>`).join("")}${record.notes ? `<p>${esc(record.notes)}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}">编辑</button></div>`;
     const result = record.result === "paused" ? "暂停" : record.result === "incomplete" ? "未完成" : "";
-    return `<div class="history-row"><div><strong>${esc(t?.title || "训练")}${t?.main ? `<span class="history-dose">${P.dose(t.main)}</span>` : ""}</strong>${t?.main ? `<p class="history-main-lift">${esc(t.main.name)}</p>` : ""}<p class="history-weights">主项实重：${esc(weight || "未填写")}</p>${result || record.notes ? `<p>${esc([result, record.notes].filter(Boolean).join(" · "))}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}" aria-label="编辑${dateText(record.date)}${esc(t?.title)}">编辑</button></div>`;
+    const weightLine = t?.main?.showWeight === false ? "" : `<p class="history-weights">主项实重：${esc(weight || "未填写")}</p>`;
+    return `<div class="history-row"><div><strong>${esc(t?.title || "训练")}${t?.main ? `<span class="history-dose">${P.dose(t.main)}</span>` : ""}</strong>${t?.main ? `<p class="history-main-lift">${esc(t.main.name)}</p>` : ""}${weightLine}${result || record.notes ? `<p>${esc([result, record.notes].filter(Boolean).join(" · "))}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}" aria-label="编辑${dateText(record.date)}${esc(t?.title)}">编辑</button></div>`;
   }
   function renderLegacy() {
     const groups = OLD_KEYS.map(key => ({ key, data: read(key) })).filter(x => x.data && x.data.version !== 16);
@@ -126,7 +135,16 @@
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
       ${t?.equipmentNote ? `<p class="equipment-note">${esc(t.equipmentNote)}</p>` : ""}
-      ${P.recordedExercises(t).map((exercise, index) => { const prefix = index ? `extra-${exercise.id}` : "weight", weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights; return `<div class="record-main"><div><strong>${exercise.name}</strong></div><small>模板：${P.prescription(exercise)}</small></div><fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend><button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button><div class="weight-grid" style="--set-count:${Math.min(exercise.sets, 5)}">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div></fieldset>`; }).join("")}
+      ${P.recordedExercises(t).map((exercise, index) => {
+        const showWeight = exercise.showWeight !== false;
+        const prefix = index ? `extra-${exercise.id}` : "weight";
+        const weights = index ? draft.additionalWeights?.[exercise.id] : draft.setWeights;
+        const fields = showWeight ? `<fieldset class="set-log"><legend>逐组实重 <span>kg · 选填</span></legend>
+          <button type="button" class="copy-weight" ${index ? "" : 'id="copyWeight"'} data-copy="${index ? exercise.id : "main"}">同首组</button>
+          <div class="weight-grid" style="--set-count:${Math.min(exercise.sets, 5)}">${Array.from({ length: exercise.sets }, (_, i) => `<label>第${i + 1}组<input name="${prefix}-${i}" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="—" value="${esc(weights?.[i] ?? "")}" /></label>`).join("")}</div>
+        </fieldset>` : "";
+        return `<div class="record-main"><div><strong>${esc(exercise.name)}</strong></div><small>${showWeight ? "模板：" : ""}${esc(P.prescription(exercise))}</small></div>${fields}`;
+      }).join("")}
       ${t && t.type !== "rest" ? `<details class="record-extra"><summary>补充记录</summary><div class="record-fields"><label>完成情况<select name="result">${[["done", "完成"], ["incomplete", "未完成"], ["paused", "暂停"]].map(([value, label]) => `<option value="${value}" ${draft.result === value ? "selected" : ""}>${label}</option>`).join("")}</select></label><label class="full-field">备注<input name="notes" type="text" maxlength="300" placeholder="动作感受、辅助重量等" value="${esc(draft.notes)}" /></label></div></details>` : ""}
       <div class="record-actions"><button type="submit" class="primary-button">保存记录</button></div><p class="form-message" id="recordStatus" role="status"></p>
     </form>`;

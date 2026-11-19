@@ -14,7 +14,15 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.equal(await page.locator(".record-day").count(), 30);
   assert.equal(await page.locator('[data-log-date="2026-11-15"] .day-record-weights').innerText(), "5组3次150kg");
   assert.equal(await page.locator('[data-log-date="2026-11-18"] .day-record-weights').innerText(), "5组8次80kg");
-  assert.equal(await page.locator('[data-log-date="2026-11-19"] .day-record-weights').innerText(), "重量未填");
+  const squatBDate = page.locator('[data-log-date="2026-11-19"]');
+  assert.equal(await squatBDate.locator('.day-record-weights').innerText(), "5组10次");
+  await squatBDate.click();
+  assert.match(await page.locator('#historyList').innerText(), /5组10次[\s\S]*保加利亚深蹲/);
+  assert.equal(await page.locator('#historyList .history-weights').count(), 0);
+  await page.locator('[data-record="confirmed-2026-11-19-squat-b"]').click();
+  assert.equal(await page.locator('#logForm .weight-grid').count(), 0);
+  await page.locator('#logForm button[type=submit]').click();
+  assert.equal(await page.locator('#workout').isVisible(), false);
   assert.match(await page.locator('[data-log-date="2026-11-11"] .day-record-weights').innerText(), /5组5次120kg/);
   assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
   assert.doesNotMatch(await page.locator("#planCalendar").innerText(), /三头任选|2组|3组|参考 22.5/);
@@ -104,17 +112,23 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.deepEqual(upgraded.records[1].additionalWeights.row, Array(5).fill(50));
   await v17page.reload();
   assert.equal(await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)).records.length, KEY), 6);
-  await v17page.evaluate(key => {
+  await v17page.evaluate(({ key, squatBTemplate }) => {
     const state = JSON.parse(localStorage.getItem(key));
     delete state.benchCNov15WeightConfirmed;
     delete state.confirmedBenchDNov18;
+    delete state.squatBNov19DoseConfirmed;
+    state.confirmedSquatBNov19 = true;
+    const squatB = state.records.find(r => r.date === "2026-11-19" && r.templateId === "squat-b");
+    squatB.snapshot = squatBTemplate;
+    squatB.setWeights = Array(4).fill(null);
+    squatB.notes = "深蹲B原备注";
     state.records.find(r => r.date === "2026-11-15" && r.templateId === "bench-c").setWeights.fill(null);
     const benchD = state.records.find(r => r.date === "2026-11-18" && r.templateId === "bench-d");
     benchD.id = "existing-bench-d";
     benchD.setWeights.fill(null);
     benchD.notes = "保留原备注";
     localStorage.setItem(key, JSON.stringify(state));
-  }, KEY);
+  }, { key: KEY, squatBTemplate: P.template("squat-b") });
   await v17page.reload();
   const corrected = await v17page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
   assert.equal(corrected.records.length, 6);
@@ -122,6 +136,10 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   const correctedBenchD = corrected.records.find(r => r.id === "existing-bench-d");
   assert.deepEqual(correctedBenchD.setWeights, Array(5).fill(80));
   assert.equal(correctedBenchD.notes, "保留原备注");
+  const correctedSquatB = corrected.records.find(r => r.id === "confirmed-2026-11-19-squat-b");
+  assert.equal(P.actualWeightSummary(correctedSquatB), "5组10次");
+  assert.deepEqual(correctedSquatB.setWeights, Array(5).fill(null));
+  assert.equal(correctedSquatB.notes, "深蹲B原备注");
   assert.deepEqual(corrected.records.find(r => r.id === "custom").setWeights, Array(5).fill(99));
   await v17page.locator("#historyLink").click();
   await v17page.locator('[data-log-date="2026-11-15"]').click();

@@ -25,6 +25,20 @@
     if (state.draft?.date === "2026-11-15" && state.draft.templateId === "bench-c") state.draft.setWeights = Array(5).fill(150);
     state.benchCNov15WeightConfirmed = true; persist();
   }
+  if (!state.confirmedBenchDNov18) {
+    const date = "2026-11-18", templateId = "bench-d";
+    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+    const record = {
+      id: "confirmed-2026-11-18-bench-d", notes: "", triceps: "", ...existing,
+      date, templateId, result: "done", setWeights: [80, 80, 80, 80, 80], snapshot: clone(P.template(templateId)),
+    };
+    state.records = P.upsertRecord(state.records, record);
+    if (state.draft?.date === date && state.draft.templateId === templateId) {
+      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(record.snapshot) };
+    }
+    state.confirmedBenchDNov18 = true;
+    persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);

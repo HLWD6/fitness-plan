@@ -39,6 +39,18 @@
     state.confirmedBenchDNov18 = true;
     persist();
   }
+  if (!state.confirmedSquatBNov19) {
+    const date = "2026-11-19", templateId = "squat-b";
+    if (!state.records.some(record => record.date === date && record.templateId === templateId)) {
+      const snapshot = clone(P.template(templateId));
+      state.records.push({
+        id: "confirmed-2026-11-19-squat-b", date, templateId, result: "done",
+        setWeights: Array(snapshot.main.sets).fill(null), notes: "", triceps: "", snapshot,
+      });
+    }
+    state.confirmedSquatBNov19 = true;
+    persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);

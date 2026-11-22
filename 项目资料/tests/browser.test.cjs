@@ -17,6 +17,12 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.equal(await page.locator('[data-log-date="2026-11-19"] .day-record').count(), 0);
   assert.equal(await page.locator('[data-log-date="2026-11-21"] .day-record-weights').innerText(), "5组8次125kg");
   assert.equal(await page.locator('[data-log-date="2026-11-22"] .day-record-weights').innerText(), "5组5次120kg");
+  const colorMismatches = await page.locator(".record-day.has-records").evaluateAll(days => days.filter(day => {
+    const card = document.querySelector(`.calendar-cell[data-template="${day.dataset.tone}"]`);
+    return !card || getComputedStyle(day).background !== getComputedStyle(card).background;
+  }).map(day => day.dataset.logDate));
+  assert.deepEqual(colorMismatches, [], "月历色调与模板卡一致，包括选中日期");
+  assert.equal(await page.locator("#historyList .history-row").getAttribute("data-tone"), "squat-b");
   assert.doesNotMatch(await page.locator("#schedule").innerText(), /已练/);
   assert.match(await page.locator('[data-log-date="2026-11-11"] .day-record-weights').innerText(), /5组5次120kg/);
   assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
@@ -96,7 +102,15 @@ const P = require("../src/training.js"), url = pathToFileURL(path.resolve(__dirn
   assert.deepEqual(back[0].setWeights, Array(5).fill(50));
   await page.locator('[data-template="deadlift"]').click();
   assert.match(await page.locator(".record-main").innerText(), /5组5次100kg/);
-  await page.keyboard.press("Escape");
+  await page.locator('[name="date"]').fill("2026-11-18");
+  await page.locator("#logForm button[type=submit]").click();
+  const sharedDay = page.locator('[data-log-date="2026-11-18"]');
+  assert.equal(await sharedDay.getAttribute("data-tone"), null);
+  const entryColors = await sharedDay.locator(".day-record").evaluateAll(entries => entries.map(entry => {
+    const card = document.querySelector(`.calendar-cell[data-template="${entry.dataset.tone}"]`);
+    return card && getComputedStyle(entry).background === getComputedStyle(card).background;
+  }));
+  assert.deepEqual(entryColors, [true, true]);
   assert.deepEqual(errors, []); await context.close();
 
   const v17 = await browser.newContext(), v17page = await v17.newPage();

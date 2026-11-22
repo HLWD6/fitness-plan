@@ -86,7 +86,7 @@
   }
   function renderCard(t) {
     const category = t.type === "chest" ? "卧推" : t.type === "back" ? "背部" : "腿部";
-    return `<button type="button" class="calendar-cell" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
+    return `<button type="button" class="calendar-cell" data-template="${t.id}" data-tone="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
       <span class="cell-top"><span class="cell-category"><svg class="icon"><use href="#i-barbell" /></svg>${category}</span><span class="cell-kind">${t.kind}</span></span>
       <strong class="cell-main">${t.title}</strong>${renderWarmup(t.warmup)}${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
       <span class="cell-dose"><span>${P.prescription(t.main)}</span></span></span>
@@ -101,10 +101,10 @@
   }
   function historyRow(record) {
     const t = record.snapshot || P.template(record.templateId), weight = weightText(record);
-    if (t?.equalExercises) return `<div class="history-row"><div><strong>${esc(t.title)}</strong>${P.recordedExercises(t).map((a, i) => `<p class="history-main-lift">${esc(a.name)}</p><p class="history-weights">${esc(P.actualWeightSummary({ snapshot: { main: a }, setWeights: i ? record.additionalWeights?.[a.id] : record.setWeights }))}</p>`).join("")}${record.notes ? `<p>${esc(record.notes)}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}">编辑</button></div>`;
+    if (t?.equalExercises) return `<div class="history-row" data-tone="${esc(record.templateId)}"><div><strong>${esc(t.title)}</strong>${P.recordedExercises(t).map((a, i) => `<p class="history-main-lift">${esc(a.name)}</p><p class="history-weights">${esc(P.actualWeightSummary({ snapshot: { main: a }, setWeights: i ? record.additionalWeights?.[a.id] : record.setWeights }))}</p>`).join("")}${record.notes ? `<p>${esc(record.notes)}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}">编辑</button></div>`;
     const result = record.result === "paused" ? "暂停" : record.result === "incomplete" ? "未完成" : "";
     const weightLine = t?.main?.showWeight === false ? "" : `<p class="history-weights">主项实重：${esc(weight || "未填写")}</p>`;
-    return `<div class="history-row"><div><strong>${esc(t?.title || "训练")}${t?.main ? `<span class="history-dose">${P.dose(t.main)}</span>` : ""}</strong>${t?.main ? `<p class="history-main-lift">${esc(t.main.name)}</p>` : ""}${weightLine}${result || record.notes ? `<p>${esc([result, record.notes].filter(Boolean).join(" · "))}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}" aria-label="编辑${dateText(record.date)}${esc(t?.title)}">编辑</button></div>`;
+    return `<div class="history-row" data-tone="${esc(record.templateId)}"><div><strong>${esc(t?.title || "训练")}${t?.main ? `<span class="history-dose">${P.dose(t.main)}</span>` : ""}</strong>${t?.main ? `<p class="history-main-lift">${esc(t.main.name)}</p>` : ""}${weightLine}${result || record.notes ? `<p>${esc([result, record.notes].filter(Boolean).join(" · "))}</p>` : ""}</div><button type="button" class="edit-record" data-record="${esc(record.id)}" aria-label="编辑${dateText(record.date)}${esc(t?.title)}">编辑</button></div>`;
   }
   function renderLegacy() {
     const groups = OLD_KEYS.map(key => ({ key, data: read(key) })).filter(x => x.data && x.data.version !== 16);
@@ -119,9 +119,15 @@
     const oldScroll = $("#historyCalendar .month-scroll")?.scrollLeft || 0;
     $("#historyCalendar").innerHTML = `<div class="month-toolbar"><button type="button" class="icon-button" data-month-step="-1" aria-label="上一月"><svg class="icon"><use href="#i-chevron" /></svg></button><strong>${monthText}<small class="calendar-weight-unit">实重 · kg</small></strong><button type="button" class="icon-button next-month" data-month-step="1" aria-label="下一月"><svg class="icon"><use href="#i-chevron" /></svg></button></div><div class="month-scroll" tabindex="0" aria-label="训练月历，可横向滚动"><div class="month-content"><div class="record-weekdays">${["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map(x => `<span>${x}</span>`).join("")}</div><div class="record-calendar-grid">${P.monthSlots(displayedMonth).map(date => {
       if (!date) return '<span class="calendar-blank" aria-hidden="true"></span>';
-      const records = state.records.filter(r => r.date === date), names = records.map(r => (r.snapshot || P.template(r.templateId)).title);
+      const records = state.records.filter(r => r.date === date);
       const summary = records.map(r => `${(r.snapshot || P.template(r.templateId)).title}，${P.actualWeightSummary(r)}`).join("；");
-      return `<button type="button" class="record-day ${records.length ? "has-records" : ""} ${date === selectedDate ? "selected" : ""}" data-log-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${dateText(date)}${summary ? `，${esc(summary)}` : ""}"><span class="record-day-number">${Number(date.slice(8))}</span>${records.length ? `<span class="day-records">${records.map(r => `<span class="day-record"><strong>${esc((r.snapshot || P.template(r.templateId)).title)}</strong><span class="day-record-weights">${esc(P.actualWeightSummary(r))}</span><span class="day-record-load">${esc(compactWeightText(r))}</span></span>`).join("")}</span>` : ""}</button>`;
+      const dayTone = records.length === 1 ? `data-tone="${esc(records[0].templateId)}"` : "";
+      const entries = records.map(record => {
+        const title = (record.snapshot || P.template(record.templateId)).title;
+        const entryTone = records.length > 1 ? `data-tone="${esc(record.templateId)}"` : "";
+        return `<span class="day-record" ${entryTone}><strong>${esc(title)}</strong><span class="day-record-weights">${esc(P.actualWeightSummary(record))}</span><span class="day-record-load">${esc(compactWeightText(record))}</span></span>`;
+      }).join("");
+      return `<button type="button" class="record-day ${records.length ? "has-records" : ""} ${date === selectedDate ? "selected" : ""}" data-log-date="${date}" ${dayTone} aria-pressed="${date === selectedDate}" aria-label="${dateText(date)}${summary ? `，${esc(summary)}` : ""}"><span class="record-day-number">${Number(date.slice(8))}</span>${entries ? `<span class="day-records">${entries}</span>` : ""}</button>`;
     }).join("")}</div></div></div><p class="calendar-scroll-hint">点选日期查看逐组重量</p>`;
     $("#historyCalendar .month-scroll").scrollLeft = oldScroll;
     ensureSelectedDayVisible();

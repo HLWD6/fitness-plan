@@ -49,7 +49,9 @@ const root = path.resolve(__dirname, "../.."), url = pathToFileURL(path.join(roo
       assert.ok(month.content <= month.width + 1, `整周月历无需横向滚动：${width}px`);
       assert.equal(await page.locator('[data-log-date="2026-11-12"] .day-record-load').innerText(), '120–130');
       assert.equal(await page.locator('[data-log-date="2026-11-15"] .day-record-load').innerText(), '150');
-      assert.equal(await page.locator('[data-log-date="2026-11-19"] .day-record-load').innerText(), '5组10次');
+      assert.equal(await page.locator('[data-log-date="2026-11-19"] .day-record-load').count(), 0);
+      assert.equal(await page.locator('[data-log-date="2026-11-21"] .day-record-load').innerText(), '125');
+      assert.equal(await page.locator('[data-log-date="2026-11-22"] .day-record-load').innerText(), '120');
     } else assert.equal(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').isVisible(), true);
     assert.match(await page.locator('[data-log-date="2026-11-12"] .day-record-weights').innerText(), /120 \/ 125 \/ 125 \/ 130 \/ 130kg/);
     await page.locator('[data-log-date="2026-11-11"]').click();

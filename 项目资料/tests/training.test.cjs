@@ -9,7 +9,12 @@ test("八种模板不绑定日期，参考重量不限制实重", () => {
   assert.equal(P.prescription(P.template("back").main), "5组8次自重");
   assert.deepEqual(P.template("squat-a").accessories.map(x => x.name), ["腿屈伸", "腿弯举"]);
   assert.deepEqual(all.slice(4).map(x => x.id), ["squat-a", "squat-b", "deadlift", "back"]);
-  assert.deepEqual(P.template("squat-b").accessories.map(x => [x.name, P.prescription(x)]), [["死虫", "4组"], ["有氧", "30分钟"]]);
+  assert.deepEqual(P.template("squat-b").accessories, P.template("squat-a").accessories);
+  assert.deepEqual(P.template("back").accessories, P.template("deadlift").accessories);
+  for (const id of ["squat-a", "squat-b"]) {
+    assert.equal(P.template(id).warmup.name, "保加利亚分腿蹲");
+    assert.equal(P.prescription(P.template(id).warmup), "2组");
+  }
 });
 test("辅助组次和弯举参考准确", () => {
   assert.equal(P.template("bench-b").accessories[0].sets, 4);
@@ -69,7 +74,8 @@ test("固定三头动作、所有组数下限和统一处方格式", () => {
   assert.equal(P.prescription(P.template("bench-a").accessories[0]), "4组10次40kg");
   assert.equal(P.prescription(P.template("bench-b").accessories[0]), "4组12次自重");
   assert.equal(P.prescription(P.template("bench-c").accessories[0]), "4组25次自重");
-  assert.equal(P.prescription(P.template("squat-a").main), "5组5次120kg");
+  assert.equal(P.prescription(P.template("squat-a").main), "5组5次130kg");
+  assert.equal(P.prescription(P.template("squat-b").main), "5组5次120kg");
   assert.equal(P.prescription(bench[0].accessories.find(a => a.id === "curl")), "1组12次22.5kg");
 });
 test("日历显示实际主项重量，空值不替换为参考重量", () => {

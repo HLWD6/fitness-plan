@@ -9,16 +9,25 @@
     { id: "core", name: "平板支撑 / 卷腹", sets: 4, reps: "", note: "自重" },
   ];
   const backExercises = () => [{ id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, { id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }];
-  const oldBack = { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: backExercises()[0], accessories: backExercises().slice(1) };
+  const squatMain = referenceWeight => ({ name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight });
+  const squatWarmup = { id: "split-squat", name: "保加利亚分腿蹲", sets: 2, showWeight: false };
+  const squatAccessories = [
+    { id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" },
+    { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" },
+  ];
+  const [pulldown, row] = backExercises();
+  const pullupNov13 = { id: "back", title: "引体", kind: "引体日", type: "back", equalExercises: true, main: pulldown, accessories: [row] };
+  const oldSquatA = { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: squatMain(120), accessories: squatAccessories };
+  const oldSquatB = { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [] };
   const TEMPLATES = freeze([
     { id: "bench-a", title: "卧推 A", kind: "容量日", type: "chest", main: { name: "快速卧推", sets: 5, reps: "8", referenceWeight: 120 }, accessories: [{ id: "press", name: "实力推", sets: 4, reps: "10", referenceWeight: 40 }, ...arms("直杆臂屈伸")] },
     { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "12", note: "自重" }, ...arms("绳索臂屈伸")] },
     { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 4, reps: "25", note: "自重" }, ...arms("直杆臂屈伸")] },
     { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 80 }, accessories: arms("JM卧推") },
-    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
-    { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [{ id: "dead-bug", name: "死虫", sets: 4, showWeight: false }, { id: "cardio", name: "有氧", durationMinutes: 30 }] },
+    { id: "squat-a", title: "深蹲 A", kind: "腰带＋套膝", type: "legs", equipmentNote: "使用腰带和套膝", warmup: squatWarmup, main: squatMain(130), accessories: squatAccessories },
+    { id: "squat-b", title: "深蹲 B", kind: "完全无装", type: "legs", equipmentNote: "不使用腰带、套膝等装备", warmup: squatWarmup, main: squatMain(120), accessories: squatAccessories },
     { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 100 }, accessories: backExercises() },
-    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: [] },
+    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: backExercises() },
   ]);
   function templates() { return [...TEMPLATES]; }
   function template(id) { return TEMPLATES.find(x => x.id === id) || null; }
@@ -52,7 +61,10 @@
   }
   function seedRecords() {
     return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]], ["2026-11-13", "back", [50, 50, 50, 50, 50]]].map(([date, templateId, weights]) => ({
-      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(templateId === "back" ? oldBack : template(templateId)),
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights,
+      notes: templateId === "back" ? "主项引体向上未做" : "", triceps: "",
+      ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}),
+      snapshot: clone(templateId === "back" ? pullupNov13 : templateId === "squat-a" ? oldSquatA : template(templateId)),
     }));
   }
   function recentRecords() {
@@ -83,7 +95,7 @@
     if (!validDate(record?.date) || !p?.type) return null;
     const templateId = p.type === "chest" ? ["bench-a", "bench-b", "bench-c", "bench-d"][Number(p.micro) - 1] : p.type === "back" ? "back" : p.type === "legs" ? p.legVariant === "B" ? "squat-b" : "squat-a" : "rest";
     const t = template(templateId); if (!t) return null;
-    const snapshot = clone(t);
+    const snapshot = clone(templateId === "squat-a" ? oldSquatA : templateId === "squat-b" ? oldSquatB : t);
     if (templateId === "back") { delete snapshot.equalExercises; snapshot.main = { name: "引体向上", sets: 4, reps: "8–12" }; snapshot.accessories = []; }
     if (snapshot.main && Number.isInteger(p.sets) && p.sets > 0) snapshot.main.sets = p.sets;
     if (snapshot.main && p.reps) snapshot.main.reps = String(p.reps);

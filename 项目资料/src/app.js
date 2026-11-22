@@ -39,22 +39,31 @@
     state.confirmedBenchDNov18 = true;
     persist();
   }
-  if (!state.squatBNov19DoseConfirmed) {
-    const date = "2026-11-19", templateId = "squat-b";
-    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
-    const snapshot = clone(existing?.snapshot || P.template(templateId));
-    snapshot.main = { name: "保加利亚深蹲", sets: 5, reps: "10", showWeight: false };
-    const record = {
-      id: "confirmed-2026-11-19-squat-b", notes: "", triceps: "", ...existing,
-      date, templateId, result: "done", setWeights: Array(snapshot.main.sets).fill(null), snapshot,
-    };
-    delete record.legacyWeight;
-    state.records = P.upsertRecord(state.records, record);
-    if (state.draft?.date === date && state.draft.templateId === templateId) {
-      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(snapshot) };
-      delete state.draft.legacyWeight;
+  if (!state.confirmedRecordsNov22) {
+    const isMistakenRecord = record => record?.date === "2026-11-19" && record.templateId === "squat-b";
+    state.records = state.records.filter(record => !isMistakenRecord(record));
+    if (isMistakenRecord(state.draft)) state.draft = null;
+
+    const pullup = P.seedRecords().find(record => record.date === "2026-11-13");
+    const previousPullup = state.records.find(record => record.date === pullup.date && record.templateId === pullup.templateId);
+    const pullupNotes = previousPullup?.notes;
+    const notes = pullupNotes?.includes(pullup.notes) ? pullupNotes : [pullup.notes, pullupNotes].filter(Boolean).join(" · ");
+    const accessoryResults = previousPullup?.snapshot?.equalExercises ? previousPullup : pullup;
+    state.records = P.upsertRecord(state.records, { ...pullup, ...accessoryResults, snapshot: pullup.snapshot, notes });
+
+    for (const [date, templateId, weight] of [["2026-11-21", "bench-a", 125], ["2026-11-22", "squat-b", 120]]) {
+      const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+      const snapshot = clone(P.template(templateId));
+      const record = {
+        id: `confirmed-${date}-${templateId}`, notes: "", triceps: "", ...existing,
+        date, templateId, result: "done", setWeights: Array(snapshot.main.sets).fill(weight), snapshot,
+      };
+      state.records = P.upsertRecord(state.records, record);
+      if (state.draft?.date === date && state.draft.templateId === templateId) {
+        state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(snapshot) };
+      }
     }
-    state.squatBNov19DoseConfirmed = true;
+    state.confirmedRecordsNov22 = true;
     persist();
   }
   if (state !== saved) persist();
@@ -71,22 +80,23 @@
     return String(low === high ? low : `${low}–${high}`);
   }
   function announce(message) { clearTimeout(noticeTimer); $("#saveStatus").textContent = message; noticeTimer = setTimeout(() => { $("#saveStatus").textContent = ""; }, 3500); }
+  function renderWarmup(warmup) {
+    if (!warmup) return "";
+    return `<span class="cell-aux-row cell-warmup"><span><small>热身</small>${esc(warmup.name)}</span><span>${esc(P.prescription(warmup))}</span></span>`;
+  }
   function renderCard(t) {
-    const count = state.records.filter(r => r.templateId === t.id && r.result === "done").length;
     const category = t.type === "chest" ? "卧推" : t.type === "back" ? "背部" : "腿部";
-    return `<button type="button" class="calendar-cell ${t.type} ${count ? "completed" : ""}" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
+    return `<button type="button" class="calendar-cell" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
       <span class="cell-top"><span class="cell-category"><svg class="icon"><use href="#i-barbell" /></svg>${category}</span><span class="cell-kind">${t.kind}</span></span>
-      <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
+      <strong class="cell-main">${t.title}</strong>${renderWarmup(t.warmup)}${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
       <span class="cell-dose"><span>${P.prescription(t.main)}</span></span></span>
       ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}` }
-      ${t.equipmentNote ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
-      ${count ? `<span class="cell-foot"><span class="cell-status"><svg class="icon"><use href="#i-check" /></svg>已练 ${count} 次</span></span>` : ""}
+      ${t.equipmentNote && !t.warmup ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
     </button>`;
   }
   function renderBoard() {
     const all = P.templates();
     $("#planCalendar").innerHTML = `<div class="bench-templates">${all.filter(t => t.type === "chest").map(renderCard).join("")}</div><div class="other-templates">${all.filter(t => t.type !== "chest").map(renderCard).join("")}</div>`;
-    $("#progressText").textContent = `${state.records.length} 次训练`;
     $("#historyCount").textContent = state.records.length;
   }
   function historyRow(record) {
@@ -135,6 +145,7 @@
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
       ${t?.equipmentNote ? `<p class="equipment-note">${esc(t.equipmentNote)}</p>` : ""}
+      ${renderWarmup(t?.warmup)}
       ${P.recordedExercises(t).map((exercise, index) => {
         const showWeight = exercise.showWeight !== false;
         const prefix = index ? `extra-${exercise.id}` : "weight";

@@ -56,39 +56,50 @@ h1 { font-size: 38px; font-weight: 600; line-height: 1.3; }
 .primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 50px; padding: 11px 20px; border: 1px solid #386e77; border-radius: 11px; background: #386e77; color: #fff; font-size: 16px; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 10px #386e7716,inset 0 1px 0 #ffffff18; transition: background .15s,box-shadow .15s; }
 .primary-button:hover:not(:disabled) { background: #2c5d67; box-shadow: 0 5px 14px #386e7725; }
 .primary-button .icon { width: 19px; height: 19px; }
-.calendar-meta { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 25px 2px 20px; color: var(--muted); font-size: 15px; }
-.calendar-legend > span { display: inline-flex; align-items: center; gap: 8px; }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; background: #82ad91; box-shadow: 0 0 0 3px #ffffff80; }
-.calendar-board { min-width: 0; }
+.calendar-board { min-width: 0; margin-top: 24px; }
 .calendar-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; }
 .bench-templates,.other-templates { display: grid; grid-template-columns: repeat(4,minmax(240px,1fr)); gap: 18px; min-width: 0; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
 .calendar-cell { scroll-snap-align: start; }
 .equipment-note { display: block; margin-top: 14px; color: #456f65; font-size: 14px; line-height: 1.6; }
-.calendar-cell { display: flex; flex-direction: column; min-width: 0; padding: 23px; border: 1px solid #dce6ed; border-radius: 17px; background: #fff; color: var(--ink); text-align: left; box-shadow: var(--shadow); transition: border-color .18s,box-shadow .18s,transform .18s; }
+.calendar-cell {
+  --card-rgb: 95 145 221;
+  --card-ink: #284b74;
+  --card-tint: .30;
+  display: flex; flex-direction: column; min-width: 0; padding: 23px;
+  border: 1px solid rgb(var(--card-rgb) / .34); border-radius: 17px;
+  background: linear-gradient(150deg,#ffffffbb,#ffffff1a 80%),rgb(var(--card-rgb) / var(--card-tint));
+  color: var(--ink); text-align: left;
+  box-shadow: inset 0 1px 0 #ffffffd9,0 6px 18px #2843570a;
+  transition: border-color .18s,box-shadow .18s,transform .18s;
+}
+[data-template="bench-c"] { --card-tint: .62; }
+[data-template="bench-b"] { --card-tint: .46; }
+[data-template="bench-d"] { --card-tint: .17; }
+[data-template="squat-a"],[data-template="squat-b"] { --card-rgb: 79 170 125; --card-ink: #285f48; }
+[data-template="squat-a"] { --card-tint: .53; }
+[data-template="squat-b"] { --card-tint: .27; }
+[data-template="deadlift"],[data-template="back"] { --card-rgb: 154 122 216; --card-ink: #514074; }
+[data-template="deadlift"] { --card-tint: .50; }
+[data-template="back"] { --card-tint: .25; }
 .calendar-cell > * { flex-shrink: 0; }
-.calendar-cell.completed { border-color: #bdd8c6; background: linear-gradient(145deg,#eaf5ee,#f4faf5); }
 .cell-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 18px; }
 .cell-category { display: inline-flex; align-items: center; gap: 7px; color: #536f7d; font-size: 15px; font-weight: 500; }
-.cell-category .icon { width: 21px; height: 21px; color: #5e8d98; }
-.cell-kind { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 7px; background: #edf3fb; color: #4b7198; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.cell-category .icon { width: 21px; height: 21px; color: var(--card-ink); }
+.cell-kind { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 7px; background: #ffffff85; color: var(--card-ink); font-size: 14px; font-weight: 500; white-space: nowrap; }
 .cell-kind::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .65; }
-.back .cell-kind { color: #527c6b; background: #ecf5ef; }
-.legs .cell-kind { color: #637c56; background: #f0f4e9; }
 .cell-main { display: block; font-size: var(--font-title); font-weight: 600; line-height: 1.35; }
 .cell-primary { display: contents; }
 .cell-exercise { margin-top: 5px; color: #506e7e; font-size: var(--font-exercise); line-height: 1.6; }
 .cell-dose { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 11px; font-size: var(--font-dose); font-variant-numeric: tabular-nums; line-height: 1.5; }
-.cell-dose > span { display: inline-block; max-width: 100%; padding: 3px 8px; border: 1px solid #e0e9ee; border-radius: 6px; background: #f4f7f9; color: #456575; font-weight: 600; }
+.cell-dose > span { display: inline-block; max-width: 100%; padding: 3px 8px; border: 1px solid rgb(var(--card-rgb) / .24); border-radius: 6px; background: #ffffff9c; color: var(--card-ink); font-weight: 600; }
 .cell-dose em { font-style: normal; font-size: 16px; color: #4d707b; }
-.completed .cell-dose > span { border-color: #d6e8dc; background: #ffffffa0; color: #48785d; }
-.cell-aux { display: grid; gap: 8px; padding-top: 17px; margin-top: 17px; border-top: 1px solid #e2ebf0; }
+.cell-aux { display: grid; gap: 8px; padding-top: 17px; margin-top: 17px; border-top: 1px solid rgb(var(--card-rgb) / .27); }
 .cell-aux-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; gap: 12px; color: #465f6f; font-size: var(--font-aux); line-height: 1.6; }
 .cell-aux-row > span:last-child { color: #5e7483; white-space: normal; text-align: right; font-size: var(--font-small); font-variant-numeric: tabular-nums; }
 .cell-aux-row small { display: block; margin-top: 3px; color: #607b88; font-size: var(--font-note); line-height: 1.5; }
-.completed .cell-aux { border-color: #d5e7dc; }
-.cell-foot { display: flex; align-items: center; margin-top: auto; padding-top: 19px; color: #49775b; font-size: var(--font-note); line-height: 1.6; }
-.cell-status { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
-.cell-status .icon { width: 15px; height: 15px; padding: 2px; border-radius: 50%; color: #fff; background: #78a587; stroke-width: 2; }
+.cell-warmup { margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: #ffffff65; }
+.cell-warmup small { display: inline; margin: 0 7px 0 0; color: var(--card-ink, #456575); font-weight: 600; }
+#logForm .cell-warmup { margin-top: 14px; background: #f2f7fb; }
 .history-panel { margin-top: 28px; border: 1px solid #dce6ed; border-radius: 14px; background: #ffffffb0; box-shadow: var(--shadow); }
 .history-panel > summary { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 20px 22px; cursor: pointer; list-style: none; color: #4f6d7e; font-size: 17px; }
 .history-panel > summary::-webkit-details-marker { display: none; }
@@ -195,7 +206,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .calendar-range { font-size: 14px; margin-top: 5px; }
   #openWorkout { min-height: 46px; padding: 10px 13px; font-size: 15px; gap: 5px; }
   #openWorkout .icon { width: 17px; height: 17px; }
-  .calendar-meta { padding: 19px 2px 14px; font-size: 14px; }
+  .calendar-board { margin-top: 18px; }
   .calendar-grid { gap: 12px; }
   .bench-templates,.other-templates { grid-template-columns: minmax(0,1fr); gap: 12px; }
   .calendar-cell { display: grid; grid-template-columns: minmax(0,1fr) auto; align-content: start; gap: 12px; padding: 18px; border-radius: 17px; }
@@ -211,7 +222,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .cell-aux-row { grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; }
   .cell-aux-row > span:last-child { max-width: 185px; text-align: right; }
   .equipment-note { grid-column: 1/-1; margin: 0; font-size: 14px; }
-  .cell-foot { grid-column: 1/-1; padding: 0; margin: 0; font-size: 14px; }
+  .calendar-cell .cell-warmup { grid-column: 1/-1; margin-top: 0; }
   .history-panel { margin-top: 20px; border-radius: 17px; }
   .history-panel > summary { padding: 16px 14px; font-size: 17px; }
   .history-content { padding: 0 12px 16px; }
@@ -287,7 +298,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .calendar-heading { padding-top: 0; }
   h1 { font-size: 25px; }
   .calendar-range { font-size: 12px; margin-top: 4px; }
-  .calendar-meta { padding: 8px 0 10px; font-size: 12px; }
+  .calendar-board { margin-top: 10px; }
   .calendar-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
   .bench-templates { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
   .other-templates { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
@@ -306,8 +317,8 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   .cell-aux-row,.cell-aux-row > span:last-child { font-size: 12px; line-height: 1.25; }
   .cell-aux-row > span:last-child { text-align: right; }
   .cell-aux-row small { margin-top: 1px; font-size: 11px; line-height: 1.3; }
-  .cell-foot { font-size: 10px; padding-top: 6px; line-height: 1.25; }
-  .cell-status .icon { width: 11px; height: 11px; }
+  .cell-warmup { margin-top: 5px; padding: 4px 5px; }
+  .cell-warmup small { margin: 0 4px 0 0; }
 }
 
 .equal-exercises { display: grid; gap: 12px; margin-top: 12px; font-size: var(--font-body, 17px); }
@@ -322,7 +333,6 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   <body>
     <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <symbol id="i-barbell" viewBox="0 0 24 24"><path d="M2 9v6M5 6v12M19 6v12M22 9v6M5 12h14" /></symbol>
-      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></symbol>
       <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
       <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3" /><path d="M8 3v4m8-4v4M4 11h16m-11 4h2m4 0h2m-8 3h2" /></symbol>
@@ -340,7 +350,6 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
           <div><h1 id="schedule-title">训练模板</h1><p class="calendar-range">重量仅供参考</p></div>
           <button type="button" class="primary-button" id="openWorkout"><svg class="icon"><use href="#i-plus" /></svg>记录训练</button>
         </div>
-        <div class="calendar-meta"><span id="progressText"></span><div class="calendar-legend"><span><i class="legend-dot completed"></i>已练过</span></div></div>
         <div class="calendar-board">
           <div class="calendar-grid" id="planCalendar" aria-label="训练模板"></div>
         </div>
@@ -359,7 +368,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
       <div class="dialog-heading"><h2 id="workout-title">训练记录</h2><button type="button" class="icon-button" id="closeWorkout" aria-label="关闭"><svg class="icon"><use href="#i-close" /></svg></button></div>
       <article id="sessionCard"></article>
     </dialog>
-    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuaciOWOhuaVtOWRqOaYvuekuu+8jOaXpeacn+S4reaYvuekuuWunumZhemHjemHj++8m+WPmOmHjemHj+iuree7g+aYvuekuuiMg+WbtO+8jOeCuemAieaXpeacn+afpeeci+avj+e7hOWunumHjeOAguaciOWOhumHjemHj+WNleS9jeS4umtn44CCCgrmqKHmnb/nu5/kuIDmjInigJznu4TmlbDvvIvmrKHmlbDvvIvph43ph4/igJ3kuablhpnvvJvmnInmlbDlgLznmoTph43ph4/pg73mmK/lj4LogIPvvIzoh6rph43lpoLlrp7moIfms6jvvIzmnKrnu5nph43ph4/nmoTliqjkvZzoh6rooYzpgInmi6njgIIKCnwg5qih5p2/IHwg5Li76aG5IHwg5LiA57qn6L6F5YqpIHwg5LiJ5aS0IHwKfC0tLXwtLS18LS0tfC0tLXwKfCDljafmjqhBIHwg5b+r6YCf5Y2n5o6oNee7hDjmrKExMjBrZyB8IOWunuWKm+aOqDTnu4QxMOasoTQwa2cgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQiB8IOWBnOmhv+WNp+aOqDXnu4Q15qyhMTM1a2cgfCDoh6rph43oh4LlsYjkvLg057uEMTLmrKEgfCDnu7PntKLoh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQyB8IOi1m+aOqDXnu4Qz5qyhMTUwa2cgfCDkv6/ljafmkpE057uEMjXmrKEgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oRCB8IOaXoOiFv+WNp+aOqDXnu4Q45qyhODBrZyB8IOKAlCB8IEpN5Y2n5o6oNee7hDEw4oCTMTXmrKEgfAoK5Zub56eN5Y2n5o6o5Y+m5Yqg5ZOR6ZOD5byv5Li+Mee7hDEy5qyhMjIuNWtn44CB5bmz5p2/5pSv5pKR5oiW5Y236IW5NOe7hOOAggoK5byV5L2T5pel77ya6Ieq6YeN5byV5L2T5ZCR5LiKNee7hDjmrKHjgIIKCua3sei5skHvvJrml6Doo4XvvIzkuI3kvb/nlKjohbDluKbjgIHliqnlipvluKbnrYnoo4XlpIfjgILmnaDpk4Pmt7HoubI157uENeasoTEyMGtn77yM6IW/5bGI5Ly444CB6IW/5byv5Li+5ZCENOe7hDEw4oCTMTXmrKHjgIIKCua3sei5skLvvJrkv53liqDliKnkuprliIbohb/oubLmr4/ohb8057uEOOKAkzEw5qyh77yM6Ieq6YeN5oiW5ZOR6ZOD77yb6L6F5Yqp5Li65q276JmrNOe7hOWSjOacieawpzMw5YiG6ZKf44CCCgrmnInmsKfmjInml7bplb/lronmjpLjgILpmaTlk5Hpk4PlvK/kuL4x57uE5aSW77yM5YW25LuW5oyJ57uE6K6h55qE5Yqo5L2c6Iez5bCRNOe7hOOAguaguOW/g+asoeaVsOaIluaXtumVv+iHquihjOWuieaOkuOAggoK5bey6K6w5YWlMjAyNuW5tDEx5pyIOeaXpeWNp+aOqEHjgIExMeaXpea3sei5skHjgIExMuaXpeWNp+aOqELjgIIxMeaXpea3sei5suS6lOe7hDEyMGtn77ybMTLml6XljafmjqhC5Li6MTIw44CBMTI144CBMTI144CBMTMw44CBMTMwa2fjgILlrp7ph43kuI3kvJropobnm5bmqKHmnb/lj4LogIPlgLzvvIzmnKrloavph43ph4/kuI3kvJrlpZfnlKjlj4LogIPlgLzjgIIKCuiusOW9leS/neWtmOWcqOW9k+WJjea1j+iniOWZqO+8jOWPr+e8lui+keOAgeWvvOWHukNTVuaIluWkh+S7vUpTT07jgIIKCuehrOaLie+8muaXoOijhe+8jOS4jeS9v+eUqOiFsOW4puOAgeWKqeWKm+W4puetieijheWkh+OAguS4u+mhuTXnu4Q15qyhMTAwa2fvvJvovoXliqnkuLrpq5jkvY3kuIvmi4njgIHlmajmorDliJLoiLnlkIQ157uEMTDmrKE1MGtn44CCCgoyMDI25bm0MTHmnIgxM+aXpeiDjOmDqO+8mumrmOS9jeS4i+aLieOAgeWZqOaisOWIkuiIueWdh+S4ujXnu4QxMOasoTUwa2fjgILog4zpg6jkuKTkuKrliqjkvZzliIbliKvorrDlvZXpgJDnu4Tlrp7ph43vvIzml6XljobjgIHmmI7nu4blj4rlr7zlh7rlnYfkv53nlZnkuKTkuKrliqjkvZzjgIIKCjIwMjblubQxMeaciDE15pel5Y2n5o6oQ+aMieiuoeWIkuWujOaIkDXnu4Qz5qyhMTUwa2fvvJsxMeaciDE25pel56Gs5ouJ5LqU57uE5Z2H6K6wMTAwa2fjgIIxMeaciDE45pel5Y2n5o6oROS4ujXnu4Q45qyh77yM5LqU57uE5Z2H5Li6ODBrZ+OAgjEx5pyIMTnml6Xmt7HoubJC6K6w5Li65L+d5Yqg5Yip5Lqa5rex6LmyNee7hDEw5qyh44CC6aaW5qyh5pu05paw5pe25LuF6KGl5YWl57y65aSx6K6w5b2V77yM5LiN6KaG55uW5bey5pyJ5ZCM5pel5ZCM5qih5p2/6K6w5b2V44CC55S16ISR5LiK5Y2n5o6o5LiA5o6S77yM5rex6LmyQeOAgea3sei5skLjgIHnoazmi4njgIHlvJXkvZPkvp3mrKHmjpLlnKjlj6bkuIDmjpLjgILlubPmnb/lj4zliJfvvIzmiYvmnLrljZXliJfvvJvmiYvmnLrmiYDmnInliqjkvZzlrozmlbTlsZXnpLrvvIzml6DpnIDmqKrlkJHmu5HliqjjgILorrDlvZXlvLnnqpfkuK3kupTnu4Tph43ph4/lkIzmjpLovpPlhaXvvIzlj6/nlKjigJzlkIzpppbnu4TigJ3lv6vpgJ/loavlhpnjgIIK" download="使用说明.md">使用说明</a></footer>
+    <footer class="site-footer shell"><span>按实际训练记录</span><a href="data:text/markdown;base64,IyDlgaXouqvorqHliJIKCuWbuuWumuaooeadv+S4jee7keWumuaXpeacn+OAguiusOW9leaXtumAieaLqeaXpeacn+OAgeaooeadv++8jOWQhOe7hOWunumHjeeLrOeri+Whq+WGmeOAguiusOW9leaciOWOhuebtOaOpeaYvuekuuaooeadv+WSjOS4u+mhueWunumHje+8jOeCueWHu+aXpeacn+WPr+afpeeci+WujOaVtOiusOW9leS4jue8lui+ke+8m+S8keaBr+aXpeeVmeepuuOAguaJi+acuuaciOWOhuaVtOWRqOaYvuekuu+8jOaXpeacn+S4reaYvuekuuWunumZhemHjemHj++8m+WPmOmHjemHj+iuree7g+aYvuekuuiMg+WbtO+8jOeCuemAieaXpeacn+afpeeci+avj+e7hOWunumHjeOAguaciOWOhumHjemHj+WNleS9jeS4umtn44CCCgrmqKHmnb/nu5/kuIDmjInigJznu4TmlbDvvIvmrKHmlbDvvIvph43ph4/igJ3kuablhpnvvJvmnInmlbDlgLznmoTph43ph4/pg73mmK/lj4LogIPvvIzoh6rph43lpoLlrp7moIfms6jvvIzmnKrnu5nph43ph4/nmoTliqjkvZzoh6rooYzpgInmi6njgIIKCnwg5qih5p2/IHwg5Li76aG5IHwg5LiA57qn6L6F5YqpIHwg5LiJ5aS0IHwKfC0tLXwtLS18LS0tfC0tLXwKfCDljafmjqhBIHwg5b+r6YCf5Y2n5o6oNee7hDjmrKExMjBrZyB8IOWunuWKm+aOqDTnu4QxMOasoTQwa2cgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQiB8IOWBnOmhv+WNp+aOqDXnu4Q15qyhMTM1a2cgfCDoh6rph43oh4LlsYjkvLg057uEMTLmrKEgfCDnu7PntKLoh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oQyB8IOi1m+aOqDXnu4Qz5qyhMTUwa2cgfCDkv6/ljafmkpE057uEMjXmrKEgfCDnm7TmnYboh4LlsYjkvLg157uEMTDigJMxNeasoSB8Cnwg5Y2n5o6oRCB8IOaXoOiFv+WNp+aOqDXnu4Q45qyhODBrZyB8IOKAlCB8IEpN5Y2n5o6oNee7hDEw4oCTMTXmrKEgfAoK5Zub56eN5Y2n5o6o5Y+m5Yqg5ZOR6ZOD5byv5Li+Mee7hDEy5qyhMjIuNWtn44CB5bmz5p2/5pSv5pKR5oiW5Y236IW5NOe7hOOAggoK56Gs5ouJ5peg6KOF77yM5Li76aG5Nee7hDXmrKExMDAga2fjgILlvJXkvZPkuLvpobnkuLroh6rph43lvJXkvZPlkJHkuIo157uEOOasoeOAguS4pOWll+i+heWKqeWdh+S4uumrmOS9jeS4i+aLieOAgeWZqOaisOWIkuiIueWQhDXnu4QxMOasoTUwIGtn44CCCgrmt7HoubJB5L2/55So6IWw5bim5ZKM5aWX6Iad77yM5p2g6ZOD5rex6LmyNee7hDXmrKExMzAga2fjgILmt7HoubJC5a6M5YWo5peg6KOF77yM5p2g6ZOD5rex6LmyNee7hDXmrKExMjAga2fjgILkuKTlpZflnYfku6Xkv53liqDliKnkuprliIbohb/oubIy57uE54Ot6Lqr77yM6L6F5Yqp5Li66IW/5bGI5Ly444CB6IW/5byv5Li+5ZCENOe7hDEw4oCTMTXmrKHjgIIKCui+heWKqemHjemHj+S4juaguOW/g+asoeaVsOaIluaXtumVv+WPr+iHquihjOWuieaOkuOAggoK5bey6K6w5YWlMjAyNuW5tDEx5pyIOeaXpeWNp+aOqEHjgIExMeaXpea3sei5skHjgIExMuaXpeWNp+aOqELjgIIxMeaXpea3sei5suS6lOe7hDEyMGtn77ybMTLml6XljafmjqhC5Li6MTIw44CBMTI144CBMTI144CBMTMw44CBMTMwa2fjgILlrp7ph43kuI3kvJropobnm5bmqKHmnb/lj4LogIPlgLzvvIzmnKrloavph43ph4/kuI3kvJrlpZfnlKjlj4LogIPlgLzjgIIKCuiusOW9leS/neWtmOWcqOW9k+WJjea1j+iniOWZqO+8jOWPr+e8lui+keOAgeWvvOWHukNTVuaIluWkh+S7vUpTT07jgIIKCjIwMjblubQxMeaciDEz5pel6K6w5Li65byV5L2T5pel77yM5Li76aG55byV5L2T5ZCR5LiK5pyq5YGa44CC6auY5L2N5LiL5ouJ44CB5Zmo5qKw5YiS6Ii55Z2H5a6M5oiQNee7hDEw5qyhNTAga2fjgIIKCjIwMjblubQxMeaciDE15pel5Y2n5o6oQ+aMieiuoeWIkuWujOaIkDXnu4Qz5qyhMTUwa2fvvJsxMeaciDE25pel56Gs5ouJ5LqU57uE5Z2H6K6wMTAwa2fjgIIxMeaciDE45pel5Y2n5o6oROS4ujXnu4Q45qyh77yM5LqU57uE5Z2H5Li6ODBrZ+OAgjEx5pyIMTnml6Xml6Dorq3nu4PjgIIxMeaciDIx5pel5Y2n5o6oQeWujOaIkDXnu4Q45qyhMTI1IGtn77yMMTHmnIgyMuaXpeaXoOijhea3sei5skLlrozmiJA157uENeasoTEyMCBrZ+OAgueUteiEkeS4iuWNp+aOqOS4gOaOku+8jOa3sei5skHjgIHmt7HoubJC44CB56Gs5ouJ44CB5byV5L2T5L6d5qyh5o6S5Zyo5Y+m5LiA5o6S44CC5bmz5p2/5Y+M5YiX77yM5omL5py65Y2V5YiX77yb5omL5py65omA5pyJ5Yqo5L2c5a6M5pW05bGV56S677yM5peg6ZyA5qiq5ZCR5ruR5Yqo44CC6K6w5b2V5by556qX5Lit5LqU57uE6YeN6YeP5ZCM5o6S6L6T5YWl77yM5Y+v55So4oCc5ZCM6aaW57uE4oCd5b+r6YCf5aGr5YaZ44CCCg==" download="使用说明.md">使用说明</a></footer>
     <script>
 /* 固定训练模板。参考重量不参与实际训练记录的计算。 */
 (function (root) {
@@ -372,16 +381,25 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     { id: "core", name: "平板支撑 / 卷腹", sets: 4, reps: "", note: "自重" },
   ];
   const backExercises = () => [{ id: "pulldown", name: "高位下拉", sets: 5, reps: "10", referenceWeight: 50 }, { id: "row", name: "器械划船", sets: 5, reps: "10", referenceWeight: 50 }];
-  const oldBack = { id: "back", title: "背部", kind: "背部日", type: "back", equalExercises: true, main: backExercises()[0], accessories: backExercises().slice(1) };
+  const squatMain = referenceWeight => ({ name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight });
+  const squatWarmup = { id: "split-squat", name: "保加利亚分腿蹲", sets: 2, showWeight: false };
+  const squatAccessories = [
+    { id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" },
+    { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" },
+  ];
+  const [pulldown, row] = backExercises();
+  const pullupNov13 = { id: "back", title: "引体", kind: "引体日", type: "back", equalExercises: true, main: pulldown, accessories: [row] };
+  const oldSquatA = { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: squatMain(120), accessories: squatAccessories };
+  const oldSquatB = { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [] };
   const TEMPLATES = freeze([
     { id: "bench-a", title: "卧推 A", kind: "容量日", type: "chest", main: { name: "快速卧推", sets: 5, reps: "8", referenceWeight: 120 }, accessories: [{ id: "press", name: "实力推", sets: 4, reps: "10", referenceWeight: 40 }, ...arms("直杆臂屈伸")] },
     { id: "bench-b", title: "卧推 B", kind: "控制日", type: "chest", main: { name: "停顿卧推", sets: 5, reps: "5", referenceWeight: 135 }, accessories: [{ id: "dips", name: "自重臂屈伸", sets: 4, reps: "12", note: "自重" }, ...arms("绳索臂屈伸")] },
     { id: "bench-c", title: "卧推 C", kind: "赛推日", type: "chest", main: { name: "赛推", sets: 5, reps: "3", referenceWeight: 150 }, accessories: [{ id: "pushups", name: "俯卧撑", sets: 4, reps: "25", note: "自重" }, ...arms("直杆臂屈伸")] },
     { id: "bench-d", title: "卧推 D", kind: "减载日", type: "chest", main: { name: "无腿卧推", sets: 5, reps: "8", referenceWeight: 80 }, accessories: arms("JM卧推") },
-    { id: "squat-a", title: "深蹲 A", kind: "深蹲日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "杠铃深蹲", sets: 5, reps: "5", referenceWeight: 120 }, accessories: [{ id: "extension", name: "腿屈伸", sets: 4, reps: "10–15" }, { id: "leg-curl", name: "腿弯举", sets: 4, reps: "10–15" }] },
-    { id: "squat-b", title: "深蹲 B", kind: "单腿日", type: "legs", main: { name: "保加利亚分腿蹲", sets: 4, reps: "8–10", perLeg: true, note: "自重 / 哑铃" }, accessories: [{ id: "dead-bug", name: "死虫", sets: 4, showWeight: false }, { id: "cardio", name: "有氧", durationMinutes: 30 }] },
+    { id: "squat-a", title: "深蹲 A", kind: "腰带＋套膝", type: "legs", equipmentNote: "使用腰带和套膝", warmup: squatWarmup, main: squatMain(130), accessories: squatAccessories },
+    { id: "squat-b", title: "深蹲 B", kind: "完全无装", type: "legs", equipmentNote: "不使用腰带、套膝等装备", warmup: squatWarmup, main: squatMain(120), accessories: squatAccessories },
     { id: "deadlift", title: "硬拉", kind: "硬拉日", type: "legs", equipmentNote: "无装 · 不使用腰带、助力带等装备", main: { name: "硬拉", sets: 5, reps: "5", referenceWeight: 100 }, accessories: backExercises() },
-    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: [] },
+    { id: "back", title: "引体", kind: "引体日", type: "back", main: { name: "引体向上", sets: 5, reps: "8", note: "自重" }, accessories: backExercises() },
   ]);
   function templates() { return [...TEMPLATES]; }
   function template(id) { return TEMPLATES.find(x => x.id === id) || null; }
@@ -415,7 +433,10 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
   }
   function seedRecords() {
     return [["2026-11-09", "bench-a", [120, 120, 120, 120, 120]], ["2026-11-11", "squat-a", [120, 120, 120, 120, 120]], ["2026-11-12", "bench-b", [120, 125, 125, 130, 130]], ["2026-11-13", "back", [50, 50, 50, 50, 50]]].map(([date, templateId, weights]) => ({
-      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights || Array(template(templateId).main?.sets || 0).fill(null), notes: "", triceps: "", ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}), snapshot: clone(templateId === "back" ? oldBack : template(templateId)),
+      id: `confirmed-${date}-${templateId}`, date, templateId, result: "done", setWeights: weights,
+      notes: templateId === "back" ? "主项引体向上未做" : "", triceps: "",
+      ...(templateId === "back" ? { additionalWeights: { row: [50, 50, 50, 50, 50] } } : {}),
+      snapshot: clone(templateId === "back" ? pullupNov13 : templateId === "squat-a" ? oldSquatA : template(templateId)),
     }));
   }
   function recentRecords() {
@@ -446,7 +467,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     if (!validDate(record?.date) || !p?.type) return null;
     const templateId = p.type === "chest" ? ["bench-a", "bench-b", "bench-c", "bench-d"][Number(p.micro) - 1] : p.type === "back" ? "back" : p.type === "legs" ? p.legVariant === "B" ? "squat-b" : "squat-a" : "rest";
     const t = template(templateId); if (!t) return null;
-    const snapshot = clone(t);
+    const snapshot = clone(templateId === "squat-a" ? oldSquatA : templateId === "squat-b" ? oldSquatB : t);
     if (templateId === "back") { delete snapshot.equalExercises; snapshot.main = { name: "引体向上", sets: 4, reps: "8–12" }; snapshot.accessories = []; }
     if (snapshot.main && Number.isInteger(p.sets) && p.sets > 0) snapshot.main.sets = p.sets;
     if (snapshot.main && p.reps) snapshot.main.reps = String(p.reps);
@@ -516,22 +537,31 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     state.confirmedBenchDNov18 = true;
     persist();
   }
-  if (!state.squatBNov19DoseConfirmed) {
-    const date = "2026-11-19", templateId = "squat-b";
-    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
-    const snapshot = clone(existing?.snapshot || P.template(templateId));
-    snapshot.main = { name: "保加利亚深蹲", sets: 5, reps: "10", showWeight: false };
-    const record = {
-      id: "confirmed-2026-11-19-squat-b", notes: "", triceps: "", ...existing,
-      date, templateId, result: "done", setWeights: Array(snapshot.main.sets).fill(null), snapshot,
-    };
-    delete record.legacyWeight;
-    state.records = P.upsertRecord(state.records, record);
-    if (state.draft?.date === date && state.draft.templateId === templateId) {
-      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(snapshot) };
-      delete state.draft.legacyWeight;
+  if (!state.confirmedRecordsNov22) {
+    const isMistakenRecord = record => record?.date === "2026-11-19" && record.templateId === "squat-b";
+    state.records = state.records.filter(record => !isMistakenRecord(record));
+    if (isMistakenRecord(state.draft)) state.draft = null;
+
+    const pullup = P.seedRecords().find(record => record.date === "2026-11-13");
+    const previousPullup = state.records.find(record => record.date === pullup.date && record.templateId === pullup.templateId);
+    const pullupNotes = previousPullup?.notes;
+    const notes = pullupNotes?.includes(pullup.notes) ? pullupNotes : [pullup.notes, pullupNotes].filter(Boolean).join(" · ");
+    const accessoryResults = previousPullup?.snapshot?.equalExercises ? previousPullup : pullup;
+    state.records = P.upsertRecord(state.records, { ...pullup, ...accessoryResults, snapshot: pullup.snapshot, notes });
+
+    for (const [date, templateId, weight] of [["2026-11-21", "bench-a", 125], ["2026-11-22", "squat-b", 120]]) {
+      const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+      const snapshot = clone(P.template(templateId));
+      const record = {
+        id: `confirmed-${date}-${templateId}`, notes: "", triceps: "", ...existing,
+        date, templateId, result: "done", setWeights: Array(snapshot.main.sets).fill(weight), snapshot,
+      };
+      state.records = P.upsertRecord(state.records, record);
+      if (state.draft?.date === date && state.draft.templateId === templateId) {
+        state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(snapshot) };
+      }
     }
-    state.squatBNov19DoseConfirmed = true;
+    state.confirmedRecordsNov22 = true;
     persist();
   }
   if (state !== saved) persist();
@@ -548,22 +578,23 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     return String(low === high ? low : `${low}–${high}`);
   }
   function announce(message) { clearTimeout(noticeTimer); $("#saveStatus").textContent = message; noticeTimer = setTimeout(() => { $("#saveStatus").textContent = ""; }, 3500); }
+  function renderWarmup(warmup) {
+    if (!warmup) return "";
+    return `<span class="cell-aux-row cell-warmup"><span><small>热身</small>${esc(warmup.name)}</span><span>${esc(P.prescription(warmup))}</span></span>`;
+  }
   function renderCard(t) {
-    const count = state.records.filter(r => r.templateId === t.id && r.result === "done").length;
     const category = t.type === "chest" ? "卧推" : t.type === "back" ? "背部" : "腿部";
-    return `<button type="button" class="calendar-cell ${t.type} ${count ? "completed" : ""}" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
+    return `<button type="button" class="calendar-cell" data-template="${t.id}" aria-haspopup="dialog" aria-label="记录${esc(t.title)}，${esc(t.kind)}">
       <span class="cell-top"><span class="cell-category"><svg class="icon"><use href="#i-barbell" /></svg>${category}</span><span class="cell-kind">${t.kind}</span></span>
-      <strong class="cell-main">${t.title}</strong>${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
+      <strong class="cell-main">${t.title}</strong>${renderWarmup(t.warmup)}${t.equalExercises ? `<span class="equal-exercises">${P.recordedExercises(t).map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : `<span class="cell-primary"><span class="cell-exercise">${t.main.name}</span>
       <span class="cell-dose"><span>${P.prescription(t.main)}</span></span></span>
       ${t.accessories.length ? `<span class="cell-aux">${t.accessories.map(a => `<span class="cell-aux-row"><span>${a.name}</span><span>${P.prescription(a)}</span></span>`).join("")}</span>` : ""}` }
-      ${t.equipmentNote ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
-      ${count ? `<span class="cell-foot"><span class="cell-status"><svg class="icon"><use href="#i-check" /></svg>已练 ${count} 次</span></span>` : ""}
+      ${t.equipmentNote && !t.warmup ? `<span class="equipment-note">${esc(t.equipmentNote)}</span>` : ""}
     </button>`;
   }
   function renderBoard() {
     const all = P.templates();
     $("#planCalendar").innerHTML = `<div class="bench-templates">${all.filter(t => t.type === "chest").map(renderCard).join("")}</div><div class="other-templates">${all.filter(t => t.type !== "chest").map(renderCard).join("")}</div>`;
-    $("#progressText").textContent = `${state.records.length} 次训练`;
     $("#historyCount").textContent = state.records.length;
   }
   function historyRow(record) {
@@ -612,6 +643,7 @@ input:disabled,select:disabled { background: #eef4f8; color: #718b9b; }
     $("#sessionCard").innerHTML = `<form id="logForm">
       <div class="record-fields"><label>日期<input name="date" type="date" value="${esc(draft.date)}" max="${P.today()}" required /></label><label>模板<select name="templateId" required><option value="" disabled ${!t ? "selected" : ""}>选择模板</option>${P.templates().map(x => `<option value="${x.id}" ${x.id === t?.id ? "selected" : ""}>${x.title}</option>`).join("")}</select></label></div>
       ${t?.equipmentNote ? `<p class="equipment-note">${esc(t.equipmentNote)}</p>` : ""}
+      ${renderWarmup(t?.warmup)}
       ${P.recordedExercises(t).map((exercise, index) => {
         const showWeight = exercise.showWeight !== false;
         const prefix = index ? `extra-${exercise.id}` : "weight";

@@ -66,6 +66,20 @@
     state.confirmedRecordsNov22 = true;
     persist();
   }
+  if (!state.confirmedBenchBNov25) {
+    const date = "2026-11-25", templateId = "bench-b";
+    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+    const record = {
+      id: "confirmed-2026-11-25-bench-b", notes: "", triceps: "", ...existing,
+      date, templateId, result: "done", setWeights: [130, 135, 135, 135, 135], snapshot: clone(P.template(templateId)),
+    };
+    state.records = P.upsertRecord(state.records, record);
+    if (state.draft?.date === date && state.draft.templateId === templateId) {
+      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], snapshot: clone(record.snapshot) };
+    }
+    state.confirmedBenchBNov25 = true;
+    persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);

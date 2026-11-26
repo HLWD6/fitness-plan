@@ -80,6 +80,32 @@
     state.confirmedBenchBNov25 = true;
     persist();
   }
+  if (!state.confirmedPullupNov26) {
+    const date = "2026-11-26", templateId = "back";
+    const existing = state.records.find(record => record.date === date && record.templateId === templateId);
+    const snapshot = {
+      ...P.template(templateId), equalExercises: true,
+      main: { name: "引体向上", sets: 4, reps: "5", showWeight: false },
+      accessories: [
+        { id: "pulldown", name: "高位下拉", sets: 4, reps: "10" },
+        { id: "rear-delt-fly", name: "后束飞鸟", sets: 4, reps: "10" },
+        { id: "curl", name: "哑铃弯举", sets: 1, reps: "5" },
+        { id: "rowing-machine", name: "划船机", reps: "50", showWeight: false },
+      ],
+    };
+    const record = {
+      id: `confirmed-${date}-${templateId}`, notes: "", triceps: "", ...existing,
+      date, templateId, result: "done", setWeights: Array(4).fill(null),
+      additionalWeights: { pulldown: Array(4).fill(50), "rear-delt-fly": Array(4).fill(20), curl: [25], "rowing-machine": [] },
+      snapshot,
+    };
+    state.records = P.upsertRecord(state.records, record);
+    if (state.draft?.date === date && state.draft.templateId === templateId) {
+      state.draft = { ...state.draft, result: record.result, setWeights: [...record.setWeights], additionalWeights: clone(record.additionalWeights), snapshot: clone(snapshot) };
+    }
+    state.confirmedPullupNov26 = true;
+    persist();
+  }
   if (state !== saved) persist();
   let draft = null, noticeTimer;
   let selectedDate = state.records.map(r => r.date).sort().at(-1) || P.today(), displayedMonth = selectedDate.slice(0, 7);
@@ -190,7 +216,7 @@
   }
   function collectDraft() {
     const form = new FormData($("#logForm")), t = draft.snapshot && draft.templateId === form.get("templateId") ? draft.snapshot : P.template(form.get("templateId"));
-    const additionalWeights = Object.fromEntries((t?.equalExercises ? t.accessories : []).map(a => [a.id, Array.from({ length: a.sets }, (_, i) => { const raw = String(form.get(`extra-${a.id}-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); })]));
+    const additionalWeights = Object.fromEntries((t?.equalExercises ? t.accessories : []).map(a => [a.id, Array.from({ length: a.sets || 0 }, (_, i) => { const raw = String(form.get(`extra-${a.id}-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); })]));
     return { ...draft, additionalWeights, templateId: String(form.get("templateId") || ""), date: String(form.get("date") || ""), result: String(form.get("result") || "done"), notes: String(form.get("notes") ?? draft.notes ?? "").trim(), triceps: draft.triceps || t?.accessories.find(a => a.id === "triceps")?.name || "", setWeights: Array.from({ length: t?.main?.sets || 0 }, (_, i) => { const raw = String(form.get(`weight-${i}`) ?? "").trim(); return raw === "" ? null : Number(raw); }) };
   }
   $("#planCalendar").addEventListener("click", e => { const card = e.target.closest("[data-template]"); if (card) openWorkout(card.dataset.template); });

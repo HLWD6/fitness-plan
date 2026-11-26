@@ -38,9 +38,10 @@
     return !Number.isNaN(d.getTime()) && `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` === value;
   }
   function dose(exercise) {
-    if (!exercise?.sets) return "";
+    if (!exercise) return "";
     const reps = String(exercise.reps || "").replace(/\s*\/\s*腿/g, "");
-    return `${exercise.sets}组${reps ? `${reps}次` : ""}${exercise.perLeg || /\/\s*腿/.test(exercise.reps || "") ? "（每腿）" : ""}`;
+    const sets = exercise.sets ? `${exercise.sets}组` : "";
+    return `${sets}${reps ? `${reps}次` : ""}${exercise.perLeg || /\/\s*腿/.test(exercise.reps || "") ? "（每腿）" : ""}`;
   }
   function prescription(exercise) {
     if (exercise?.durationMinutes) return `${exercise.durationMinutes}分钟`;
@@ -80,7 +81,7 @@
     if (record.setWeights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "每组重量需在0–500 kg之间。";
     for (const exercise of t.equalExercises ? t.accessories : []) {
       const weights = record.additionalWeights?.[exercise.id];
-      if (!Array.isArray(weights) || weights.length !== exercise.sets || weights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "请检查各动作的逐组重量。";
+      if (!Array.isArray(weights) || weights.length !== (exercise.sets || 0) || weights.some(x => x !== null && (typeof x !== "number" || !Number.isFinite(x) || x < 0 || x > 500))) return "请检查各动作的逐组重量。";
     }
     if (!["done", "incomplete", "paused"].includes(record.result)) return "请选择完成情况。";
     return "";
